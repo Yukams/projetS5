@@ -23,7 +23,7 @@ public class FenetreConnexion extends JFrame implements ActionListener {
         //taille fenetre
         setSize(900, 550);
         //taille non modifiable manuellement
-        setResizable(false);
+        setResizable(true);
         //Click sur croix ferme la fenetre
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Centrer la fenetre par rapport à l'ecran
@@ -63,6 +63,10 @@ public class FenetreConnexion extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         identifiant = idTexte.getText();
         motDePasse = mdpTexte.getText();
+        setVisible(false);
+        
+        Messagerie mess = new Messagerie();
+        mess.setVisible(true);
         System.out.println("id = "+identifiant+"\n");
         System.out.println("mdp = "+motDePasse+"\n");
     }
