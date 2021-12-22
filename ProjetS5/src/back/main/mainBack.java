@@ -16,7 +16,8 @@ import back.users.Utilisateur;
 
 
 public class mainBack {
-	private static final String DB_URL = "jdbc:mysql://localhost:3306/projetS5";
+	private static final String DB_URL_MULTI_QUERY = "jdbc:mysql://localhost:3306/projetS5?allowMultiQueries=true";
+	private static final String DB_URL_SINGLE_QUERY = "jdbc:mysql://localhost:3306/projetS5";
 	private static final String USER = "root";
 	private static final String PASS = "root";
 	private static Object FileUtils;
@@ -52,14 +53,15 @@ public class mainBack {
 		return user.getId();
 	}
 
-	// Remplis la base de donnee
+	// Filling database with default values
 	private static void fillDatabase() {
-		try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
-			String sql = new String(Files.readAllBytes(Paths.get("/home/gecko/Code/Fac/Projet/projetS5/ProjetS5/src/back/main/database_setup.sql")));
-			stmt.execute(sql);
-			System.out.println("Database filled successfully...");
+			String sqlFillDb = new String(Files.readAllBytes(Paths.get("projetS5/ProjetS5/src/back/main/database_fill.sql")));
+			stmt.execute(sqlFillDb);
+
+			System.out.println("Database filled successfully.");
 		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
@@ -68,15 +70,27 @@ public class mainBack {
 	// Cree la base de donnee
 	private static void createDatabase() {
 		// Open a connection
-		try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		try(Connection conn = DriverManager.getConnection(DB_URL_SINGLE_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
-			String sqlDelete = "DROP DATABASE IF EXISTS projetS5;";
-			stmt.execute(sqlDelete);
-			String sqlCreate = "CREATE DATABASE projetS5;";
-			stmt.execute(sqlCreate);
-			System.out.println("Database created successfully...");
+			// Create empty database
+			stmt.execute("DROP DATABASE IF EXISTS projetS5;");
+			stmt.execute("CREATE DATABASE projetS5;");
+
+			System.out.println("Database created successfully.");
 		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
+			Statement stmt = conn.createStatement()
+		) {
+			// Create empty tables
+			String sql = new String(Files.readAllBytes(Paths.get("projetS5/ProjetS5/src/back/main/database_setup.sql")));
+			stmt.execute(sql);
+
+			System.out.println("Tables created successfully.");
+		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
 	}
