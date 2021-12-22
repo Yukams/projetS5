@@ -1,8 +1,13 @@
 package back.main;
 
 import java.util.Set;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import back.users.Utilisateur;
+
 
 public class mainBack {
 
@@ -44,7 +49,20 @@ public class mainBack {
 
 	// Cree la base de donnee
 	private static void createDatabase() {
+		String DB_URL = "jdbc:mysql://localhost:8080/projetS5";
+		String USER = "root";
+		String PASS = "root";
 
+		// Open a connection
+		try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			Statement stmt = conn.createStatement()
+		) {
+			String sql = "CREATE DATABASE STUDENTS";
+			stmt.executeUpdate(sql);
+			System.out.println("Database created successfully...");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
