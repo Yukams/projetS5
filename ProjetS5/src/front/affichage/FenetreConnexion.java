@@ -1,9 +1,15 @@
 package front.affichage;
 
+import front.users.Utilisateur;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 
 public class FenetreConnexion extends JFrame implements ActionListener {
 
@@ -14,8 +20,8 @@ public class FenetreConnexion extends JFrame implements ActionListener {
     private JTextField idTexte = new JTextField(10);
     private JPasswordField mdpTexte = new JPasswordField(10);
     private JButton connexionButton = new JButton("Connexion");
-    private String identifiant;
-    private String motDePasse;
+    private String username;
+    private String password;
 
     public FenetreConnexion(){
         //titre
@@ -61,18 +67,65 @@ public class FenetreConnexion extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        identifiant = idTexte.getText();
-        motDePasse = new String( mdpTexte.getPassword());
-        //PARTIE MOHA (verfif a demander à database)
-        setVisible(false);
-        if (identifiant.equals("") || motDePasse.equals("")){
-            setVisible(true);
-            idTexte.setText("");
+        username = idTexte.getText();
+        password = new String( mdpTexte.getPassword());
+        int userId;
+        if ((userId = connexionUtilisateur(username, password)) == -1) {
             mdpTexte.setText("");
+            afficherMessageErreur();
         } else {
-
+            setVisible(false);
             Messagerie mess = new Messagerie();
             mess.setVisible(true);
         }
+    }
+    private static boolean isValidString(String str){
+        String specialCharactersString = "!@#$%&*()'+,-./:;<=>?[]^`{|} ";
+        if(str.length()>=4 && str.length() <= 20) {
+            for (int i = 0; i < str.length(); i++) {
+                char c = str.charAt(i);
+                if(specialCharactersString.contains(Character.toString(c))){ return false; }
+            }
+            return true;
+        }
+        return false;
+    }
+    // Call verifiant le password et le username
+    private static int connexionUtilisateur(String username, String password) {
+        // TODO
+        int id = -1;
+        if (username.equals("") || password.equals(""))
+            return id;
+        else if(!isValidString(username))
+            return -1;
+        final String HOST = "127.0.0.1";
+        final int PORT = 5000;
+
+        try {
+            StringBuilder sb = new StringBuilder();
+            String strID;
+            Socket sc = new Socket(HOST,PORT);
+            DataInputStream in = new DataInputStream(sc.getInputStream());
+            DataOutputStream out = new DataOutputStream(sc.getOutputStream());
+            // Sending CX Token
+            sb.append(username+"@"+password); //format: username@password
+            String cxToken = sb.toString();
+            out.writeUTF(cxToken);
+            //Recieving response (NULL == wrong password)
+            strID = in.readUTF();
+            sc.close();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+    // Affiche le message d'erreur
+    private static void afficherMessageErreur() {
+        // TODO
+        JOptionPane.showMessageDialog(new JFrame(), "Nom d'Utilisateur ou Mot De Pass invalide !", "Dialog",
+                JOptionPane.ERROR_MESSAGE);
     }
 }

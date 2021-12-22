@@ -3,6 +3,7 @@ package front.main;
 import java.util.LinkedList;
 import java.util.List;
 
+import front.affichage.FenetreConnexion;
 import front.fil.FilDeDiscussion;
 import front.users.Utilisateur;
 
@@ -11,22 +12,6 @@ public class mainFront {
 		// TODO
 		// Etape 1 : Lancer l'interface UI
 		lancerApplicationClient();
-		// Etape 2 : Gerer la page d'accueil
-		afficherPageAccueil();
-		// Etape 3 : Se connecter
-		int userId;
-		String password;
-		String username;
-		do {
-			username = getUsername();
-			password = getPassword();
-
-			if ((userId = connexionUtilisateur(username, password)) == 0) {
-				afficherMessageErreur();
-			}
-		} while (userId == 0);
-		// Etape 4 : Affiche la page de messagerie
-		afficherMessagerie(userId);
 	}
 
 	// Affiche la messagerie
@@ -51,9 +36,16 @@ public class mainFront {
 		// TODO
 	}
 
+	private static int connexionUtilisateur(String username, String password) {
+		// TODO
+		return 0;
+	}
+
 	// Lance l'application cote client
 	private static void lancerApplicationClient() {
 		// TODO
+		FenetreConnexion fen = new FenetreConnexion();
+		fen.setVisible(true);
 	}
 
 	// Affiche la page d'accueil
@@ -61,11 +53,7 @@ public class mainFront {
 		// TODO
 	}
 
-	// Call verifiant le password et le username
-	private static int connexionUtilisateur(String username, String password) {
-		// TODO
-		return 0;
-	}
+
 
 	// Recupere le username de l'UI
 	private static String getUsername() {
