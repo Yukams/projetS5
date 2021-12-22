@@ -1,5 +1,11 @@
 package back.main;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
 import java.util.Set;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,6 +16,10 @@ import back.users.Utilisateur;
 
 
 public class mainBack {
+	private static final String DB_URL = "jdbc:mysql://localhost:3306/projetS5";
+	private static final String USER = "root";
+	private static final String PASS = "root";
+	private static Object FileUtils;
 
 	public static void main(String[] args) {
 		// TODO
@@ -44,21 +54,27 @@ public class mainBack {
 
 	// Remplis la base de donnee
 	private static void fillDatabase() {
-
+		try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			Statement stmt = conn.createStatement()
+		) {
+			String sql = new String(Files.readAllBytes(Paths.get("/home/gecko/Code/Fac/Projet/projetS5/ProjetS5/src/back/main/database_setup.sql")));
+			stmt.execute(sql);
+			System.out.println("Database filled successfully...");
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Cree la base de donnee
 	private static void createDatabase() {
-		String DB_URL = "jdbc:mysql://localhost:8080/projetS5";
-		String USER = "root";
-		String PASS = "root";
-
 		// Open a connection
 		try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
-			String sql = "CREATE DATABASE STUDENTS";
-			stmt.executeUpdate(sql);
+			String sqlDelete = "DROP DATABASE IF EXISTS projetS5;";
+			stmt.execute(sqlDelete);
+			String sqlCreate = "CREATE DATABASE projetS5;";
+			stmt.execute(sqlCreate);
 			System.out.println("Database created successfully...");
 		} catch (SQLException e) {
 			e.printStackTrace();
