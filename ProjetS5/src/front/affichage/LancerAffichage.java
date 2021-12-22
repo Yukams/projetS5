@@ -6,8 +6,9 @@ public class LancerAffichage {
         char[] mdp;
         // TODO Auto-generated method stub
         FenetreConnexion fen=new FenetreConnexion();
-        fen.setVisible(true);
-
+        //fen.setVisible(true);
+        Messagerie mess = new Messagerie();
+        mess.setVisible(true);
 
     }
 }

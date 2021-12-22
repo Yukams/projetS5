@@ -10,7 +10,7 @@ public class Groupe {
 	private GroupeType groupeType;
 	private List<Utilisateur> etudiants;
 
-	protected Groupe(String nom, int id, GroupeType groupeType, List<Utilisateur> etudiants) {
+	public Groupe(String nom, int id, GroupeType groupeType, List<Utilisateur> etudiants) {
 		this.nom = nom;
 		this.id = id;
 		this.groupeType = groupeType;
