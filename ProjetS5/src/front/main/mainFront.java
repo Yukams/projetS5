@@ -1,17 +1,17 @@
 package front.main;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.io.IOException;
+import java.net.ServerSocket;
 
+import server.Server;
 import front.affichage.FenetreConnexion;
-import front.fil.FilDeDiscussion;
-import front.users.Utilisateur;
 
 public class mainFront {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// TODO
 		// Etape 1 : Lancer l'interface UI
 		lancerApplicationClient();
+
 
 	}
 

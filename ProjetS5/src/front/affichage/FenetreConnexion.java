@@ -1,7 +1,9 @@
 package front.affichage;
 
+import front.main.mainFront;
 import front.users.Utilisateur;
 import front.utils.Utils;
+import server.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -89,7 +91,7 @@ public class FenetreConnexion extends JFrame implements ActionListener {
         if (username.equals("") || password.equals("") ||!utils.isValidString(username))
             id = -1;
         else {
-            id = connect(username, password);
+            //id = connect(username, password);
         }
         return id;
     }
@@ -97,18 +99,18 @@ public class FenetreConnexion extends JFrame implements ActionListener {
     // Connection
     private static int connect(String username, String password){
         final String HOST = "127.0.0.1";
-        final int PORT = 5000;
+
         int recvId = 0;
-        try (Socket sc = new Socket(HOST,PORT)){
+        try (Socket sc = new Socket(HOST, Server.PORT)){
             StringBuilder authSB = new StringBuilder();
             ObjectInputStream in = new ObjectInputStream(sc.getInputStream()); //ce que je reçois
-            DataOutputStream out = new DataOutputStream(sc.getOutputStream()); ////ce que je reçois ======> DONC COTE SERVER: L'inverse
+            DataOutputStream out = new DataOutputStream(sc.getOutputStream()); ////ce que j'envoie  ======> DONC COTE SERVER: L'inverse
             // Serealization
-            authSB.append("{username:"+username+",password:"+password+"}"); //format: username:usrnm,password:pswrd
+            authSB.append("{username:"+username+",password:"+password+"}"); //format(json): username:usrnm,password:pswrd
             String authToken = authSB.toString();
             // Sending token
             out.writeUTF(authToken);
-            //Recieving response (-2 == wrong password)
+            //Recieving response (null == wrong password)
             Utilisateur usr = (Utilisateur)in.readObject();
             recvId = usr.getId();
 
