@@ -58,7 +58,7 @@ public class mainBack {
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
-			String sqlFillDb = new String(Files.readAllBytes(Paths.get("projetS5/ProjetS5/src/back/main/database_fill.sql")));
+			String sqlFillDb = new String(Files.readAllBytes(Paths.get("ProjetS5/src/back/main/database_fill.sql")));
 			stmt.execute(sqlFillDb);
 
 			System.out.println("Database filled successfully.");
@@ -86,7 +86,7 @@ public class mainBack {
 			Statement stmt = conn.createStatement()
 		) {
 			// Create empty tables
-			String sql = new String(Files.readAllBytes(Paths.get("projetS5/ProjetS5/src/back/main/database_setup.sql")));
+			String sql = new String(Files.readAllBytes(Paths.get("ProjetS5/src/back/main/database_setup.sql")));
 			stmt.execute(sql);
 
 			System.out.println("Tables created successfully.");
