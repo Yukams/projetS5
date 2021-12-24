@@ -12,7 +12,12 @@ public class mainFront {
 		// Etape 1 : Lancer l'interface UI
 		lancerApplicationClient();
 
+	}
 
+	// Lance l'application cote client
+	private static void lancerApplicationClient() {
+		FenetreConnexion fen = new FenetreConnexion();
+		fen.setVisible(true);
 	}
 
 	// Affiche la messagerie
@@ -42,15 +47,10 @@ public class mainFront {
 		return 0;
 	}*/
 
-	// Lance l'application cote client
-	private static void lancerApplicationClient() {
-		// TODO
-		FenetreConnexion fen = new FenetreConnexion();
-		fen.setVisible(true);
-	}
+
 
 	// Affiche la page d'accueil
-	private static void afficherPageAccueil() {
+	/*private static void afficherPageAccueil() {
 		// TODO
 	}
 
@@ -65,5 +65,5 @@ public class mainFront {
 	private static String getPassword() {
 		return null;
 	}
-
+*/
 }
