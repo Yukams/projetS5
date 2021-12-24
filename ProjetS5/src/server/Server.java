@@ -1,7 +1,5 @@
 package server;
 
-import client.ClientHandler;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -19,14 +17,10 @@ public class Server {
 
             while(!serverSocket.isClosed()){
                 Socket socket = serverSocket.accept();
-                System.out.println("Connexion d'un nouveau client");
-
-                ClientHandler clientHandler = new ClientHandler(socket);
-
-                Thread thread = new Thread(clientHandler);
-                thread.start();
-                System.out.println("Thread End");
-
+                System.out.println("Client trying to connect...");
+                /*ServerHandler serverHandler = new ServerHandler(socket);
+                Thread thread = new Thread(serverHandler);
+                thread.start();*/
             }
 
         } catch (IOException e){
@@ -36,11 +30,9 @@ public class Server {
 
     public void closeServerSocket(){
         try{
-
             if(serverSocket != null){
                 serverSocket.close();
             }
-
         } catch (IOException e){
             e.printStackTrace();
         }

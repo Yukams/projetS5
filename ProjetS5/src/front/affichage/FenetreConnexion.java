@@ -1,8 +1,10 @@
 package front.affichage;
 
+import front.client.Client;
 import front.main.mainFront;
 import front.users.Utilisateur;
 import front.utils.Utils;
+import server.AdminInterface;
 import server.Server;
 
 import javax.swing.*;
@@ -24,6 +26,7 @@ public class FenetreConnexion extends JFrame implements ActionListener {
     private String username;
     private String password;
     private Utils utils = new Utils();
+    private Client client;
 
     public FenetreConnexion(){
         //titre
@@ -66,38 +69,35 @@ public class FenetreConnexion extends JFrame implements ActionListener {
         setContentPane(connex);
     }
 
-
     @Override
     public void actionPerformed(ActionEvent e) {
         username = idTexte.getText();
         password = new String( mdpTexte.getPassword());
-        int userId;
-        if ((userId = connexionUtilisateur(username, password)) == -1) {
+
+        if (credentialsNature(username, password) == -1) {
             mdpTexte.setText("");
-            afficherMessageErreur();
-        } else if ((userId = connexionUtilisateur(username, password)) == -2) {
-            mdpTexte.setText("");
-            afficherMessageErreurMdp();
-        } else {
+            utils.messageErrorSyntax();
+        } else if (credentialsNature(username, password) == 1){
+            setVisible(false);
+            AdminInterface adminInterface = new AdminInterface();
+        }
+        else {
+            this.client = new Client(username, password);
             setVisible(false);
             Messagerie mess = new Messagerie();
             mess.setVisible(true);
         }
     }
-    // Call verifiant le password et le username
-    private int connexionUtilisateur(String username, String password) {
-        // TODO
-        int id = 0;
-        if (username.equals("") || password.equals("") ||!utils.isValidString(username))
-            id = -1;
-        else {
-            //id = connect(username, password);
-        }
-        return id;
+    // Check credentials nature
+    private int credentialsNature(String username, String password) {
+        if(username.equals("") || password.equals("") ||!utils.isValidString(username)) return -1;
+        else if(username.equals("root") && password.equals("root")) return 1;
+        return 0;
+
     }
 
     // Connection
-    private static int connect(String username, String password){
+    /*private static int connect(String username, String password){
         final String HOST = "127.0.0.1";
 
         int recvId = 0;
@@ -120,14 +120,5 @@ public class FenetreConnexion extends JFrame implements ActionListener {
             e.printStackTrace();
         }
         return recvId;
-    }
-    // Affiche le message d'erreur
-    private void afficherMessageErreur() {
-        JOptionPane.showMessageDialog(new JFrame(), "Nom d'Utilisateur ou Mot De Pass invalide !", "Dialog",
-                JOptionPane.ERROR_MESSAGE);
-    }
-    private void afficherMessageErreurMdp() {
-        JOptionPane.showMessageDialog(new JFrame(), "Nom d'Utilisateur ou Mot De Pass incorrect !", "Dialog",
-                JOptionPane.WARNING_MESSAGE);
-    }
+    }*/
 }
