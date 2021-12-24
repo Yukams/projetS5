@@ -1,18 +1,15 @@
 package back.main;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Scanner;
-import java.util.Set;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import back.users.Utilisateur;
+import back.api.Server;
+import back.users.User;
 
 
 public class mainBack {
@@ -40,16 +37,16 @@ public class mainBack {
 		// Etape 3 : Traiter la demande
 		/* ex :
 		int id = 0;
-		Utilisateur user = (Utilisateur) IUtilisateur.getUtilisateur(id);
-		Set<Integer> set = user.getGroupesId();
-		for (int groupeId : set) {
-			Groupe groupe = (Groupe) IGroupe.getGroupe(id);
-			groupe.getNom();
+		User user = (User) IUser.getUser(id);
+		Set<Integer> set = user.getGroupsId();
+		for (int GroupId : set) {
+			Group Group = (Group) IGroup.getGroup(id);
+			Group.getname();
 		}*/
 	}
 	
-	private static int connexionUtilisateur(String username, String password) {
-		Utilisateur user = (Utilisateur) back.api.Serveur.connect(username, password);
+	private static int connexionUser(String username, String password) {
+		User user = (User) Server.connect(username, password);
 		return user.getId();
 	}
 

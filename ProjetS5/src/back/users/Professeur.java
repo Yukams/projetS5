@@ -1,9 +1,9 @@
 package back.users;
 
-public class Professeur extends UtilisateurCampus {
+public class Professeur extends UserCampus {
 
-	public Professeur(String nom, String prenom) {
-		super(nom, prenom);
+	public Professeur(String name, String surname) {
+		super(name, surname);
 	}
 
 }
