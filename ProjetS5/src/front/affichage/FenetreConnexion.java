@@ -1,9 +1,10 @@
 package front.affichage;
 
-import client.Client;
+import front.client.Client;
 import front.main.mainFront;
 import front.users.Utilisateur;
 import front.utils.Utils;
+import server.AdminInterface;
 import server.Server;
 
 import javax.swing.*;
@@ -73,19 +74,26 @@ public class FenetreConnexion extends JFrame implements ActionListener {
         username = idTexte.getText();
         password = new String( mdpTexte.getPassword());
 
-        if (!credentialsValidity(username, password)) {
+        if (credentialsNature(username, password) == -1) {
             mdpTexte.setText("");
             utils.messageErrorSyntax();
-        } else {
+        } else if (credentialsNature(username, password) == 1){
+            setVisible(false);
+            AdminInterface adminInterface = new AdminInterface();
+        }
+        else {
             this.client = new Client(username, password);
             setVisible(false);
             Messagerie mess = new Messagerie();
             mess.setVisible(true);
         }
     }
-    // Check credentials validity
-    private boolean credentialsValidity(String username, String password) {
-        return !(username.equals("") || password.equals("") ||!utils.isValidString(username));
+    // Check credentials nature
+    private int credentialsNature(String username, String password) {
+        if(username.equals("") || password.equals("") ||!utils.isValidString(username)) return -1;
+        else if(username.equals("root") && password.equals("root")) return 1;
+        return 0;
+
     }
 
     // Connection

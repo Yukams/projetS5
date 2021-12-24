@@ -1,7 +1,6 @@
-package client;
+package front.client;
 
 import front.affichage.FenetreConnexion;
-import front.users.Utilisateur;
 
 import java.io.*;
 import java.net.Socket;
@@ -14,12 +13,14 @@ public class ClientHandler implements Runnable{
     private DataOutputStream dataOutputStream; //writer
     private ObjectInputStream objectInputStream; //reader
     private FenetreConnexion connexionWindow;
+    private String usernamePasswordToken;
 
     public ClientHandler(Socket socket) {
         try {
             this.socket = socket;
             this.dataOutputStream = new DataOutputStream(socket.getOutputStream());//writer
             this.objectInputStream = new ObjectInputStream(socket.getInputStream());//reader
+
 
             clientHandler.add(this);
         } catch (IOException e){

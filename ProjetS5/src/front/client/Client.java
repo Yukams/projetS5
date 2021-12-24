@@ -1,10 +1,8 @@
-package client;
+package front.client;
 
 import front.affichage.FenetreConnexion;
-import front.utils.Utils;
 import server.Server;
 
-import javax.sound.midi.Soundbank;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
