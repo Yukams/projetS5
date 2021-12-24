@@ -8,7 +8,7 @@ public class Message implements IMessage {
 	private int id;
 	private String contenu;
 	private Date date;
-	private List<Integer> utilisateurAyantLu;
+	private List<Integer> UserAyantLu;
 
 	public Message(int authorId, String contenu) {
 		this.authorId = authorId;

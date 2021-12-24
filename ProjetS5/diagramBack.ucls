@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.2.4" icons="true" automaticImage="PNG" always-add-relationships="false" generalizations="true" 
   realizations="true" associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
-  <interface id="1" language="java" name="back.fil.IFilDeDiscussion" project="ProjetS5" 
-    file="/ProjetS5/src/back/fil/IFilDeDiscussion.java" binary="false" corner="BOTTOM_RIGHT">    
+  <interface id="1" language="java" name="back.fil.IThread" project="ProjetS5"
+    file="/ProjetS5/src/back/fil/IThread.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="281" width="374" x="1003" y="429"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -19,8 +19,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <class id="3" language="java" name="back.users.Administratif" project="ProjetS5" 
-    file="/ProjetS5/src/back/users/Administratif.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="3" language="java" name="back.users.Administrative" project="ProjetS5"
+    file="/ProjetS5/src/back/users/Administrative.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="83" width="167" x="2455" y="750"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -55,8 +55,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="7" language="java" name="back.users.UtilisateurCampus" project="ProjetS5" 
-    file="/ProjetS5/src/back/users/UtilisateurCampus.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="7" language="java" name="back.users.UserCampus" project="ProjetS5"
+    file="/ProjetS5/src/back/users/UserCampus.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="83" width="199" x="2245" y="429"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -64,8 +64,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="8" language="java" name="back.fil.FilDeDiscussion" project="ProjetS5" 
-    file="/ProjetS5/src/back/fil/FilDeDiscussion.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="8" language="java" name="back.fil.Thread" project="ProjetS5"
+    file="/ProjetS5/src/back/fil/Thread.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="299" width="318" x="1003" y="-36"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -73,8 +73,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="9" language="java" name="back.groups.Groupe" project="ProjetS5" 
-    file="/ProjetS5/src/back/groups/Groupe.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="9" language="java" name="back.groups.Group" project="ProjetS5"
+    file="/ProjetS5/src/back/groups/Group.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="245" width="187" x="2016" y="-36"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -82,8 +82,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <interface id="10" language="java" name="back.groups.IGroupe" project="ProjetS5" 
-    file="/ProjetS5/src/back/groups/IGroupe.java" binary="false" corner="BOTTOM_RIGHT">    
+  <interface id="10" language="java" name="back.groups.IGroup" project="ProjetS5"
+    file="/ProjetS5/src/back/groups/IGroup.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="245" width="329" x="1647" y="429"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -100,8 +100,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <enumeration id="12" language="java" name="back.groups.GroupeType" project="ProjetS5" 
-    file="/ProjetS5/src/back/groups/GroupeType.java" binary="false" corner="BOTTOM_RIGHT">    
+  <enumeration id="12" language="java" name="back.groups.GroupType" project="ProjetS5"
+    file="/ProjetS5/src/back/groups/GroupType.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="155" width="189" x="2016" y="429"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -109,7 +109,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </enumeration>  
-  <class id="13" language="java" name="back.api.Serveur" project="ProjetS5" file="/ProjetS5/src/back/api/Serveur.java" 
+  <class id="13" language="java" name="back.api.Server" project="ProjetS5" file="/ProjetS5/src/back/api/Serveur.java"
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="425" width="374" x="1361" y="-36"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -118,8 +118,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="14" language="java" name="back.users.Etudiant" project="ProjetS5" 
-    file="/ProjetS5/src/back/users/Etudiant.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="14" language="java" name="back.users.Student" project="ProjetS5"
+    file="/ProjetS5/src/back/users/Student.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="83" width="145" x="2270" y="750"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -127,8 +127,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="15" language="java" name="back.users.Utilisateur" project="ProjetS5" 
-    file="/ProjetS5/src/back/users/Utilisateur.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="15" language="java" name="back.users.User" project="ProjetS5"
+    file="/ProjetS5/src/back/users/User.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="299" width="180" x="2484" y="-36"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -136,8 +136,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <interface id="16" language="java" name="back.users.IUtilisateur" project="ProjetS5" 
-    file="/ProjetS5/src/back/users/IUtilisateur.java" binary="false" corner="BOTTOM_RIGHT">    
+  <interface id="16" language="java" name="back.users.IUser" project="ProjetS5"
+    file="/ProjetS5/src/back/users/IUser.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="263" width="355" x="2718" y="429"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -154,8 +154,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="18" language="java" name="back.users.Techniciens" project="ProjetS5" 
-    file="/ProjetS5/src/back/users/Techniciens.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="18" language="java" name="back.users.Technician" project="ProjetS5"
+    file="/ProjetS5/src/back/users/Technician.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="83" width="163" x="2662" y="750"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -163,8 +163,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="19" language="java" name="back.users.UtilisateurService" project="ProjetS5" 
-    file="/ProjetS5/src/back/users/UtilisateurService.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="19" language="java" name="back.users.UserService" project="ProjetS5"
+    file="/ProjetS5/src/back/users/UserService.java" binary="false" corner="BOTTOM_RIGHT">
     <position height="83" width="194" x="2484" y="429"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -190,7 +190,7 @@
   </realization>  
   <association id="24">    
     <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="25" name="groupeType"/>      
+      <attribute id="25" name="GroupType"/>
       <multiplicity id="26" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="12" navigable="true"/>    
