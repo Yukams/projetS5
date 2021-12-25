@@ -1,6 +1,4 @@
-package back.groups;
-
-import java.util.List;
+package back.backobjects.groups;
 
 public abstract class Group implements IGroup {
 	private String name;

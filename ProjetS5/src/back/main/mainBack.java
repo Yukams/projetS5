@@ -1,15 +1,20 @@
 package back.main;
 
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import back.api.Server;
-import back.users.User;
+import back.backobjects.users.User;
 
 
 public class mainBack {
@@ -17,9 +22,11 @@ public class mainBack {
 	private static final String DB_URL_SINGLE_QUERY = "jdbc:mysql://localhost:3306/projetS5";
 	private static final String USER = "root";
 	private static final String PASS = "root";
-	private static Object FileUtils;
+	private static final int PORT = 9090;
+	private static ArrayList<ClientHandler> clients = new ArrayList<>();
+	private static ExecutorService pool = Executors.newFixedThreadPool(4);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// TODO
 		// Etape 1 : Creer la database
 		createDatabase();
@@ -27,22 +34,22 @@ public class mainBack {
 		fillDatabase();
 		// Etape 3 : Lancer l'application
 		lancerApplication();
-		// test branche
 	}
 
 	// Lance l'application
-	private static void lancerApplication() {
-		// Etape 1 : En mode ecoute pasive
-		// Etape 2 : Recevoir une demande du l'UI
-		// Etape 3 : Traiter la demande
-		/* ex :
-		int id = 0;
-		User user = (User) IUser.getUser(id);
-		Set<Integer> set = user.getGroupsId();
-		for (int GroupId : set) {
-			Group Group = (Group) IGroup.getGroup(id);
-			Group.getname();
-		}*/
+	private static void lancerApplication() throws IOException {
+		ServerSocket incoming = new ServerSocket(PORT);
+
+		while(true) {
+			System.out.println("[SERVER] Waiting for client connection");
+			Socket client = incoming.accept();
+			System.out.println("[SERVER] Connected to client !");
+			ClientHandler clientThread = new ClientHandler(client);
+			clients.add(clientThread);
+
+			pool.execute(clientThread);
+		}
+
 	}
 	
 	private static int connexionUser(String username, String password) {

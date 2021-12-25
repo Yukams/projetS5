@@ -1,4 +1,4 @@
-package back.users;
+package back.backobjects.users;
 
 public class Technician extends UserService {
 
