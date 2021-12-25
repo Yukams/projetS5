@@ -1,6 +1,9 @@
-package back.users;
+package back.backobjects.users;
 
-import java.util.Set;
+import back.api.Server;
+import back.frontobjects.FrontUser;
+import back.main.ClientPayload;
+import com.google.gson.Gson;
 
 public abstract class User implements IUser {
 	private int id;
@@ -8,6 +11,7 @@ public abstract class User implements IUser {
 	private String name;
 	private String surname;
 	private boolean connected = false;
+	static Gson gson = new Gson();
 
 	protected User(String name, String surname) {
 		this.name = name;
@@ -37,5 +41,12 @@ public abstract class User implements IUser {
 	@Override
 	public String getUsername() {
 		return this.username;
+	}
+
+	public static String getUserById(ClientPayload payload) {
+		int id = payload.id;
+		FrontUser user = Server.getUser(id);
+
+		return gson.toJson(user);
 	}
 }

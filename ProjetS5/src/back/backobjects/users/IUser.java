@@ -1,10 +1,10 @@
-package back.users;
+package back.backobjects.users;
 
 import java.util.List;
 import java.util.Set;
 
 import back.api.Server;
-import back.fil.IThread;
+import back.backobjects.thread.IThread;
 
 public interface IUser {
 	public int getId();
@@ -27,10 +27,6 @@ public interface IUser {
 
 	public static IUser deleteUser(int UserId) {
 		return Server.deleteUser(UserId);
-	}
-
-	public static IUser getUser(int UserId) {
-		return Server.getUser(UserId);
 	}
 
 	public static List<IThread> getAllThreadForUser(int UserId) {

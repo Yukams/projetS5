@@ -5,13 +5,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import back.backobjects.users.User;
 import back.dbobjects.*;
-import back.fil.IThread;
-import back.fil.IMessage;
-import back.fil.Thread;
-import back.groups.GroupType;
-import back.groups.IGroup;
-import back.users.IUser;
+import back.backobjects.thread.IThread;
+import back.backobjects.thread.IMessage;
+import back.backobjects.thread.Thread;
+import back.backobjects.groups.GroupType;
+import back.backobjects.groups.IGroup;
+import back.backobjects.users.IUser;
+import back.frontobjects.FrontUser;
 import com.google.gson.Gson;
 
 public class Server {
@@ -157,14 +159,17 @@ public class Server {
 		return null;
 	}
 
-	public static IUser deleteUser(int UserId) {
+	public static IUser deleteUser(int userId) {
 		// TODO call SQL
 		return null;
 	}
 
-	public static IUser getUser(int UserId) {
-		// TODO call SQL
-		return null;
+	public static FrontUser getUser(int userId) {
+		String jsonString = treatQuery("SELECT * FROM dbUser WHERE id=" + userId + ";");
+		Gson gson = new Gson();
+		DbUser[] dbObject = gson.fromJson(jsonString, DbUser[].class);
+
+		return new FrontUser(dbObject[0].name, dbObject[0].surname);
 	}
 
 }

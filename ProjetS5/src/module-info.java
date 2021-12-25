@@ -4,4 +4,7 @@ module projetS5 {
     requires mysql.connector.java;
     requires com.google.gson;
     exports back.dbobjects;
+    exports back.main;
+    exports front.client;
+    exports back.frontobjects;
 }

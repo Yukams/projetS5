@@ -1,4 +1,4 @@
-package back.groups;
+package back.backobjects.groups;
 
 import back.api.Server;
 
