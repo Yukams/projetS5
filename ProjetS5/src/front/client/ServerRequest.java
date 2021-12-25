@@ -1,6 +1,5 @@
 package front.client;
 
-import front.client.ClientPayload;
 
 public class ServerRequest {
     public String address;

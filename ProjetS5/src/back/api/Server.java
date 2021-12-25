@@ -169,7 +169,7 @@ public class Server {
 		Gson gson = new Gson();
 		DbUser[] dbObject = gson.fromJson(jsonString, DbUser[].class);
 
-		return new FrontUser(dbObject[0].name, dbObject[0].surname);
+		return new FrontUser(dbObject[0].name, dbObject[0].surname, dbObject[0].id);
 	}
 
 }

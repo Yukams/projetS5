@@ -1,9 +1,9 @@
 package front.client;
 
 public class ClientPayload {
-    public int id;
+    public int userId;
 
     public ClientPayload(int id) {
-        this.id = id;
+        this.userId = id;
     }
 }
