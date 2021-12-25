@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="dbjar">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/ProjetS5/dbjar" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/ProjetS5/dbjar" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/ProjetS5/dbjar" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/ProjetS5/dbjar" recursive="false" type="SOURCES" />
+  </library>
+</component>

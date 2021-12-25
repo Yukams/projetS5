@@ -3,19 +3,15 @@ package front.main;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import server.Server;
 import front.affichage.FenetreConnexion;
 
 public class mainFront {
-	public static void main(String[] args) throws IOException {
-		// TODO
-		// Etape 1 : Lancer l'interface UI
-		lancerApplicationClient();
-
+	public static void main(String[] args){
+		launchConnexionWindow();
 	}
 
-	// Lance l'application cote client
-	private static void lancerApplicationClient() {
+	// Launch connexion window
+	private static void launchConnexionWindow() {
 		FenetreConnexion fen = new FenetreConnexion();
 		fen.setVisible(true);
 	}

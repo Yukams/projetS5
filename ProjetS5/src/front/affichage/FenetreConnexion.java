@@ -1,18 +1,13 @@
 package front.affichage;
 
 import front.client.Client;
-import front.main.mainFront;
-import front.users.Utilisateur;
+import front.server.ServerInterface;
 import front.utils.Utils;
-import server.AdminInterface;
-import server.Server;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
-import java.net.Socket;
 
 public class FenetreConnexion extends JFrame implements ActionListener {
 
@@ -76,12 +71,12 @@ public class FenetreConnexion extends JFrame implements ActionListener {
 
         if (credentialsNature(username, password) == -1) {
             mdpTexte.setText("");
-            utils.messageErrorSyntax();
-        } else if (credentialsNature(username, password) == 1){
+            utils.syntaxErrorMessage();
+        } else if (credentialsNature(username, password) == 1) {
             setVisible(false);
-            AdminInterface adminInterface = new AdminInterface();
-        }
-        else {
+            ServerInterface serverInterface = new ServerInterface();
+            serverInterface.setVisible(true);
+        } else {
             this.client = new Client(username, password);
             setVisible(false);
             Messagerie mess = new Messagerie();
@@ -93,7 +88,6 @@ public class FenetreConnexion extends JFrame implements ActionListener {
         if(username.equals("") || password.equals("") ||!utils.isValidString(username)) return -1;
         else if(username.equals("root") && password.equals("root")) return 1;
         return 0;
-
     }
 
     // Connection
