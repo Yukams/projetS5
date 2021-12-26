@@ -1,36 +1,44 @@
 package back.backobjects.thread;
 
 import back.api.Server;
+import back.frontobjects.FrontThread;
+import back.frontobjects.FrontUser;
 
 import java.util.List;
+import java.util.Map;
+
+import static back.main.mainBack.gson;
 
 public interface IThread {
-	public String getTitle();
+	String getTitle();
 
-	public List<IMessage> getMessagesIdInChronologicalOrder();
+	List<IMessage> getMessagesIdInChronologicalOrder();
 
-	public static IThread createThread(String title, int authorId, int GroupId, String contenu) {
+	static IThread createThread(String title, int authorId, int GroupId, String contenu) {
 		Message message = (Message) Server.createMessage(contenu, authorId, GroupId);
 		return Server.createThread(title, message.getAuthorId(), GroupId, message.getId());
 	}
 
-	public static IThread addMessageToThread(int idFil, String contenu, int authorId, int GroupId) {
+	static IThread addMessageToThread(int idFil, String contenu, int authorId, int GroupId) {
 		return Server.addMessageToThread(idFil, contenu, authorId, GroupId);
 	}
 
-	public static IThread modifyThread(String title, List<Integer> messagesId, int threadId) {
+	static IThread modifyThread(String title, List<Integer> messagesId, int threadId) {
 		return Server.modifyThread(title, messagesId, threadId);
 	}
 
-	public static IThread deleteThread(int threadId) {
+	static IThread deleteThread(int threadId) {
 		return Server.deleteThread(threadId);
 	}
 
-	public static IThread getThread(int threadId) {
+	static IThread getThread(int threadId) {
 		return Server.getThread(threadId);
 	}
 
-	public static List<IThread> getAllThreadForUser(int UserId) {
-		return Server.getAllThreadForUser(UserId);
+	static String getAllThreadForUser(Map<String, String> payload) {
+		int id = Integer.parseInt(payload.get("id"));
+		List<FrontThread> threads = Server.getAllThreadForUser(id);
+
+		return gson.toJson(threads);
 	}
 }

@@ -1,5 +1,7 @@
 package back.main;
 
+import back.backobjects.thread.IThread;
+import back.backobjects.users.IUser;
 import back.backobjects.users.User;
 import com.google.gson.Gson;
 
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Map;
 
 public class ClientHandler implements Runnable {
     private Socket client;
@@ -50,11 +53,13 @@ public class ClientHandler implements Runnable {
 
     public String treatRequest(ClientRequest request) {
         String address = request.address;
-        ClientPayload payload = request.payload;
-        String toClient = "{ \"payload\": \"null\" }";
+        Map<String,String> payload = request.payload;
+        String toClient = "\"null\"";
 
         if (address.equals("/user/getUserById")) {
-            toClient = User.getUserById(payload);
+            toClient = IUser.getUserById(payload);
+        } else if (address.equals("/thread/getThreadsByUserId")) {
+            toClient = IThread.getAllThreadForUser(payload);
         }
 
         return "{ \"payload\": " + gson.toJson(toClient) + "}";
