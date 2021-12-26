@@ -2,8 +2,9 @@ package back.backobjects.users;
 
 import back.api.Server;
 import back.frontobjects.FrontUser;
-import back.main.ClientPayload;
 import com.google.gson.Gson;
+
+import java.util.Map;
 
 public abstract class User implements IUser {
 	private int id;
@@ -43,8 +44,8 @@ public abstract class User implements IUser {
 		return this.username;
 	}
 
-	public static String getUserById(ClientPayload payload) {
-		int id = payload.id;
+	public static String getUserById(Map<String, String> payload) {
+		int id = Integer.parseInt(payload.get("id"));
 		FrontUser user = Server.getUser(id);
 
 		return gson.toJson(user);
