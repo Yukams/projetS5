@@ -1,14 +1,12 @@
 package front.affichage;
 
-import front.client.Client;
-import front.server.ServerInterface;
 import front.utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+/*
 public class FenetreConnexion extends JFrame implements ActionListener {
 
 
@@ -114,5 +112,5 @@ public class FenetreConnexion extends JFrame implements ActionListener {
             e.printStackTrace();
         }
         return recvId;
-    }*/
-}
+    }
+}*/

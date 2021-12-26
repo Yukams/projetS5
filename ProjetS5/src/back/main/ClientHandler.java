@@ -1,6 +1,9 @@
 package back.main;
 
+import back.api.Server;
+import back.backobjects.thread.IMessage;
 import back.backobjects.thread.IThread;
+import back.backobjects.thread.Message;
 import back.backobjects.users.IUser;
 import back.backobjects.users.User;
 import com.google.gson.Gson;
@@ -56,10 +59,25 @@ public class ClientHandler implements Runnable {
         Map<String,String> payload = request.payload;
         String toClient = "\"null\"";
 
+        // {"id": int}
         if (address.equals("/user/getUserById")) {
             toClient = IUser.getUserById(payload);
-        } else if (address.equals("/thread/getThreadsByUserId")) {
+        }
+        // {"id": int}
+        else if (address.equals("/thread/getThreadsByUserId")) {
             toClient = IThread.getAllThreadForUser(payload);
+        }
+        // {"username": String, "password": String}
+        else if (address.equals("/connect")) {
+            toClient = Server.connect(payload);
+        }
+        // {"authorId": int, "content": String, "threadId": int}
+        else if (address.equals("/message/createMessage")) {
+            toClient = IMessage.createMessage(payload);
+        }
+        // {"authorId": int, "groupId": int, "title": String, "content": String}
+        else if (address.equals("/thread/createThread")) {
+            toClient = IThread.createThread(payload);
         }
 
         return "{ \"payload\": " + gson.toJson(toClient) + "}";

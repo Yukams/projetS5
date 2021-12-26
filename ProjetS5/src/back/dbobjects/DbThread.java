@@ -1,7 +1,6 @@
 package back.dbobjects;
 
-public class DbThread {
-    public int id;
+public class DbThread extends DbObject {
     public String title;
     public int groupId;
     public int firstMessageId;

@@ -1,9 +1,6 @@
 package back.dbobjects;
 
-public class DbUser {
-    public int id;
-    public String username;
+public class DbUser extends DbObject {
     public String name;
     public String surname;
-    public int groupType;
 }

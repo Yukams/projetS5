@@ -1,11 +1,9 @@
 package back.frontobjects;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class FrontThread {
+public class FrontThread extends FrontObject {
     public List<FrontMessage> messages;
-    public int id;
     public String title;
 
 

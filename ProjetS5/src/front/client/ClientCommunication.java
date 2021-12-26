@@ -23,9 +23,16 @@ public class ClientCommunication {
 
         // Get User By Id example
         Map<String, String> payload = new HashMap<>();
-        payload.put("id", "11");
+        //payload.put("id", "11");
         //ServerRequest serverRequest = new ServerRequest("/user/getUserById", payload);
-        ServerRequest serverRequest = new ServerRequest("/thread/getThreadsByUserId", payload);
+        //ServerRequest serverRequest = new ServerRequest("/thread/getThreadsByUserId", payload);
+        //payload.put("username", "Jean31");
+        //payload.put("password", "123");
+        //ServerRequest serverRequest = new ServerRequest("/connect", payload);
+        payload.put("authorId", "10");
+        payload.put("content", "je suis un nouveau message");
+        payload.put("threadId", "30");
+        ServerRequest serverRequest = new ServerRequest("/message/createMessage", payload);
         String request = gson.toJson(serverRequest);
         System.out.println("[CLIENT] Do request to server" + request);
         out.println(request);

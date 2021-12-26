@@ -114,7 +114,7 @@ public class QueryTest {
                 // Build status (later)
                 String status = "NOT_READ";
 
-                FrontMessage m = new FrontMessage(user, message.text, message.date, status);
+                FrontMessage m = new FrontMessage(message.id, user, message.text, message.date, status);
                 messagesList.add(m);
             }
 

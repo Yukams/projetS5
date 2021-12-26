@@ -1,10 +1,12 @@
 package back.utils;
 
+import java.util.Random;
+
 public class Utils {
 
 	public static int createRandomId() {
-		// TODO
-		return 0;
+		Random r = new Random();
+		return r.nextInt();
 	}
 
 	public static String createRandomPassword() {

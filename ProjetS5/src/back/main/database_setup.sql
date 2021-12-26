@@ -7,7 +7,8 @@ CREATE TABLE dbUser (
     id INT PRIMARY KEY NOT NULL,
     username VARCHAR(25) NOT NULL,
     name VARCHAR(25) NOT NULL,
-    surname VARCHAR(25) NOT NULL
+    surname VARCHAR(25) NOT NULL,
+    password VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE dbLinkUserGroup (
@@ -52,4 +53,10 @@ CREATE TABLE dbLinkMessageThread (
      FOREIGN KEY (messageId) REFERENCES dbMessage(id),
      FOREIGN KEY (threadId) REFERENCES dbThread(id),
      PRIMARY KEY (messageId, threadId)
+);
+
+CREATE TABLE dbConnectionToken (
+    id INT PRIMARY KEY NOT NULL,
+    userId INT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES dbUser(id)
 );

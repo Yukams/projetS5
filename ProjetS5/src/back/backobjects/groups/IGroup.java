@@ -1,6 +1,7 @@
 package back.backobjects.groups;
 
 import back.api.Server;
+import back.frontobjects.FrontGroup;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface IGroup {
 		return Server.deleteGroup(GroupId);
 	}
 
-	public static IGroup getGroup(int GroupId) {
+	public static FrontGroup getGroup(int GroupId) {
 		return Server.getGroup(GroupId);
 	}
 }
