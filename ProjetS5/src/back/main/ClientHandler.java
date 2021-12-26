@@ -1,5 +1,7 @@
 package back.main;
 
+import back.backobjects.thread.IThread;
+import back.backobjects.users.IUser;
 import back.backobjects.users.User;
 import com.google.gson.Gson;
 
@@ -52,10 +54,12 @@ public class ClientHandler implements Runnable {
     public String treatRequest(ClientRequest request) {
         String address = request.address;
         Map<String,String> payload = request.payload;
-        String toClient = "{ \"payload\": \"null\" }";
+        String toClient = "\"null\"";
 
         if (address.equals("/user/getUserById")) {
-            toClient = User.getUserById(payload);
+            toClient = IUser.getUserById(payload);
+        } else if (address.equals("/thread/getThreadsByUserId")) {
+            toClient = IThread.getAllThreadForUser(payload);
         }
 
         return "{ \"payload\": " + gson.toJson(toClient) + "}";

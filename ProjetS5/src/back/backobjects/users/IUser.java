@@ -1,35 +1,41 @@
 package back.backobjects.users;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import back.api.Server;
-import back.backobjects.thread.IThread;
+import back.frontobjects.FrontUser;
+
+import static back.main.mainBack.gson;
+
 
 public interface IUser {
-	public int getId();
+	int getId();
 
-	public String getName();
+	String getName();
 
-	public String getSurname();
+	String getSurname();
 
-	public boolean isConnected();
+	boolean isConnected();
 
-	public String getUsername();
+	String getUsername();
 
-	public static IUser createUser(String name, String surname, String username, Set<Integer> GroupsId) {
+	static IUser createUser(String name, String surname, String username, Set<Integer> GroupsId) {
 		return Server.createUser(name, surname, username, GroupsId);
 	}
 
-	public static IUser modifyUser(String name, String surname, Set<Integer> GroupsId, int UserId) {
+	static IUser modifyUser(String name, String surname, Set<Integer> GroupsId, int UserId) {
 		return Server.modifyUser(name, surname, GroupsId, UserId);
 	}
 
-	public static IUser deleteUser(int UserId) {
-		return Server.deleteUser(UserId);
+	static IUser deleteUser(int userId) {
+		return Server.deleteUser(userId);
 	}
 
-	public static List<IThread> getAllThreadForUser(int UserId) {
-		return IThread.getAllThreadForUser(UserId);
+	static String getUserById(Map<String, String> payload) {
+		int id = Integer.parseInt(payload.get("id"));
+		FrontUser user = Server.getUser(id);
+
+		return gson.toJson(user);
 	}
 }

@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 
 import back.api.Server;
 import back.backobjects.users.User;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 
 public class mainBack {
@@ -25,6 +27,7 @@ public class mainBack {
 	private static final int PORT = 9090;
 	private static ArrayList<ClientHandler> clients = new ArrayList<>();
 	private static ExecutorService pool = Executors.newFixedThreadPool(4);
+	public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public static void main(String[] args) throws IOException {
 		// TODO
