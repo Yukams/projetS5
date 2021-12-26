@@ -1,17 +1,17 @@
 package back.frontobjects;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class FrontThread {
-    public List<FrontMessage> messages;
-    public int id;
+public class FrontThread extends FrontObject {
     public String title;
+    public int groupId;
+    public List<FrontMessage> messages;
 
 
-    public FrontThread(int id, String title, List<FrontMessage> messagesList) {
+    public FrontThread(int id, String title, List<FrontMessage> messagesList, int groupId) {
         this.id = id;
         this.title = title;
+        this.groupId = groupId;
         this.messages = messagesList;
     }
 }

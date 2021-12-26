@@ -1,7 +1,6 @@
 package front.affichage;
 
 import front.client.Client;
-import front.server.ServerInterface;
 import front.utils.Utils;
 
 import javax.swing.*;
@@ -74,8 +73,8 @@ public class FenetreConnexion extends JFrame implements ActionListener {
             utils.syntaxErrorMessage();
         } else if (credentialsNature(username, password) == 1) {
             setVisible(false);
-            ServerInterface serverInterface = new ServerInterface();
-            serverInterface.setVisible(true);
+            //ServerInterface serverInterface = new ServerInterface();
+            //serverInterface.setVisible(true);
         } else {
             this.client = new Client(username, password);
             setVisible(false);

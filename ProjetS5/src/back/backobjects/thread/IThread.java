@@ -1,6 +1,7 @@
 package back.backobjects.thread;
 
 import back.api.Server;
+import back.frontobjects.FrontMessage;
 import back.frontobjects.FrontThread;
 import back.frontobjects.FrontUser;
 
@@ -14,9 +15,15 @@ public interface IThread {
 
 	List<IMessage> getMessagesIdInChronologicalOrder();
 
-	static IThread createThread(String title, int authorId, int GroupId, String contenu) {
-		Message message = (Message) Server.createMessage(contenu, authorId, GroupId);
-		return Server.createThread(title, message.getAuthorId(), GroupId, message.getId());
+	static String createThread(Map<String, String> payload) {
+		int authorId = Integer.parseInt(payload.get("authorId"));
+		int groupId = Integer.parseInt(payload.get("groupId"));
+		String content = payload.get("content");
+		String title = payload.get("title");
+
+		FrontThread thread = Server.createThread(authorId, groupId, content, title);
+
+		return gson.toJson(thread);
 	}
 
 	static IThread addMessageToThread(int idFil, String contenu, int authorId, int GroupId) {

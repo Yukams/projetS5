@@ -1,7 +1,5 @@
 package back.dbobjects;
 
-public class DbGroup {
-    public int id;
+public class DbGroup extends DbObject {
     public String name;
-    public int groupType;
 }

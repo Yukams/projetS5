@@ -1,31 +1,42 @@
 package back.backobjects.thread;
 
 import back.api.Server;
+import back.frontobjects.FrontMessage;
+import back.frontobjects.FrontUser;
 
 import java.util.Date;
+import java.util.Map;
+
+import static back.main.mainBack.gson;
 
 public interface IMessage {
-	public int getAuthorId();
+	int getAuthorId();
 
-	public int getId();
+	int getId();
 
-	public String getContenu();
+	String getContenu();
 
-	public Date getDate();
+	Date getDate();
 
-	public static IMessage createMessage(String contenu, int authorId, int GroupId) {
-		return Server.createMessage(contenu, authorId, GroupId);
+	static String createMessage(Map<String, String> payload) {
+		int authorId = Integer.parseInt(payload.get("authorId"));
+		String content = payload.get("content");
+		int threadId = Integer.parseInt(payload.get("threadId"));
+
+		FrontMessage message = Server.createMessage(authorId, content, threadId);
+
+		return gson.toJson(message);
 	}
 
-	public static IMessage modifyMessage(String contenu, int messageId) {
+	static IMessage modifyMessage(String contenu, int messageId) {
 		return Server.modifyMessage(contenu, messageId);
 	}
 
-	public static IMessage deleteMessage(int messageId) {
+	static IMessage deleteMessage(int messageId) {
 		return Server.deleteMessage(messageId);
 	}
 
-	public static IMessage getMessage(int messageId) {
+	static IMessage getMessage(int messageId) {
 		return Server.getMessage(messageId);
 	}
 }

@@ -1,7 +1,6 @@
 package front.client;
 
 import front.affichage.FenetreConnexion;
-import front.server.Server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -23,7 +22,7 @@ public class Client {
 
     public Client(String username, String password){
         try {
-            this.socket = new Socket(HOST, Server.PORT);
+            //this.socket = new Socket(HOST, PORT);
             this.username = username;
             this.password = password;
 

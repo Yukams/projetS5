@@ -1,10 +1,8 @@
 package back.api;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.Date;
 
 import back.dbobjects.*;
 import back.backobjects.thread.IThread;
@@ -13,6 +11,7 @@ import back.backobjects.thread.Thread;
 import back.backobjects.groups.GroupType;
 import back.backobjects.groups.IGroup;
 import back.backobjects.users.IUser;
+import back.frontobjects.FrontGroup;
 import back.frontobjects.FrontMessage;
 import back.frontobjects.FrontThread;
 import back.frontobjects.FrontUser;
@@ -24,7 +23,17 @@ public class Server {
 	private static final String DB_URL_MULTI_QUERY = "jdbc:mysql://localhost:3306/projetS5?allowMultiQueries=true";
 	private static final String DB_URL_SINGLE_QUERY = "jdbc:mysql://localhost:3306/projetS5";
 	private static final String USER = "root";
-	private static final String PASS = "toor";
+	private static final String PASS = "root";
+
+	public static void treatQueryWithoutResponse(String queryString) {
+		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
+			Statement stmt = conn.createStatement()
+		) {
+			stmt.executeUpdate(queryString);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static String treatQuery(String queryString) {
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
@@ -55,10 +64,10 @@ public class Server {
 		return null;
 	}
 
-	private static StringBuilder groupStringToJsonList(DbGroup[] objectList) {
+	private static StringBuilder groupStringToJsonList(DbObject[] objectList) {
 		StringBuilder groupList = new StringBuilder("(");
-		for(DbGroup group: objectList) {
-			groupList.append("'").append(group.id).append("',");
+		for(DbObject object: objectList) {
+			groupList.append("'").append(object.id).append("',");
 		}
 		groupList.setLength(groupList.length() - 1);
 		groupList.append(")");
@@ -70,20 +79,41 @@ public class Server {
 		return "NOT_READ";
 	}
 
-	/* Connexion User */
-	public static IUser connect(String username, String password) {
-		// TODO call SQL
-		// Construire l'User OU renvoyer null si mdp incorrect
+	/* Connect User */
+	public static String connect(Map<String,String> payload) {
+		String username = payload.get("username");
+		String password = payload.get("password");
+		System.out.println("SELECT * FROM dbUser WHERE username='" + username + "' AND password='" + password + "';");
+
+		String jsonString = Server.treatQuery("SELECT * FROM dbUser WHERE username='" + username + "' AND password='" + password + "';");
+		DbUser[] objectList = gson.fromJson(jsonString, DbUser[].class);
+		System.out.println(Arrays.toString(objectList));
+
+		if(objectList.length != 0) {
+			createConnectionToken(objectList[0].id);
+			return gson.toJson(objectList[0]);
+		}
+
 		return null;
 	}
 
-	/* Fil de discussion */
-	public static IThread createThread(String title, int authorId, int GroupId, int messageId) {
+	public static void createConnectionToken(int userId) {
 		int id = back.utils.Utils.createRandomId();
-		List<Integer> messagesId = new LinkedList<>();
-		messagesId.add(messageId);
-		// TODO call SQL
-		return null;
+		treatQueryWithoutResponse("INSERT INTO dbConnectionToken VALUES (" + id + "," + userId + ");");
+	}
+
+	/* Fil de discussion */
+	public static FrontThread createThread(int authorId, int groupId, String content, String title) {
+		int id = back.utils.Utils.createRandomId();
+
+		treatQueryWithoutResponse("INSERT INTO dbThread VALUES (" + id + ",'" + title + "'," + groupId + "," + authorId + ");");
+
+		List<FrontMessage> messages = new ArrayList<>();
+		// Create message
+		FrontMessage firstMessage = createMessage(authorId, content, id);
+		messages.add(firstMessage);
+
+		return new FrontThread(authorId, title, messages, groupId);
 	}
 
 	public static IThread addMessageToThread(int idFil, String contenu, int authorId, int GroupId) {
@@ -113,7 +143,6 @@ public class Server {
 	public static List<FrontThread> getAllThreadForUser(int userId) {
 		// Get Groups for the user
 		String jsonString = Server.treatQuery("SELECT g.id, g.name FROM dbLinkUserGroup JOIN dbGroup g ON id WHERE userId=" + userId + " AND dbLinkUserGroup.groupId=g.id;");
-		System.out.println(jsonString);
 		DbGroup[] objectList = gson.fromJson(jsonString, DbGroup[].class);
 
 		// Transform groups into a JSON List
@@ -124,11 +153,11 @@ public class Server {
 		DbThread[] dbThreadList = gson.fromJson(jsonString, DbThread[].class);
 
 		List<FrontThread> threadsList = new ArrayList<>();
-		// Construct each thread
+		// Build each thread
 		for(DbThread thread: dbThreadList) {
 			List<FrontMessage> messagesList = new ArrayList<>();
 			// Get all messages related to the thread in date order (older first)
-			jsonString = Server.treatQuery("SELECT m.id, m.authorId, m.text, m.date FROM dbLinkMessageThread JOIN dbMessage m ON id WHERE threadId=" + thread.id + " ORDER BY m.date;");
+			jsonString = Server.treatQuery("SELECT DISTINCT m.id, m.authorId, m.text, m.date FROM dbLinkMessageThread l JOIN dbMessage m ON l.messageId=m.id WHERE l.threadId=" + thread.id + " ORDER BY m.date;\n");
 			DbMessage[] dbMessageList = gson.fromJson(jsonString, DbMessage[].class);
 
 			// Construct each message
@@ -143,17 +172,23 @@ public class Server {
 				// Build status (later)
 				String status = getStatusFromMessageId(message.id);
 
-				FrontMessage m = new FrontMessage(user, message.text, message.date, status);
+				FrontMessage m = new FrontMessage(message.id ,user, message.text, message.date, status);
 				messagesList.add(m);
 			}
 
 			// Add the thread to the thread list
-			threadsList.add(new FrontThread(thread.id, thread.title, messagesList));
+			threadsList.add(new FrontThread(thread.id, thread.title, messagesList, thread.groupId));
 		}
 
 		return threadsList;
 	}
 
+	public static FrontGroup getGroupFromThreadId(int threadId) {
+		String jsonString = treatQuery("SELECT * FROM dbThread WHERE id=" + threadId + ";");
+		DbThread[] dbObject = gson.fromJson(jsonString, DbThread[].class);
+
+		return getGroup(dbObject[0].groupId);
+	}
 
 	public static List<IThread> getAllThread(int userId) {
 		// TODO call SQL
@@ -161,10 +196,25 @@ public class Server {
 	}
 
 	/* Message */
-	public static IMessage createMessage(String contenu, int authorId, int GroupId) {
+	public static FrontMessage createMessage(int authorId, String content, int threadId) {
 		int id = back.utils.Utils.createRandomId();
-		// TODO call SQL
-		return null;
+		// Add Message in database
+		long date = new Date().getTime();
+		treatQueryWithoutResponse("INSERT INTO dbMessage VALUES (" + id + "," + authorId + ",'" + content + "','" + date + "');");
+
+		// Connect Message to its Thread
+		treatQueryWithoutResponse("INSERT INTO dbLinkMessageThread VALUES (" + id + "," + threadId + ");");
+
+		// Connect Message To Users
+		FrontGroup group = getGroupFromThreadId(threadId);
+
+		List<FrontUser> users = getUsersFromGroupId(group.id);
+
+		for(FrontUser user: users) {
+			treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + user.id + "," + id + ",'NOT_SEEN'" + ");");
+		}
+
+		return new FrontMessage(id, getUser(authorId), content, date, "NOT_READ");
 	}
 
 	public static IMessage modifyMessage(String contenu, int messageId) {
@@ -199,9 +249,11 @@ public class Server {
 		return null;
 	}
 
-	public static IGroup getGroup(int GroupId) {
-		// TODO call SQL
-		return null;
+	public static FrontGroup getGroup(int groupId) {
+		String jsonString = treatQuery("SELECT * FROM dbGroup WHERE id=" + groupId + ";");
+		DbGroup[] dbObject = gson.fromJson(jsonString, DbGroup[].class);
+
+		return new FrontGroup(dbObject[0].id, dbObject[0].name);
 	}
 
 	/* Users */
@@ -224,10 +276,21 @@ public class Server {
 
 	public static FrontUser getUser(int userId) {
 		String jsonString = treatQuery("SELECT * FROM dbUser WHERE id=" + userId + ";");
-		Gson gson = new Gson();
 		DbUser[] dbObject = gson.fromJson(jsonString, DbUser[].class);
 
 		return new FrontUser(dbObject[0].name, dbObject[0].surname, dbObject[0].id);
+	}
+
+	public static List<FrontUser> getUsersFromGroupId(int id) {
+		String jsonString = treatQuery("SELECT u.id, u.username, u.name, u.surname, u.password FROM dbLinkUserGroup l JOIN dbUser u on l.userId WHERE l.groupId=" + id + " AND u.id=l.userId;");
+		DbUser[] dbObject = gson.fromJson(jsonString, DbUser[].class);
+
+		List<FrontUser> users = new ArrayList<>();
+		for(DbUser user: dbObject) {
+			users.add(new FrontUser(user.name, user.surname, user.id));
+		}
+
+		return users;
 	}
 
 }

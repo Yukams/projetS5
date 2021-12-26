@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import back.api.Server;
-import back.backobjects.users.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -23,7 +21,7 @@ public class mainBack {
 	private static final String DB_URL_MULTI_QUERY = "jdbc:mysql://localhost:3306/projetS5?allowMultiQueries=true";
 	private static final String DB_URL_SINGLE_QUERY = "jdbc:mysql://localhost:3306/projetS5";
 	private static final String USER = "root";
-	private static final String PASS = "toor";
+	private static final String PASS = "root";
 	private static final int PORT = 9090;
 	private static ArrayList<ClientHandler> clients = new ArrayList<>();
 	private static ExecutorService pool = Executors.newFixedThreadPool(4);
@@ -36,11 +34,11 @@ public class mainBack {
 		// Etape 2 : Peupler la database
 		fillDatabase();
 		// Etape 3 : Lancer l'application
-		lancerApplication();
+		launchApplication();
 	}
 
 	// Lance l'application
-	private static void lancerApplication() throws IOException {
+	private static void launchApplication() throws IOException {
 		ServerSocket incoming = new ServerSocket(PORT);
 
 		while(true) {
@@ -53,11 +51,6 @@ public class mainBack {
 			pool.execute(clientThread);
 		}
 
-	}
-	
-	private static int connexionUser(String username, String password) {
-		User user = (User) Server.connect(username, password);
-		return user.getId();
 	}
 
 	// Filling database with default values
