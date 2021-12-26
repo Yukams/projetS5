@@ -20,7 +20,7 @@ public class Server {
 	private static final String DB_URL_MULTI_QUERY = "jdbc:mysql://localhost:3306/projetS5?allowMultiQueries=true";
 	private static final String DB_URL_SINGLE_QUERY = "jdbc:mysql://localhost:3306/projetS5";
 	private static final String USER = "root";
-	private static final String PASS = "root";
+	private static final String PASS = "toor";
 
 	public static String treatQuery(String queryString) {
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);

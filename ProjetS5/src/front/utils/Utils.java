@@ -16,13 +16,13 @@ public class Utils {
     }
 
     // Message Erreur Syntax
-    public void messageErrorSyntax() {
-        JOptionPane.showMessageDialog(new JFrame(), "Nom d'Utilisateur ou Mot De Pass invalide !", "Error Syntax",
+    public void syntaxErrorMessage() {
+        JOptionPane.showMessageDialog(new JFrame(), "Invalid Username or Password", "Error Syntax",
                 JOptionPane.ERROR_MESSAGE);
     }
     // Message Erreur Data
-    public void messageErrorCredentials() {
-        JOptionPane.showMessageDialog(new JFrame(), "Nom d'Utilisateur ou Mot De Pass incorrect !", "Error Credentials",
+    public void credentialsErrorMessage() {
+        JOptionPane.showMessageDialog(new JFrame(), "Wrong Username or Password", "Error Credentials",
                 JOptionPane.WARNING_MESSAGE);
     }
 }

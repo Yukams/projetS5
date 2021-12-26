@@ -1,7 +1,7 @@
 package front.client;
 
 import front.affichage.FenetreConnexion;
-import server.Server;
+import front.server.Server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
