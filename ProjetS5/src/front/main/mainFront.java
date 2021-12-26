@@ -2,7 +2,7 @@ package front.main;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-/*
+
 import front.affichage.FenetreConnexion;
 
 public class mainFront {
@@ -61,5 +61,5 @@ public class mainFront {
 	private static String getPassword() {
 		return null;
 	}
-
-}*/
+*/
+}

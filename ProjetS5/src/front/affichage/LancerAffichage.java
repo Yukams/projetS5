@@ -1,5 +1,5 @@
 package front.affichage;
-/*
+
 public class LancerAffichage {
     public static void main(String[] args) {
         String id;
@@ -12,4 +12,3 @@ public class LancerAffichage {
 
     }
 }
-*/

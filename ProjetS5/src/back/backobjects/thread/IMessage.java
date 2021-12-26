@@ -19,7 +19,7 @@ public interface IMessage {
 	Date getDate();
 
 	static String createMessage(Map<String, String> payload) {
-		int authorId = Integer.parseInt(payload.get("id"));
+		int authorId = Integer.parseInt(payload.get("authorId"));
 		String content = payload.get("content");
 		int threadId = Integer.parseInt(payload.get("threadId"));
 

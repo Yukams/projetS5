@@ -1,5 +1,6 @@
 package front.client;
 
+import front.affichage.FenetreConnexion;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,7 +10,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
+
 public class Client {
     public final static String HOST = "127.0.0.1";
     private Socket socket;
@@ -21,7 +22,7 @@ public class Client {
 
     public Client(String username, String password){
         try {
-            this.socket = new Socket(HOST, Server.PORT);
+            //this.socket = new Socket(HOST, PORT);
             this.username = username;
             this.password = password;
 
@@ -58,9 +59,9 @@ public class Client {
         } catch (IOException e){
             e.printStackTrace();
         }
-    }*/
+    }
 /*-----------------------------------------------------------------------*/
-/*    public static void main(String[] args){
+    public static void main(String[] args){
         launchConnexionWindow();
     }
     // Lance l'application cote client
@@ -68,4 +69,4 @@ public class Client {
         FenetreConnexion fen = new FenetreConnexion();
         fen.setVisible(true);
     }
-}*/
+}

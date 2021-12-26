@@ -25,6 +25,16 @@ public class Server {
 	private static final String USER = "root";
 	private static final String PASS = "root";
 
+	public static void treatQueryWithoutResponse(String queryString) {
+		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
+			Statement stmt = conn.createStatement()
+		) {
+			stmt.executeUpdate(queryString);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static String treatQuery(String queryString) {
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
@@ -80,25 +90,30 @@ public class Server {
 		System.out.println(Arrays.toString(objectList));
 
 		if(objectList.length != 0) {
-			//createConnectionToken(objectList[0].id);
+			createConnectionToken(objectList[0].id);
 			return gson.toJson(objectList[0]);
 		}
 
 		return null;
 	}
 
+	public static void createConnectionToken(int userId) {
+		int id = back.utils.Utils.createRandomId();
+		treatQueryWithoutResponse("INSERT INTO dbConnectionToken VALUES (" + id + "," + userId + ");");
+	}
+
 	/* Fil de discussion */
 	public static FrontThread createThread(int authorId, int groupId, String content, String title) {
 		int id = back.utils.Utils.createRandomId();
+
+		treatQueryWithoutResponse("INSERT INTO dbThread VALUES (" + id + ",'" + title + "'," + groupId + "," + authorId + ");");
 
 		List<FrontMessage> messages = new ArrayList<>();
 		// Create message
 		FrontMessage firstMessage = createMessage(authorId, content, id);
 		messages.add(firstMessage);
 
-		treatQuery("INSERT INTO dbThread VALUES (" + id + "," + title + "," + groupId + "," + firstMessage.id + "," + firstMessage.user.id + ");");
-
-		return new FrontThread(authorId, title, messages);
+		return new FrontThread(authorId, title, messages, groupId);
 	}
 
 	public static IThread addMessageToThread(int idFil, String contenu, int authorId, int GroupId) {
@@ -138,11 +153,11 @@ public class Server {
 		DbThread[] dbThreadList = gson.fromJson(jsonString, DbThread[].class);
 
 		List<FrontThread> threadsList = new ArrayList<>();
-		// Construct each thread
+		// Build each thread
 		for(DbThread thread: dbThreadList) {
 			List<FrontMessage> messagesList = new ArrayList<>();
 			// Get all messages related to the thread in date order (older first)
-			jsonString = Server.treatQuery("SELECT m.id, m.authorId, m.text, m.date FROM dbLinkMessageThread JOIN dbMessage m ON id WHERE threadId=" + thread.id + " ORDER BY m.date;");
+			jsonString = Server.treatQuery("SELECT DISTINCT m.id, m.authorId, m.text, m.date FROM dbLinkMessageThread l JOIN dbMessage m ON l.messageId=m.id WHERE l.threadId=" + thread.id + " ORDER BY m.date;\n");
 			DbMessage[] dbMessageList = gson.fromJson(jsonString, DbMessage[].class);
 
 			// Construct each message
@@ -162,7 +177,7 @@ public class Server {
 			}
 
 			// Add the thread to the thread list
-			threadsList.add(new FrontThread(thread.id, thread.title, messagesList));
+			threadsList.add(new FrontThread(thread.id, thread.title, messagesList, thread.groupId));
 		}
 
 		return threadsList;
@@ -184,10 +199,11 @@ public class Server {
 	public static FrontMessage createMessage(int authorId, String content, int threadId) {
 		int id = back.utils.Utils.createRandomId();
 		// Add Message in database
-		treatQuery("INSERT INTO dbMessage VALUES (" + id + "," + authorId + "," + content + ");");
+		long date = new Date().getTime();
+		treatQueryWithoutResponse("INSERT INTO dbMessage VALUES (" + id + "," + authorId + ",'" + content + "','" + date + "');");
 
 		// Connect Message to its Thread
-		treatQuery("INSERT INTO dbLinkMessageThread (" + id + "," + threadId + ");");
+		treatQueryWithoutResponse("INSERT INTO dbLinkMessageThread VALUES (" + id + "," + threadId + ");");
 
 		// Connect Message To Users
 		FrontGroup group = getGroupFromThreadId(threadId);
@@ -195,10 +211,10 @@ public class Server {
 		List<FrontUser> users = getUsersFromGroupId(group.id);
 
 		for(FrontUser user: users) {
-			treatQuery("INSERT INTO dbLinkUserMessage (" + user.id + "," + id + "'NOT_SEEN'" + ");");
+			treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + user.id + "," + id + ",'NOT_SEEN'" + ");");
 		}
 
-		return new FrontMessage(id, getUser(authorId), content, new Date(), "NOT_READ");
+		return new FrontMessage(id, getUser(authorId), content, date, "NOT_READ");
 	}
 
 	public static IMessage modifyMessage(String contenu, int messageId) {

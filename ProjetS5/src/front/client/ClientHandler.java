@@ -1,5 +1,5 @@
 package front.client;
-/*
+
 import front.affichage.FenetreConnexion;
 
 import java.io.*;
@@ -61,4 +61,3 @@ public class ClientHandler implements Runnable{
 
 
 }
-*/

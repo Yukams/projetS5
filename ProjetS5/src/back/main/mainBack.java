@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import back.api.Server;
-import back.backobjects.users.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

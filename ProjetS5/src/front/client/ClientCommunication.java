@@ -29,17 +29,20 @@ public class ClientCommunication {
         //payload.put("username", "Jean31");
         //payload.put("password", "123");
         //ServerRequest serverRequest = new ServerRequest("/connect", payload);
-        payload.put("authorId", "10");
+        payload.put("authorId", "11");
         payload.put("content", "je suis un nouveau message");
-        payload.put("threadId", "30");
-        ServerRequest serverRequest = new ServerRequest("/message/createMessage", payload);
+        //payload.put("threadId", "30");
+        //ServerRequest serverRequest = new ServerRequest("/message/createMessage", payload);
+        payload.put("groupId", "92");
+        payload.put("title", "je suis un nouveau thread");
+        ServerRequest serverRequest = new ServerRequest("/thread/createThread", payload);
         String request = gson.toJson(serverRequest);
         System.out.println("[CLIENT] Do request to server" + request);
         out.println(request);
 
         String serverResponseString = in.readLine();
         ServerResponse serverPayload = gson.fromJson(serverResponseString, ServerResponse.class);
-        System.out.println(serverPayload.payload);
-        while(true);
+        System.out.println("[CLIENT] Response from server :\n" + serverPayload.payload);
+        //while(true);
     }
 }
