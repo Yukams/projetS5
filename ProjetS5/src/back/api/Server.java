@@ -83,7 +83,6 @@ public class Server {
 	public static String connect(Map<String,String> payload) {
 		String username = payload.get("username");
 		String password = payload.get("password");
-		System.out.println("SELECT * FROM dbUser WHERE username='" + username + "' AND password='" + password + "';");
 
 		String jsonString = Server.treatQuery("SELECT * FROM dbUser WHERE username='" + username + "' AND password='" + password + "';");
 		DbUser[] objectList = gson.fromJson(jsonString, DbUser[].class);
@@ -95,6 +94,14 @@ public class Server {
 		}
 
 		return null;
+	}
+
+	public static String disconnect(Map<String, String> payload) {
+		int userId = Integer.parseInt(payload.get("id"));
+
+		treatQueryWithoutResponse("DELETE FROM dbConnectionToken WHERE userId=" + userId + ";");
+
+		return gson.toJson(getUser(userId));
 	}
 
 	public static void createConnectionToken(int userId) {
@@ -254,6 +261,23 @@ public class Server {
 
 	public static List<FrontUser> getUsersFromGroupId(int id) {
 		String jsonString = treatQuery("SELECT u.id, u.username, u.name, u.surname, u.password FROM dbLinkUserGroup l JOIN dbUser u on l.userId WHERE l.groupId=" + id + " AND u.id=l.userId;");
+		return getFrontUsers(jsonString);
+	}
+
+	public static FrontUser createUser(String username, String name, String surname, String password) {
+		int id = back.utils.Utils.createRandomId();
+
+		treatQueryWithoutResponse("INSERT INTO dbUser VALUES (" + id + ",'" + username + "','" + name + "','" + surname + "','" + password + "');");
+
+		return new FrontUser(name, surname, id);
+	}
+
+	public static List<FrontUser> getAllConnectedUsers() {
+		String jsonString = treatQuery("SELECT u.id FROM dbConnectionToken l JOIN dbUser u ON l.userId WHERE l.userId=u.id;");
+		return getFrontUsers(jsonString);
+	}
+
+	private static List<FrontUser> getFrontUsers(String jsonString) {
 		DbUser[] dbObject = gson.fromJson(jsonString, DbUser[].class);
 
 		List<FrontUser> users = new ArrayList<>();
@@ -264,11 +288,8 @@ public class Server {
 		return users;
 	}
 
-	public static FrontUser createUser(String username, String name, String surname, String password) {
-		int id = back.utils.Utils.createRandomId();
-
-		treatQueryWithoutResponse("INSERT INTO dbUser VALUES (" + id + ",'" + username + "','" + name + "','" + surname + "','" + password + "');");
-
-		return new FrontUser(name, surname, id);
+	public static List<FrontUser> getAllDatabaseUsers() {
+		String jsonString = treatQuery("SELECT * FROM dbUser;");
+		return getFrontUsers(jsonString);
 	}
 }
