@@ -5,6 +5,7 @@
 package front.server;
 
 import front.client.RootRequest;
+import front.client.ServerResponse;
 import front.utils.Utils;
 
 import java.util.*;
@@ -27,10 +28,10 @@ public class ServerInterface extends javax.swing.JFrame {
     /**
      * Creates new form ServerInterface
      */
+
     public ServerInterface() {
         initComponents();
         this.centrePanel.setVisible(false);
-        payload.clear();
         this.rootRequest = new RootRequest();
 
 
