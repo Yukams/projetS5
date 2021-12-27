@@ -62,6 +62,6 @@ public class QueryTest {
     private static void showDbThreadsForAUser() {
         int idUser = 11;
 
-        System.out.println(gson.toJson(Server.getAllThreadForUser(idUser)));
+        System.out.println("showDbThreadsForAUser :\n" + gson.toJson(Server.getAllThreadForUser(idUser)));
     }
 }

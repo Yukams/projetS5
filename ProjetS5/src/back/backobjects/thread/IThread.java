@@ -38,7 +38,7 @@ public interface IThread {
 		return Server.deleteThread(threadId);
 	}
 
-	static IThread getThread(int threadId) {
+	static FrontThread getThread(int threadId) {
 		return Server.getThread(threadId);
 	}
 

@@ -131,13 +131,33 @@ public class Server {
 		return null;
 	}
 
-	public static IThread getThread(int threadId) {
-		// Get DbThread
-		String jsonString = treatQuery("SELECT * FROM dbThread WHERE id=" + threadId + ";");
-		Gson gson = new Gson();
-		DbThread dbObject = gson.fromJson(jsonString, DbThread.class);
+	public static FrontThread getThread(int threadId) {
+		String jsonString = Server.treatQuery("SELECT * FROM dbThread WHERE id=" + threadId + ";");
+		DbThread thread = gson.fromJson(jsonString, DbThread[].class)[0];
 
-		return new Thread(dbObject.title);
+		List<FrontMessage> messagesList = new ArrayList<>();
+		// Get all messages related to the thread in date order (older first)
+		jsonString = Server.treatQuery("SELECT m.id, m.authorId, m.text, m.date FROM dbLinkMessageThread l JOIN dbMessage m ON l.messageId=m.id WHERE l.threadId=" + threadId + " ORDER BY m.date;");
+		DbMessage[] dbMessageList = gson.fromJson(jsonString, DbMessage[].class);
+
+		// Build each message
+		for(DbMessage message: dbMessageList) {
+			// Get message user
+			jsonString = Server.treatQuery("SELECT * FROM dbUser WHERE id=" + message.authorId + ";");
+			DbUser[] dbUser = gson.fromJson(jsonString, DbUser[].class);
+
+			// Build author
+			FrontUser user = new FrontUser(dbUser[0].name, dbUser[0].surname, dbUser[0].id);
+
+			// Build status (later)
+			String status = getStatusFromMessageId(message.id);
+
+			FrontMessage m = new FrontMessage(message.id ,user, message.text, message.date, status);
+			messagesList.add(m);
+		}
+
+		// Add the thread to the thread list
+		return new FrontThread(thread.id, thread.title, messagesList, thread.groupId);
 	}
 
 	public static List<FrontThread> getAllThreadForUser(int userId) {
@@ -149,35 +169,13 @@ public class Server {
 		StringBuilder groupList = groupStringToJsonList(objectList);
 
 		// Get all Threads for the said User
-		jsonString = Server.treatQuery("SELECT * FROM dbThread WHERE groupId IN " + groupList + " OR authorId=" + userId);
+		jsonString = Server.treatQuery("SELECT id FROM dbThread WHERE groupId IN " + groupList + " OR authorId=" + userId);
 		DbThread[] dbThreadList = gson.fromJson(jsonString, DbThread[].class);
 
 		List<FrontThread> threadsList = new ArrayList<>();
 		// Build each thread
 		for(DbThread thread: dbThreadList) {
-			List<FrontMessage> messagesList = new ArrayList<>();
-			// Get all messages related to the thread in date order (older first)
-			jsonString = Server.treatQuery("SELECT DISTINCT m.id, m.authorId, m.text, m.date FROM dbLinkMessageThread l JOIN dbMessage m ON l.messageId=m.id WHERE l.threadId=" + thread.id + " ORDER BY m.date;\n");
-			DbMessage[] dbMessageList = gson.fromJson(jsonString, DbMessage[].class);
-
-			// Construct each message
-			for(DbMessage message: dbMessageList) {
-				// Get message user
-				jsonString = Server.treatQuery("SELECT * FROM dbUser WHERE id=" + message.authorId + ";");
-				DbUser[] dbUser = gson.fromJson(jsonString, DbUser[].class);
-
-				// Construct author
-				FrontUser user = new FrontUser(dbUser[0].name, dbUser[0].surname, dbUser[0].id);
-
-				// Build status (later)
-				String status = getStatusFromMessageId(message.id);
-
-				FrontMessage m = new FrontMessage(message.id ,user, message.text, message.date, status);
-				messagesList.add(m);
-			}
-
-			// Add the thread to the thread list
-			threadsList.add(new FrontThread(thread.id, thread.title, messagesList, thread.groupId));
+			threadsList.add(getThread(thread.id));
 		}
 
 		return threadsList;
@@ -188,11 +186,6 @@ public class Server {
 		DbThread[] dbObject = gson.fromJson(jsonString, DbThread[].class);
 
 		return getGroup(dbObject[0].groupId);
-	}
-
-	public static List<IThread> getAllThread(int userId) {
-		// TODO call SQL
-		return null;
 	}
 
 	/* Message */
