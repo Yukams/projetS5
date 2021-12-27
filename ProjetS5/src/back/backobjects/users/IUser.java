@@ -1,5 +1,6 @@
 package back.backobjects.users;
 
+import java.util.List;
 import java.util.Map;
 
 import back.api.Server;
@@ -25,5 +26,15 @@ public interface IUser {
 		FrontUser user = Server.createUser(username, name, surname, password);
 
 		return gson.toJson(user);
+	}
+
+	static String getAllConnectedUsers() {
+		List<FrontUser> users = Server.getAllConnectedUsers();
+		return gson.toJson(users);
+	}
+
+	static String getAllDatabaseUsers() {
+		List<FrontUser> users = Server.getAllDatabaseUsers();
+		return gson.toJson(users);
 	}
 }

@@ -32,6 +32,10 @@ public class QueryTest {
         System.out.println("[OK] createUser");
         getAllDatabaseGroups();
         System.out.println("[OK] getAllDatabaseGroups");
+        getAllConnectedUsers();
+        System.out.println("[OK] getAllConnectedUsers");
+        getAllDatabaseUsers();
+        System.out.println("[OK] getAllDatabaseUsers");
         System.out.println("Fin QueryTest");
 
     }
@@ -101,5 +105,13 @@ public class QueryTest {
 
     private static void getAllDatabaseGroups() {
         System.out.println("getAllDatabaseGroups :\n" + gson.toJson(Server.getAllDatabaseGroups()));
+    }
+
+    private static void getAllConnectedUsers() {
+        System.out.println("getAllConnectedUsers :\n" + gson.toJson(Server.getAllConnectedUsers()));
+    }
+
+    private static void getAllDatabaseUsers() {
+        System.out.println("getAllDatabaseUsers :\n" + gson.toJson(Server.getAllDatabaseUsers()));
     }
 }

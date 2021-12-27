@@ -57,9 +57,12 @@ public class ClientHandler implements Runnable {
         String address = request.address;
         Map<String,String> payload = request.payload;
         String toClient = switch (address) {
-            // CONNECT
+            // CONNECTIVITY
             // { "username": String, "password": String }
             case "/connect" -> Server.connect(payload);
+
+            // { "id": int }
+            case "/disconnect" -> Server.disconnect(payload);
 
 
             // USER
@@ -68,6 +71,12 @@ public class ClientHandler implements Runnable {
 
             // { "username": String, "name": String, "surname": String, "password": String }
             case "/user/createUser" -> IUser.createUser(payload);
+
+            // {}
+            case "/user/getAllConnectedUsers" -> IUser.getAllConnectedUsers();
+
+            // {}
+            case "/user/getAllDatabaseUsers" -> IUser.getAllDatabaseUsers();
 
 
             // THREAD
