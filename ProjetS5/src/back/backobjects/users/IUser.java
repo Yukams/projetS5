@@ -15,4 +15,15 @@ public interface IUser {
 
 		return gson.toJson(user);
 	}
+
+	static String createUser(Map<String, String> payload) {
+		String username = payload.get("username");
+		String name = payload.get("name");
+		String surname = payload.get("surname");
+		String password = payload.get("password");
+
+		FrontUser user = Server.createUser(username, name, surname, password);
+
+		return gson.toJson(user);
+	}
 }

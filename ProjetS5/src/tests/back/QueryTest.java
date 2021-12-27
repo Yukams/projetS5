@@ -2,6 +2,8 @@ package tests.back;
 
 
 import back.api.Server;
+import back.frontobjects.FrontGroup;
+import back.utils.Utils;
 import com.google.gson.Gson;
 import back.dbobjects.*;
 
@@ -24,7 +26,14 @@ public class QueryTest {
         System.out.println("[OK] showDbThreadsForAUser");
         getMessageStatus();
         System.out.println("[OK] getMessageStatus");
+        changeStatusOfMessagesInThread();
+        System.out.println("[OK] changeStatusOfMessagesInThread");
+        createGroupAndAddUserToIt();
+        System.out.println("[OK] createGroupAndAddUserToIt");
+        createUser();
+        System.out.println("[OK] createUser");
         System.out.println("Fin QueryTest");
+
     }
 
     private static void showDbUsers() {
@@ -71,5 +80,25 @@ public class QueryTest {
         System.out.println("getMessageStatus SEEN :\n" + Server.getStatusFromMessageId(22));
         System.out.println("getMessageStatus NOT_SEEN :\n" + Server.getStatusFromMessageId(21));
         System.out.println("getMessageStatus NOT_SEEN :\n" + Server.getStatusFromMessageId(20));
+    }
+
+    private static void changeStatusOfMessagesInThread() {
+        int threadId = 30;
+        int userId = 11;
+
+        System.out.println("changeStatusOfMessagesInThread :\n" + gson.toJson(Server.updateMessages(userId, threadId)));
+    }
+
+    private static void createGroupAndAddUserToIt() {
+        int userId = 11;
+
+        FrontGroup group = Server.createGroup("unNouveauGroupeTest" + Utils.createRandomId());
+        System.out.println("createGroupAndAddUserToIt :\n" + gson.toJson(Server.addUserToGroup(group.id, userId)));
+    }
+
+    private static void createUser() {
+        int i = Utils.createRandomId();
+
+        System.out.println("createGroupAndAddUserToIt :\n" + gson.toJson(Server.createUser("toto" + i, "T" + i, "Valentin" + i, "p" + i)));
     }
 }

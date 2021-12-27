@@ -1,6 +1,7 @@
 package back.main;
 
 import back.api.Server;
+import back.backobjects.groups.IGroup;
 import back.backobjects.thread.IMessage;
 import back.backobjects.thread.IThread;
 import back.backobjects.users.IUser;
@@ -56,18 +57,39 @@ public class ClientHandler implements Runnable {
         String address = request.address;
         Map<String,String> payload = request.payload;
         String toClient = switch (address) {
-            // {"id": int}
-            case "/user/getUserById" -> IUser.getUserById(payload);
-            // {"id": int}
-            case "/thread/getThreadsByUserId" -> IThread.getAllThreadForUser(payload);
-            // {"username": String, "password": String}
+            // CONNECT
+            // { "username": String, "password": String }
             case "/connect" -> Server.connect(payload);
-            // {"authorId": int, "content": String, "threadId": int}
-            case "/message/createMessage" -> IMessage.createMessage(payload);
-            // {"authorId": int, "groupId": int, "title": String, "content": String}
+
+
+            // USER
+            // { "id": int }
+            case "/user/getUserById" -> IUser.getUserById(payload);
+
+            // { "username": String, "name": String, "surname": String, "password": String }
+            case "/user/createUser" -> IUser.createUser(payload);
+
+
+            // THREAD
+            // { "id": int }
+            case "/thread/getThreadsByUserId" -> IThread.getAllThreadForUser(payload);
+
+            // { "authorId": int, "groupId": int, "title": String, "content": String }
             case "/thread/createThread" -> IThread.createThread(payload);
-            // {"userId": int, "threadId": int}
+
+            // { "userId": int, "threadId": int }
             case "/thread/updateMessagesOfThread" -> IThread.updateMessages(payload);
+
+            // MESSAGE
+            // { "authorId": int, "content": String, "threadId": int }
+            case "/message/createMessage" -> IMessage.createMessage(payload);
+
+            // GROUP
+            // { "name": String }
+            case "group/createGroup" -> IGroup.createGroup(payload);
+
+            // { "groupId": int, "userId": int }
+            case "group/addUserToGroup" -> IGroup.addUserToGroup(payload);
             default -> "\"null\"";
         };
 

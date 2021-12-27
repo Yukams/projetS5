@@ -5,10 +5,6 @@ import java.util.*;
 import java.util.Date;
 
 import back.dbobjects.*;
-import back.backobjects.thread.IThread;
-import back.backobjects.thread.IMessage;
-import back.backobjects.groups.IGroup;
-import back.backobjects.users.IUser;
 import back.frontobjects.FrontGroup;
 import back.frontobjects.FrontMessage;
 import back.frontobjects.FrontThread;
@@ -222,6 +218,20 @@ public class Server {
 		return new FrontGroup(dbObject[0].id, dbObject[0].name);
 	}
 
+	public static FrontGroup createGroup(String name) {
+		int id = back.utils.Utils.createRandomId();
+
+		treatQueryWithoutResponse("INSERT INTO dbGroup VALUES (" + id + ",'" + name + "');");
+
+		return new FrontGroup(id, name);
+	}
+
+	public static FrontGroup addUserToGroup(int groupId, int userId) {
+		treatQueryWithoutResponse("INSERT INTO dbLinkUserGroup VALUES (" + userId + "," + groupId + ");");
+
+		return getGroup(groupId);
+	}
+
 	/* Users */
 	public static FrontUser getUser(int userId) {
 		String jsonString = treatQuery("SELECT * FROM dbUser WHERE id=" + userId + ";");
@@ -240,5 +250,13 @@ public class Server {
 		}
 
 		return users;
+	}
+
+	public static FrontUser createUser(String username, String name, String surname, String password) {
+		int id = back.utils.Utils.createRandomId();
+
+		treatQueryWithoutResponse("INSERT INTO dbUser VALUES (" + id + ",'" + username + "','" + name + "','" + surname + "','" + password + "');");
+
+		return new FrontUser(name, surname, id);
 	}
 }
