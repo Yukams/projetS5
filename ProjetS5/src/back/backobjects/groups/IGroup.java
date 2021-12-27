@@ -23,4 +23,9 @@ public interface IGroup {
         FrontGroup group = Server.addUserToGroup(groupId, userId);
         return gson.toJson(group);
     }
+
+    static String getAllDatabaseGroups() {
+        List<FrontGroup> groups = Server.getAllDatabaseGroups();
+        return gson.toJson(groups);
+    }
 }

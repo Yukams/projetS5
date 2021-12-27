@@ -19,7 +19,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/ProjetS5/dbjar/gson-2.8.9.jar!/" />
+          <root url="jar://$MODULE_DIR$/ProjetS5/jarLib/AbsoluteLayout.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -27,22 +27,12 @@
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
-        <CLASSES />
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/ProjetS5/dbjar/gson-2.8.9-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
         <CLASSES>
-          <root url="jar://C:/Program Files/NetBeans-12.6/netbeans/java/modules/ext/AbsoluteLayout.jar!/" />
+          <root url="jar://$MODULE_DIR$/ProjetS5/jarLib/gson-2.8.9.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="dbjar" level="project" />
   </component>
 </module>

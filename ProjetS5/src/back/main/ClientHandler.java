@@ -90,6 +90,10 @@ public class ClientHandler implements Runnable {
 
             // { "groupId": int, "userId": int }
             case "group/addUserToGroup" -> IGroup.addUserToGroup(payload);
+
+            // {}
+            case "group/getAllDatabaseGroups" -> IGroup.getAllDatabaseGroups();
+
             default -> "\"null\"";
         };
 

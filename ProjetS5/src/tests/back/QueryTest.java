@@ -1,10 +1,8 @@
 package tests.back;
 
-
 import back.api.Server;
 import back.frontobjects.FrontGroup;
 import back.utils.Utils;
-import com.google.gson.Gson;
 import back.dbobjects.*;
 
 import static back.main.mainBack.gson;
@@ -32,6 +30,8 @@ public class QueryTest {
         System.out.println("[OK] createGroupAndAddUserToIt");
         createUser();
         System.out.println("[OK] createUser");
+        getAllDatabaseGroups();
+        System.out.println("[OK] getAllDatabaseGroups");
         System.out.println("Fin QueryTest");
 
     }
@@ -41,21 +41,18 @@ public class QueryTest {
         String jsonString = Server.treatQuery("SELECT * FROM dbUser;");
         System.out.println("\nshowDbUsers :\n" + jsonString);
         // Serialization from DB
-        Gson gson = new Gson(); // Or use new GsonBuilder().create();
         DbUser[] objectList = gson.fromJson(jsonString, DbUser[].class); // deserializes json into objectList
     }
 
     private static void showDbGroups() {
         String jsonString = Server.treatQuery("SELECT * FROM dbGroup;");
         System.out.println("\nshowDbGroups :\n" + jsonString);
-        Gson gson = new Gson();
         DbGroup[] objectList = gson.fromJson(jsonString, DbGroup[].class);
     }
 
     private static void showDbThreads() {
         String jsonString = Server.treatQuery("SELECT * FROM dbThread;");
         System.out.println("\nshowDbThreads :\n" + jsonString);
-        Gson gson = new Gson();
         DbThread[] objectList = gson.fromJson(jsonString, DbThread[].class);
     }
 
@@ -100,5 +97,9 @@ public class QueryTest {
         int i = Utils.createRandomId();
 
         System.out.println("createGroupAndAddUserToIt :\n" + gson.toJson(Server.createUser("toto" + i, "T" + i, "Valentin" + i, "p" + i)));
+    }
+
+    private static void getAllDatabaseGroups() {
+        System.out.println("getAllDatabaseGroups :\n" + gson.toJson(Server.getAllDatabaseGroups()));
     }
 }
