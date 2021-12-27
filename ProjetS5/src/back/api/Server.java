@@ -7,15 +7,12 @@ import java.util.Date;
 import back.dbobjects.*;
 import back.backobjects.thread.IThread;
 import back.backobjects.thread.IMessage;
-import back.backobjects.thread.Thread;
-import back.backobjects.groups.GroupType;
 import back.backobjects.groups.IGroup;
 import back.backobjects.users.IUser;
 import back.frontobjects.FrontGroup;
 import back.frontobjects.FrontMessage;
 import back.frontobjects.FrontThread;
 import back.frontobjects.FrontUser;
-import com.google.gson.Gson;
 
 import static back.main.mainBack.gson;
 
@@ -64,7 +61,7 @@ public class Server {
 		return null;
 	}
 
-	private static StringBuilder groupStringToJsonList(DbObject[] objectList) {
+	private static StringBuilder dbObjectToJsonList(DbObject[] objectList) {
 		StringBuilder groupList = new StringBuilder("(");
 		for(DbObject object: objectList) {
 			groupList.append("'").append(object.id).append("',");
@@ -75,8 +72,15 @@ public class Server {
 		return groupList;
 	}
 
-	private static String getStatusFromMessageId(int id) {
-		return "NOT_READ";
+	public static String getStatusFromMessageId(int id) {
+		String jsonString = Server.treatQuery("SELECT messageId FROM dbLinkUserMessage WHERE messageId=" + id + " AND status='NOT_SEEN';");
+		DbMessage[] messages = gson.fromJson(jsonString, DbMessage[].class);
+
+		if(messages.length == 0) {
+			return "SEEN";
+		}
+
+		return "NOT_SEEN";
 	}
 
 	/* Connect User */
@@ -102,7 +106,7 @@ public class Server {
 		treatQueryWithoutResponse("INSERT INTO dbConnectionToken VALUES (" + id + "," + userId + ");");
 	}
 
-	/* Fil de discussion */
+	/* Threads */
 	public static FrontThread createThread(int authorId, int groupId, String content, String title) {
 		int id = back.utils.Utils.createRandomId();
 
@@ -114,21 +118,6 @@ public class Server {
 		messages.add(firstMessage);
 
 		return new FrontThread(authorId, title, messages, groupId);
-	}
-
-	public static IThread addMessageToThread(int idFil, String contenu, int authorId, int GroupId) {
-		// TODO call SQL
-		return null;
-	}
-
-	public static IThread modifyThread(String title, List<Integer> messagesId, int threadId) {
-		// TODO call SQL
-		return null;
-	}
-
-	public static IThread deleteThread(int threadId) {
-		// TODO call SQL
-		return null;
 	}
 
 	public static FrontThread getThread(int threadId) {
@@ -166,7 +155,7 @@ public class Server {
 		DbGroup[] objectList = gson.fromJson(jsonString, DbGroup[].class);
 
 		// Transform groups into a JSON List
-		StringBuilder groupList = groupStringToJsonList(objectList);
+		StringBuilder groupList = dbObjectToJsonList(objectList);
 
 		// Get all Threads for the said User
 		jsonString = Server.treatQuery("SELECT id FROM dbThread WHERE groupId IN " + groupList + " OR authorId=" + userId);
@@ -188,6 +177,18 @@ public class Server {
 		return getGroup(dbObject[0].groupId);
 	}
 
+	public static FrontThread updateMessages(int userId, int threadId) {
+		FrontThread thread = getThread(threadId);
+
+		for(FrontMessage message: thread.messages) {
+			if(!message.status.equals("SEEN")) {
+				treatQueryWithoutResponse("UPDATE dbLinkUserMessage SET status = 'SEEN' WHERE messageId=" + message.id + " AND userId=" + userId + ";");
+			}
+		}
+
+		return getThread(threadId);
+	}
+
 	/* Message */
 	public static FrontMessage createMessage(int authorId, String content, int threadId) {
 		int id = back.utils.Utils.createRandomId();
@@ -202,46 +203,18 @@ public class Server {
 		FrontGroup group = getGroupFromThreadId(threadId);
 
 		List<FrontUser> users = getUsersFromGroupId(group.id);
-
 		for(FrontUser user: users) {
-			treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + user.id + "," + id + ",'NOT_SEEN'" + ");");
+			if(user.id != authorId) {
+				treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + user.id + "," + id + ",'NOT_SEEN'" + ");");
+			}
 		}
+		// Author has SEEN status as he is the writer of the message
+		treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + authorId + "," + id + ",'SEEN'" + ");");
 
 		return new FrontMessage(id, getUser(authorId), content, date, "NOT_READ");
 	}
 
-	public static IMessage modifyMessage(String contenu, int messageId) {
-		// TODO call SQL
-		return null;
-	}
-
-	public static IMessage deleteMessage(int messageId) {
-		// TODO call SQL
-		return null;
-	}
-
-	public static IMessage getMessage(int messageId) {
-		// TODO call SQL
-		return null;
-	}
-
 	/* Group */
-	public static IGroup createGroup(String name, GroupType GroupType, List<Integer> StudentsId) {
-		int id = back.utils.Utils.createRandomId();
-		// TODO call SQL
-		return null;
-	}
-
-	public static IGroup modifyGroup(List<Integer> StudentsId, int GroupId) {
-		// TODO call SQL
-		return null;
-	}
-
-	public static IGroup deleteGroup(int GroupId) {
-		// TODO call SQL
-		return null;
-	}
-
 	public static FrontGroup getGroup(int groupId) {
 		String jsonString = treatQuery("SELECT * FROM dbGroup WHERE id=" + groupId + ";");
 		DbGroup[] dbObject = gson.fromJson(jsonString, DbGroup[].class);
@@ -250,23 +223,6 @@ public class Server {
 	}
 
 	/* Users */
-	public static IUser createUser(String name, String surname, String username, Set<Integer> GroupsId) {
-		int id = back.utils.Utils.createRandomId();
-		String password = back.utils.Utils.createRandomPassword();
-		// TODO call SQL
-		return null;
-	}
-
-	public static IUser modifyUser(String name, String surname, Set<Integer> GroupsId, int UserId) {
-		// TODO call SQL
-		return null;
-	}
-
-	public static IUser deleteUser(int userId) {
-		// TODO call SQL
-		return null;
-	}
-
 	public static FrontUser getUser(int userId) {
 		String jsonString = treatQuery("SELECT * FROM dbUser WHERE id=" + userId + ";");
 		DbUser[] dbObject = gson.fromJson(jsonString, DbUser[].class);
@@ -285,5 +241,4 @@ public class Server {
 
 		return users;
 	}
-
 }

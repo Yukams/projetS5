@@ -22,6 +22,8 @@ public class QueryTest {
         System.out.println("[OK] showDbMessagesFromAUser");
         showDbThreadsForAUser();
         System.out.println("[OK] showDbThreadsForAUser");
+        getMessageStatus();
+        System.out.println("[OK] getMessageStatus");
         System.out.println("Fin QueryTest");
     }
 
@@ -63,5 +65,11 @@ public class QueryTest {
         int idUser = 11;
 
         System.out.println("showDbThreadsForAUser :\n" + gson.toJson(Server.getAllThreadForUser(idUser)));
+    }
+
+    private static void getMessageStatus() {
+        System.out.println("getMessageStatus SEEN :\n" + Server.getStatusFromMessageId(22));
+        System.out.println("getMessageStatus NOT_SEEN :\n" + Server.getStatusFromMessageId(21));
+        System.out.println("getMessageStatus NOT_SEEN :\n" + Server.getStatusFromMessageId(20));
     }
 }
