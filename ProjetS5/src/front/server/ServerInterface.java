@@ -5,6 +5,7 @@
 package front.server;
 
 import front.client.RootRequest;
+import front.utils.Utils;
 
 import java.util.*;
 import javax.swing.JOptionPane;
@@ -19,6 +20,7 @@ public class ServerInterface extends javax.swing.JFrame {
     protected String[] groups;
     private final String connected = "Connected";
     private final String disconnected = "Disconnected";
+    Map<String, String> payload = new HashMap<>();
 
     private RootRequest rootRequest;
 
@@ -28,6 +30,7 @@ public class ServerInterface extends javax.swing.JFrame {
     public ServerInterface() {
         initComponents();
         this.centrePanel.setVisible(false);
+        payload.clear();
         this.rootRequest = new RootRequest();
 
 
@@ -429,7 +432,37 @@ public class ServerInterface extends javax.swing.JFrame {
 
     private void registerUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerUserButtonActionPerformed
         // TODO add your handling code here:
+        ArrayList<String> fieldsList = this.getRegisteredUserInfo();
+        boolean dataIsCorrect = false;
+        for(String info : fieldsList){
+            dataIsCorrect = true;
+            if(info.equals("") || !Utils.isValidString(info)){
+                dataIsCorrect = false;
+                Utils.missingFieldsErrorMessage();
+                break;
+            }
+        }
+        if(dataIsCorrect){
+            registerUser(fieldsList);
+        }
     }//GEN-LAST:event_registerUserButtonActionPerformed
+
+    public void registerUser(ArrayList<String> fields){
+
+    }
+
+    private ArrayList<String> getRegisteredUserInfo(){
+        ArrayList<String> arrayList = new ArrayList<>();
+        String rgstFirstName = firstNameTxtField.getText();
+        arrayList.add(rgstFirstName);
+        String rgstLastName = lastNameTxtField.getText();
+        arrayList.add(rgstLastName);
+        String rgstUsername = usrNameTxtField.getText();
+        arrayList.add(rgstUsername);
+        String rgstPassword = new String( passwordTxtField.getPassword());
+        arrayList.add(rgstPassword);
+        return arrayList;
+    }
 
     //Add user
     private void btn1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn1MouseClicked
