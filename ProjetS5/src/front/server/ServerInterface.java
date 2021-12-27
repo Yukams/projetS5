@@ -19,7 +19,7 @@ public class ServerInterface extends javax.swing.JFrame {
     protected String[] groups;
     private final String connected = "Connected";
     private final String disconnected = "Disconnected";
-    /*Cx*/
+
     private RootRequest rootRequest;
 
     /**
