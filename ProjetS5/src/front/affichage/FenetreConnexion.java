@@ -1,6 +1,9 @@
 package front.affichage;
 
-import front.client.Client;
+import front.client.ClientConnexion;
+import front.frontobjects.FrontUser;
+import front.main.mainFront;
+import front.server.ServerInterface;
 import front.utils.Utils;
 
 import javax.swing.*;
@@ -19,8 +22,8 @@ public class FenetreConnexion extends JFrame implements ActionListener {
     private JButton connexionButton = new JButton("Connexion");
     private String username;
     private String password;
-    private Utils utils = new Utils();
-    private Client client;
+    private ClientConnexion clientConnexion;
+    private FrontUser frontUser;
 
     public FenetreConnexion(){
         //titre
@@ -70,48 +73,25 @@ public class FenetreConnexion extends JFrame implements ActionListener {
 
         if (credentialsNature(username, password) == -1) {
             mdpTexte.setText("");
-            utils.syntaxErrorMessage();
+            mainFront.utils.syntaxErrorMessage();
         } else if (credentialsNature(username, password) == 1) {
             setVisible(false);
-            //ServerInterface serverInterface = new ServerInterface();
-            //serverInterface.setVisible(true);
+            ServerInterface serverInterface = new ServerInterface();
+            serverInterface.setVisible(true);
         } else {
-            this.client = new Client(username, password);
-            setVisible(false);
-            Messagerie mess = new Messagerie();
-            mess.setVisible(true);
+            this.clientConnexion = new ClientConnexion(username, password);
+            this.frontUser = clientConnexion.getFrontUser();
+            if(this.frontUser != null){
+                setVisible(false);
+                Messagerie mess = new Messagerie(this.frontUser);
+                mess.setVisible(true);
+            }
         }
     }
     // Check credentials nature
     private int credentialsNature(String username, String password) {
-        if(username.equals("") || password.equals("") ||!utils.isValidString(username)) return -1;
+        if(username.equals("") || password.equals("") ||!mainFront.utils.isValidString(username)) return -1;
         else if(username.equals("root") && password.equals("root")) return 1;
         return 0;
     }
-
-    // Connection
-    /*private static int connect(String username, String password){
-        final String HOST = "127.0.0.1";
-
-        int recvId = 0;
-        try (Socket sc = new Socket(HOST, Server.PORT)){
-            StringBuilder authSB = new StringBuilder();
-            ObjectInputStream in = new ObjectInputStream(sc.getInputStream()); //ce que je reçois
-            DataOutputStream out = new DataOutputStream(sc.getOutputStream()); ////ce que j'envoie  ======> DONC COTE SERVER: L'inverse
-            // Serealization
-            authSB.append("{username:"+username+",password:"+password+"}"); //format(json): username:usrnm,password:pswrd
-            String authToken = authSB.toString();
-            // Sending token
-            out.writeUTF(authToken);
-            //Recieving response (null == wrong password)
-            Utilisateur usr = (Utilisateur)in.readObject();
-            recvId = usr.getId();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return recvId;
-    }*/
 }

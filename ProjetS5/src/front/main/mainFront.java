@@ -1,14 +1,15 @@
 package front.main;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-
 import front.affichage.FenetreConnexion;
+import front.utils.Utils;
 
 public class mainFront {
+	public static Utils utils = new Utils();
 	public static void main(String[] args){
 		launchConnexionWindow();
 	}
+
+	/*-------------------------------------------------------------------*/
 
 	// Launch connexion window
 	private static void launchConnexionWindow() {
@@ -32,34 +33,4 @@ public class mainFront {
 		List<FilDeDiscussion> fils = FilDeDiscussion.buildFilDeDiscussionListFromJSON(json);
 		return null;
 	}*/
-
-	// Affiche le message d'erreur
-	/*private static void afficherMessageErreur() {
-		// TODO
-	}*/
-
-	/*private static int connexionUtilisateur(String username, String password) {
-		// TODO
-		return 0;
-	}*/
-
-
-
-	// Affiche la page d'accueil
-	/*private static void afficherPageAccueil() {
-		// TODO
-	}
-
-
-
-	// Recupere le username de l'UI
-	private static String getUsername() {
-		return null;
-	}
-
-	// Recupere le password de l'UI
-	private static String getPassword() {
-		return null;
-	}
-*/
 }
