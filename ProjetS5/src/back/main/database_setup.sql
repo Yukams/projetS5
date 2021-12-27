@@ -1,13 +1,13 @@
 CREATE TABLE dbGroup (
     id INT PRIMARY KEY NOT NULL,
-    name VARCHAR(25) NOT NULL
+    name VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE dbUser (
     id INT PRIMARY KEY NOT NULL,
-    username VARCHAR(25) NOT NULL,
-    name VARCHAR(25) NOT NULL,
-    surname VARCHAR(25) NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    surname VARCHAR(50) NOT NULL,
     password VARCHAR(100) NOT NULL
 );
 
@@ -22,7 +22,7 @@ CREATE TABLE dbLinkUserGroup (
 CREATE TABLE dbMessage (
     id INT PRIMARY KEY NOT NULL,
     authorId INT NOT NULL,
-    text VARCHAR(1000) NOT NULL,
+    text VARCHAR(3000) NOT NULL,
     date BIGINT NOT NULL,
     FOREIGN KEY (authorId) REFERENCES dbUser(id)
 );
@@ -38,7 +38,7 @@ CREATE TABLE dbLinkUserMessage (
 
 CREATE TABLE dbThread (
     id INT PRIMARY KEY NOT NULL,
-    title VARCHAR(100) NOT NULL,
+    title VARCHAR(300) NOT NULL,
     groupId INT NOT NULL,
     authorId INT NOT NULL,
     FOREIGN KEY (authorId) REFERENCES dbUser(id),
