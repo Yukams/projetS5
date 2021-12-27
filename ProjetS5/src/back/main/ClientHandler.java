@@ -3,9 +3,7 @@ package back.main;
 import back.api.Server;
 import back.backobjects.thread.IMessage;
 import back.backobjects.thread.IThread;
-import back.backobjects.thread.Message;
 import back.backobjects.users.IUser;
-import back.backobjects.users.User;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -57,28 +55,21 @@ public class ClientHandler implements Runnable {
     public String treatRequest(ClientRequest request) {
         String address = request.address;
         Map<String,String> payload = request.payload;
-        String toClient = "\"null\"";
-
-        // {"id": int}
-        if (address.equals("/user/getUserById")) {
-            toClient = IUser.getUserById(payload);
-        }
-        // {"id": int}
-        else if (address.equals("/thread/getThreadsByUserId")) {
-            toClient = IThread.getAllThreadForUser(payload);
-        }
-        // {"username": String, "password": String}
-        else if (address.equals("/connect")) {
-            toClient = Server.connect(payload);
-        }
-        // {"authorId": int, "content": String, "threadId": int}
-        else if (address.equals("/message/createMessage")) {
-            toClient = IMessage.createMessage(payload);
-        }
-        // {"authorId": int, "groupId": int, "title": String, "content": String}
-        else if (address.equals("/thread/createThread")) {
-            toClient = IThread.createThread(payload);
-        }
+        String toClient = switch (address) {
+            // {"id": int}
+            case "/user/getUserById" -> IUser.getUserById(payload);
+            // {"id": int}
+            case "/thread/getThreadsByUserId" -> IThread.getAllThreadForUser(payload);
+            // {"username": String, "password": String}
+            case "/connect" -> Server.connect(payload);
+            // {"authorId": int, "content": String, "threadId": int}
+            case "/message/createMessage" -> IMessage.createMessage(payload);
+            // {"authorId": int, "groupId": int, "title": String, "content": String}
+            case "/thread/createThread" -> IThread.createThread(payload);
+            // {"userId": int, "threadId": int}
+            case "/thread/updateMessagesOfThread" -> IThread.updateMessages(payload);
+            default -> "\"null\"";
+        };
 
         return "{ \"payload\": " + gson.toJson(toClient) + "}";
     }
