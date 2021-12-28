@@ -28,22 +28,23 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        String request = null;
+        String request = "";
         try {
-            while (request == null) {
+            while (request != null) {
                 request = in.readLine();
+                System.out.println("request -> " + request);
+
+                if(request != null) {
+                    System.out.println("[SERVER] Received request from client => " + request);
+                    ClientRequest serverPayload = gson.fromJson(request, ClientRequest.class);
+                    String response = treatRequest(serverPayload);
+                    System.out.println("[SERVER] Sending response to client => " + response);
+                    out.println(response);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            assert request != null;
-
-            System.out.println("[SERVER] Received request from client => " + request);
-            ClientRequest serverPayload = gson.fromJson(request, ClientRequest.class);
-            String response = treatRequest(serverPayload);
-            System.out.println("[SERVER] Sending response to client => " + response);
-            out.println(response);
-
             try {
                 out.close();
                 in.close();
@@ -51,6 +52,7 @@ public class ClientHandler implements Runnable {
                 e.printStackTrace();
             }
         }
+        System.out.println("[SERVER] Client communication closed");
     }
 
     public String treatRequest(ClientRequest request) {
