@@ -9,6 +9,7 @@ import back.frontobjects.FrontGroup;
 import back.frontobjects.FrontMessage;
 import back.frontobjects.FrontThread;
 import back.frontobjects.FrontUser;
+import back.main.ClientHandler;
 
 import static back.main.mainBack.gson;
 
@@ -80,7 +81,7 @@ public class Server {
 	}
 
 	/* Connect User */
-	public static String connect(Map<String,String> payload) {
+	public static String connect(ClientHandler clientHandler, Map<String,String> payload) {
 		String username = payload.get("username");
 		String password = payload.get("password");
 
@@ -88,7 +89,9 @@ public class Server {
 		DbUser[] objectList = gson.fromJson(jsonString, DbUser[].class);
 		System.out.println(Arrays.toString(objectList));
 
+		// Save id for disconnection
 		if(objectList.length != 0) {
+			clientHandler.setClientId(objectList[0].id);
 			createConnectionToken(objectList[0].id);
 			return gson.toJson(objectList[0]);
 		}
@@ -96,12 +99,8 @@ public class Server {
 		return null;
 	}
 
-	public static String disconnect(Map<String, String> payload) {
-		int userId = Integer.parseInt(payload.get("id"));
-
-		treatQueryWithoutResponse("DELETE FROM dbConnectionToken WHERE userId=" + userId + ";");
-
-		return gson.toJson(getUser(userId));
+	public static void disconnect(ClientHandler clientHandler) {
+		treatQueryWithoutResponse("DELETE FROM dbConnectionToken WHERE userId=" + clientHandler.getClientId() + ";");
 	}
 
 	public static void createConnectionToken(int userId) {
