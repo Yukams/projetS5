@@ -19,6 +19,7 @@ public class ClientHandler implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
     private Gson gson = new Gson();
+    private int clientId = -1;
 
     public ClientHandler(Socket clientSocket) throws IOException {
         client = clientSocket;
@@ -45,6 +46,10 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            if(clientId != -1){
+                Server.disconnect(this);
+            }
+
             try {
                 out.close();
                 in.close();
@@ -61,11 +66,7 @@ public class ClientHandler implements Runnable {
         String toClient = switch (address) {
             // CONNECTIVITY
             // { "username": String, "password": String }
-            case "/connect" -> Server.connect(payload);
-
-            // { "id": int }
-            case "/disconnect" -> Server.disconnect(payload);
-
+            case "/connect" -> Server.connect(this ,payload);
 
             // USER
             // { "id": int }
@@ -109,5 +110,13 @@ public class ClientHandler implements Runnable {
         };
 
         return "{ \"payload\": " + gson.toJson(toClient) + "}";
+    }
+
+    public void setClientId(int id) {
+        this.clientId = id;
+    }
+
+    public int getClientId() {
+        return this.clientId;
     }
 }
