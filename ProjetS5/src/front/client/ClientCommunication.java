@@ -43,6 +43,19 @@ public class ClientCommunication {
         String serverResponseString = in.readLine();
         ServerResponse serverPayload = gson.fromJson(serverResponseString, ServerResponse.class);
         System.out.println("[CLIENT] Response from server :\n" + serverPayload.payload);
+
+        //////// SECOND CALL
+        serverRequest = new ServerRequest("/user/getAllConnectedUsers", payload);
+        request = gson.toJson(serverRequest);
+        System.out.println("[CLIENT] Do request to server" + request);
+        out.println(request);
+
+        serverResponseString = in.readLine();
+        serverPayload = gson.fromJson(serverResponseString, ServerResponse.class);
+        System.out.println("[CLIENT] Response from server :\n" + serverPayload.payload);
         //while(true);
+
+        out.close();
+        in.close();
     }
 }
