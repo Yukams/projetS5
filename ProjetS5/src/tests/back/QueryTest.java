@@ -100,7 +100,7 @@ public class QueryTest {
     private static void createUser() {
         int i = Utils.createRandomId();
 
-        System.out.println("createGroupAndAddUserToIt :\n" + gson.toJson(Server.createUser("toto" + i, "T" + i, "Valentin" + i, "p" + i)));
+        System.out.println("createGroupAndAddUserToIt :\n" + gson.toJson(Server.createUser("toto" + i, "T" + i, "Valentin" + i, "p" + i, false)));
     }
 
     private static void getAllDatabaseGroups() {

@@ -138,7 +138,7 @@ public class Server {
 			DbUser[] dbUser = gson.fromJson(jsonString, DbUser[].class);
 
 			// Build author
-			FrontUser user = new FrontUser(dbUser[0].name, dbUser[0].surname, dbUser[0].id);
+			FrontUser user = new FrontUser(dbUser[0].name, dbUser[0].surname, dbUser[0].id, dbUser[0].isAdmin);
 
 			// Build status (later)
 			String status = getStatusFromMessageId(message.id);
@@ -255,7 +255,7 @@ public class Server {
 		String jsonString = treatQuery("SELECT * FROM dbUser WHERE id=" + userId + ";");
 		DbUser[] dbObject = gson.fromJson(jsonString, DbUser[].class);
 
-		return new FrontUser(dbObject[0].name, dbObject[0].surname, dbObject[0].id);
+		return new FrontUser(dbObject[0].name, dbObject[0].surname, dbObject[0].id, dbObject[0].isAdmin);
 	}
 
 	public static List<FrontUser> getUsersFromGroupId(int id) {
@@ -263,12 +263,12 @@ public class Server {
 		return getFrontUsers(jsonString);
 	}
 
-	public static FrontUser createUser(String username, String name, String surname, String password) {
+	public static FrontUser createUser(String username, String name, String surname, String password, boolean isAdmin) {
 		int id = back.utils.Utils.createRandomId();
 
-		treatQueryWithoutResponse("INSERT INTO dbUser VALUES (" + id + ",'" + username + "','" + name + "','" + surname + "','" + password + "');");
+		treatQueryWithoutResponse("INSERT INTO dbUser VALUES (" + id + ",'" + username + "','" + name + "','" + surname + "','" + password + "'," + isAdmin + ");");
 
-		return new FrontUser(name, surname, id);
+		return new FrontUser(name, surname, id, isAdmin);
 	}
 
 	public static List<FrontUser> getAllConnectedUsers() {
@@ -281,7 +281,7 @@ public class Server {
 
 		List<FrontUser> users = new ArrayList<>();
 		for(DbUser user: dbObject) {
-			users.add(new FrontUser(user.name, user.surname, user.id));
+			users.add(new FrontUser(user.name, user.surname, user.id, user.isAdmin));
 		}
 
 		return users;

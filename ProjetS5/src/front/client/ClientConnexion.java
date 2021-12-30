@@ -55,7 +55,8 @@ public class ClientConnexion {
                 int userId = fileObject.get("id").getAsInt();
                 String name = fileObject.get("name").getAsString();
                 String surname = fileObject.get("surname").getAsString();
-                this.frontUser = new FrontUser(name,surname,userId);
+                boolean isAdmin = fileObject.get("isAdmin").getAsBoolean();
+                this.frontUser = new FrontUser(name,surname,userId, isAdmin);
             }
 
         } catch (IOException e) {

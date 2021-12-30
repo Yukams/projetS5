@@ -3,10 +3,11 @@ INSERT INTO dbGroup VALUES (90, 'testGroup1'),
                            (92, 'testGroup3'),
                            (93, 'testGroup4');
 
-INSERT INTO dbUser VALUES  (10, 'Jean31', 'Dupont', 'Jean', '123'),
-                           (11, 'Pierre31', 'Dubois', 'Pierre', '123'),
-                           (12, 'Dylan31', 'Dulin', 'Dylan', '123'),
-                           (13, 'Vincent31', 'Depierre', 'Vincent', '123');
+INSERT INTO dbUser VALUES   (10, 'Jean31', 'Dupont', 'Jean', '123', false),
+                            (11, 'Pierre31', 'Dubois', 'Pierre', '123', false),
+                            (12, 'Dylan31', 'Dulin', 'Dylan', '123', false),
+                            (13, 'Vincent31', 'Depierre', 'Vincent', '123', false),
+                            (14, 'root', 'root', 'root', 'root', true);
 
 INSERT INTO dbLinkUserGroup VALUES (10, 91),
                                    (11, 91),
