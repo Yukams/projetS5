@@ -68,12 +68,16 @@ public class ClientHandler implements Runnable {
             // { "username": String, "password": String }
             case "/connect" -> Server.connect(this ,payload);
 
+
             // USER
             // { "id": int }
             case "/user/getUserById" -> IUser.getUserById(payload);
 
             // { "username": String, "name": String, "surname": String, "password": String }
             case "/user/createUser" -> IUser.createUser(payload);
+
+            // { "id": int }
+            case "/user/deleteUser" -> IUser.deleteUser(payload);
 
             // {}
             case "/user/getAllConnectedUsers" -> IUser.getAllConnectedUsers();
@@ -89,22 +93,33 @@ public class ClientHandler implements Runnable {
             // { "authorId": int, "groupId": int, "title": String, "content": String }
             case "/thread/createThread" -> IThread.createThread(payload);
 
+            // { "id": int }
+            case "/user/deleteThread" -> IThread.deleteThread(payload);
+
             // { "userId": int, "threadId": int }
             case "/thread/updateMessagesOfThread" -> IThread.updateMessages(payload);
+
 
             // MESSAGE
             // { "authorId": int, "content": String, "threadId": int }
             case "/message/createMessage" -> IMessage.createMessage(payload);
 
+            // { "id": int }
+            case "/message/deleteMessage" -> IMessage.deleteMessage(payload);
+
+
             // GROUP
             // { "name": String }
-            case "group/createGroup" -> IGroup.createGroup(payload);
+            case "/group/createGroup" -> IGroup.createGroup(payload);
+
+            // { "id": int }
+            case "/group/deleteGroup" -> IGroup.deleteGroup(payload);
 
             // { "groupId": int, "userId": int }
-            case "group/addUserToGroup" -> IGroup.addUserToGroup(payload);
+            case "/group/addUserToGroup" -> IGroup.addUserToGroup(payload);
 
             // {}
-            case "group/getAllDatabaseGroups" -> IGroup.getAllDatabaseGroups();
+            case "/group/getAllDatabaseGroups" -> IGroup.getAllDatabaseGroups();
 
             default -> "\"null\"";
         };

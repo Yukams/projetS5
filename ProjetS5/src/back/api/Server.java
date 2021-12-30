@@ -87,7 +87,13 @@ public class Server {
 
 		String jsonString = Server.treatQuery("SELECT * FROM dbUser WHERE username='" + username + "' AND password='" + password + "';");
 		DbUser[] objectList = gson.fromJson(jsonString, DbUser[].class);
-		System.out.println(Arrays.toString(objectList));
+
+		List<FrontUser> connectedUsers = getAllConnectedUsers();
+		for(FrontUser user: connectedUsers) {
+			if(user.id == objectList[0].id) {
+				return null;
+			}
+		}
 
 		// Save id for disconnection
 		if(objectList.length != 0) {
@@ -191,6 +197,43 @@ public class Server {
 		return getThread(threadId);
 	}
 
+	public static FrontThread deleteThread(int id) {
+		FrontThread thread = getThread(id);
+
+		for(FrontMessage message: thread.messages) {
+			deleteMessage(message.id);
+		}
+
+		treatQueryWithoutResponse("DELETE FROM dbThread WHERE id=" + id + ";");
+		return thread;
+	}
+
+	private static List<FrontThread> getAllOwnWrittenThreadsForUser(int authorId) {
+		String jsonString = treatQuery("SELECT * FROM dbThread WHERE authorId=" + authorId + ";");
+		DbThread[] dbThreadList = gson.fromJson(jsonString, DbThread[].class);
+
+		List<FrontThread> threadsList = new ArrayList<>();
+		// Build each thread
+		for(DbThread thread: dbThreadList) {
+			threadsList.add(getThread(thread.id));
+		}
+
+		return threadsList;
+	}
+
+	private static List<FrontThread> getAllThreadsForGroup(int groupId) {
+		String jsonString = treatQuery("SELECT * FROM dbThread WHERE groupId=" + groupId + ";");
+		DbThread[] dbThreadList = gson.fromJson(jsonString, DbThread[].class);
+
+		List<FrontThread> threadsList = new ArrayList<>();
+		// Build each thread
+		for(DbThread thread: dbThreadList) {
+			threadsList.add(getThread(thread.id));
+		}
+
+		return threadsList;
+	}
+
 	/* Message */
 	public static FrontMessage createMessage(int authorId, String content, int threadId) {
 		int id = back.utils.Utils.createRandomId();
@@ -214,6 +257,20 @@ public class Server {
 		treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + authorId + "," + id + ",'SEEN'" + ");");
 
 		return new FrontMessage(id, getUser(authorId), content, date, "NOT_READ");
+	}
+
+	private static FrontMessage getMessage(int id) {
+		String jsonString = Server.treatQuery("SELECT * FROM dbMessage WHERE id=" + id + ";");
+		DbMessage message = gson.fromJson(jsonString, DbMessage[].class)[0];
+
+		return new FrontMessage(message.id, getUser(message.authorId), message.text, message.date, getStatusFromMessageId(id));
+	}
+
+	public static FrontMessage deleteMessage(int id) {
+		FrontMessage message = getMessage(id);
+		Server.treatQueryWithoutResponse("DELETE FROM dbMessage WHERE id=" + id + ";");
+
+		return message;
 	}
 
 	/* Group */
@@ -248,6 +305,19 @@ public class Server {
 		}
 
 		return groups;
+	}
+
+	public static FrontGroup deleteGroup(int id) {
+		FrontGroup group = getGroup(id);
+
+		List<FrontThread> threads = getAllThreadsForGroup(id);
+		for(FrontThread thread : threads) {
+			deleteThread(thread.id);
+		}
+
+		Server.treatQueryWithoutResponse("DELETE FROM dbGroup WHERE id=" + id + ";");
+
+		return group;
 	}
 
 	/* Users */
@@ -290,5 +360,18 @@ public class Server {
 	public static List<FrontUser> getAllDatabaseUsers() {
 		String jsonString = treatQuery("SELECT * FROM dbUser;");
 		return getFrontUsers(jsonString);
+	}
+
+	public static FrontUser deleteUser(int id) {
+		FrontUser user = getUser(id);
+
+		List<FrontThread> threads = getAllOwnWrittenThreadsForUser(id);
+		for(FrontThread thread : threads) {
+			deleteThread(thread.id);
+		}
+
+		treatQueryWithoutResponse("DELETE FROM dbUser WHERE id=" + id + ";");
+
+		return user;
 	}
 }
