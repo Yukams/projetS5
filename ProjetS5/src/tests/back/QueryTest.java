@@ -36,6 +36,10 @@ public class QueryTest {
         System.out.println("[OK] getAllConnectedUsers");
         getAllDatabaseUsers();
         System.out.println("[OK] getAllDatabaseUsers");
+        removeAUser();
+        System.out.println("[OK] removeAUser");
+        removeAGroup();
+        System.out.println("[OK] removeAGroup");
         System.out.println("Fin QueryTest");
 
     }
@@ -113,5 +117,13 @@ public class QueryTest {
 
     private static void getAllDatabaseUsers() {
         System.out.println("getAllDatabaseUsers :\n" + gson.toJson(Server.getAllDatabaseUsers()));
+    }
+
+    private static void removeAUser() {
+        System.out.println("removeAUser :\n" + gson.toJson(Server.deleteUser(11)));
+    }
+
+    private static void removeAGroup() {
+        System.out.println("removeAUser :\n" + gson.toJson(Server.deleteGroup(93)));
     }
 }

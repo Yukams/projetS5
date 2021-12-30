@@ -24,11 +24,10 @@ public class mainBack {
 	private static final String PASS = "root";
 	private static final int PORT = 9090;
 	private static ArrayList<ClientHandler> clients = new ArrayList<>();
-	private static ExecutorService pool = Executors.newFixedThreadPool(4);
+	private static ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public static void main(String[] args) throws IOException {
-		// TODO
 		// Etape 1 : Creer la database
 		createDatabase();
 		// Etape 2 : Peupler la database

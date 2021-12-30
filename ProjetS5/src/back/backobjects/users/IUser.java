@@ -38,4 +38,11 @@ public interface IUser {
 		List<FrontUser> users = Server.getAllDatabaseUsers();
 		return gson.toJson(users);
 	}
+
+	static String deleteUser(Map<String, String> payload) {
+		int id = Integer.parseInt(payload.get("id"));
+		FrontUser user = Server.deleteUser(id);
+
+		return gson.toJson(user);
+	}
 }

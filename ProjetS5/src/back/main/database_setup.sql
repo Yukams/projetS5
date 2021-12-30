@@ -15,8 +15,8 @@ CREATE TABLE dbUser (
 CREATE TABLE dbLinkUserGroup (
     userId INT NOT NULL,
     groupId INT NOT NULL,
-    FOREIGN KEY (userId) REFERENCES dbUser(id),
-    FOREIGN KEY (groupId) REFERENCES dbGroup(id),
+    FOREIGN KEY (userId) REFERENCES dbUser(id) ON DELETE CASCADE,
+    FOREIGN KEY (groupId) REFERENCES dbGroup(id) ON DELETE CASCADE,
     PRIMARY KEY (userId, groupId)
 );
 
@@ -25,15 +25,15 @@ CREATE TABLE dbMessage (
     authorId INT NOT NULL,
     text VARCHAR(3000) NOT NULL,
     date BIGINT NOT NULL,
-    FOREIGN KEY (authorId) REFERENCES dbUser(id)
+    FOREIGN KEY (authorId) REFERENCES dbUser(id) ON DELETE CASCADE
 );
 
 CREATE TABLE dbLinkUserMessage (
     userId INT NOT NULL,
     messageId INT NOT NULL,
     status VARCHAR(10),
-    FOREIGN KEY (userId) REFERENCES dbUser(id),
-    FOREIGN KEY (messageId) REFERENCES dbMessage(id),
+    FOREIGN KEY (userId) REFERENCES dbUser(id) ON DELETE CASCADE,
+    FOREIGN KEY (messageId) REFERENCES dbMessage(id) ON DELETE CASCADE,
     PRIMARY KEY (userId, messageId)
 );
 
@@ -42,20 +42,20 @@ CREATE TABLE dbThread (
     title VARCHAR(300) NOT NULL,
     groupId INT NOT NULL,
     authorId INT NOT NULL,
-    FOREIGN KEY (authorId) REFERENCES dbUser(id),
-    FOREIGN KEY (groupId) REFERENCES dbGroup(id)
+    FOREIGN KEY (authorId) REFERENCES dbUser(id) ON DELETE CASCADE,
+    FOREIGN KEY (groupId) REFERENCES dbGroup(id) ON DELETE CASCADE
 );
 
 CREATE TABLE dbLinkMessageThread (
      messageId INT NOT NULL,
      threadId INT NOT NULL,
-     FOREIGN KEY (messageId) REFERENCES dbMessage(id),
-     FOREIGN KEY (threadId) REFERENCES dbThread(id),
+     FOREIGN KEY (messageId) REFERENCES dbMessage(id) ON DELETE CASCADE,
+     FOREIGN KEY (threadId) REFERENCES dbThread(id) ON DELETE CASCADE,
      PRIMARY KEY (messageId, threadId)
 );
 
 CREATE TABLE dbConnectionToken (
     id INT PRIMARY KEY NOT NULL,
     userId INT NOT NULL,
-    FOREIGN KEY (userId) REFERENCES dbUser(id)
+    FOREIGN KEY (userId) REFERENCES dbUser(id) ON DELETE CASCADE
 );

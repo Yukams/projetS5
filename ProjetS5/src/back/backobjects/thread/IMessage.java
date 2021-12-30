@@ -2,6 +2,7 @@ package back.backobjects.thread;
 
 import back.api.Server;
 import back.frontobjects.FrontMessage;
+import back.frontobjects.FrontThread;
 import back.frontobjects.FrontUser;
 
 import java.util.Date;
@@ -19,4 +20,11 @@ public interface IMessage {
 
 		return gson.toJson(message);
 	}
+
+    static String deleteMessage(Map<String, String> payload) {
+		int id = Integer.parseInt(payload.get("id"));
+		FrontMessage message = Server.deleteMessage(id);
+
+		return gson.toJson(message);
+    }
 }
