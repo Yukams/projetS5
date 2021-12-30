@@ -329,7 +329,7 @@ public class Server {
 	}
 
 	public static List<FrontUser> getUsersFromGroupId(int id) {
-		String jsonString = treatQuery("SELECT u.id, u.username, u.name, u.surname, u.password FROM dbLinkUserGroup l JOIN dbUser u on l.userId WHERE l.groupId=" + id + " AND u.id=l.userId;");
+		String jsonString = treatQuery("SELECT u.id, u.name, u.surname, u.isAdmin FROM dbLinkUserGroup l JOIN dbUser u on l.userId WHERE l.groupId=" + id + " AND u.id=l.userId;");
 		return getFrontUsers(jsonString);
 	}
 
@@ -342,7 +342,7 @@ public class Server {
 	}
 
 	public static List<FrontUser> getAllConnectedUsers() {
-		String jsonString = treatQuery("SELECT u.id FROM dbConnectionToken l JOIN dbUser u ON l.userId WHERE l.userId=u.id;");
+		String jsonString = treatQuery("SELECT u.id, u.name, u.surname, u.isAdmin FROM dbConnectionToken l JOIN dbUser u ON l.userId WHERE l.userId=u.id;");
 		return getFrontUsers(jsonString);
 	}
 
