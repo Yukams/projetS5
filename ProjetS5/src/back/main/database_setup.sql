@@ -1,14 +1,15 @@
 CREATE TABLE dbGroup (
     id INT PRIMARY KEY NOT NULL,
-    name VARCHAR(50) NOT NULL
+    name VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE dbUser (
     id INT PRIMARY KEY NOT NULL,
-    username VARCHAR(50) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
     name VARCHAR(50) NOT NULL,
     surname VARCHAR(50) NOT NULL,
-    password VARCHAR(100) NOT NULL
+    password VARCHAR(100) NOT NULL,
+    isAdmin BIT NOT NULL
 );
 
 CREATE TABLE dbLinkUserGroup (

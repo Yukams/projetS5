@@ -22,8 +22,9 @@ public interface IUser {
 		String name = payload.get("name");
 		String surname = payload.get("surname");
 		String password = payload.get("password");
+		boolean isAdmin = Boolean.parseBoolean(payload.get("isAdmin"));
 
-		FrontUser user = Server.createUser(username, name, surname, password);
+		FrontUser user = Server.createUser(username, name, surname, password, isAdmin);
 
 		return gson.toJson(user);
 	}
