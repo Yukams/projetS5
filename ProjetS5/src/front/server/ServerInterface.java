@@ -5,7 +5,8 @@
 package front.server;
 
 import front.client.RootRequest;
-import front.client.ServerResponse;
+import front.frontobjects.FrontGroup;
+import front.frontobjects.FrontUser;
 import front.utils.Utils;
 
 import java.util.*;
@@ -30,9 +31,14 @@ public class ServerInterface extends javax.swing.JFrame {
      */
 
     public ServerInterface() {
+        this.rootRequest = new RootRequest();
+        this.rootRequest.setUsersList();
+        this.groups = this.rootRequest.askGroupsFromServer();
+
+
         initComponents();
         this.centrePanel.setVisible(false);
-        this.rootRequest = new RootRequest();
+
 
 
     }
@@ -52,7 +58,13 @@ public class ServerInterface extends javax.swing.JFrame {
     }
     
     private void fillUsersTableData(){ //AL = ArrayList
-        usersTableData.put("root", connected);
+
+        for(FrontUser connectedFrontUser : this.rootRequest.connectedUsersAL){
+            usersTableData.put(connectedFrontUser.name + " " + connectedFrontUser.surname, connected);
+        }
+        for(FrontUser disconnectedFrontUser : this.rootRequest.disconectedUsersAL){
+            usersTableData.put(disconnectedFrontUser.name + " " + disconnectedFrontUser.surname, disconnected);
+        }
     }
     
     private void setUsrTblData(){
@@ -66,6 +78,18 @@ public class ServerInterface extends javax.swing.JFrame {
             dtmUsers.addRow(data); //Ajoute Ligne par ligne !
         }
         usrTable.setModel(dtmUsers);
+    }
+
+    private void usrTableMouseClicked(java.awt.event.MouseEvent evt) {
+        // TODO
+        boolean b = usrTable.isEditing();
+        if(!b){
+            int row = usrTable.getSelectedRow();
+            int column = usrTable.getSelectedColumn();
+            String usr = (String) dtmUsers.getValueAt(row,column);
+
+            JOptionPane.showMessageDialog(null, usr);
+        }
     }
 
     private void initComponents() {
@@ -292,7 +316,7 @@ public class ServerInterface extends javax.swing.JFrame {
 
         groupSelectAddUser.setBackground(new java.awt.Color(255, 255, 255));
         groupSelectAddUser.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        groupSelectAddUser.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TD", "SPORT", "SERVICE", "PEDAGOGIQUE" }));
+        groupSelectAddUser.setModel(new javax.swing.DefaultComboBoxModel<>(this.groups));
         pAddUsr.add(groupSelectAddUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 320, 480, 30));
 
         centrePanel.add(pAddUsr, "card2");
@@ -432,7 +456,7 @@ public class ServerInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_usrNameTxtFieldActionPerformed
 
     private void registerUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerUserButtonActionPerformed
-        // TODO add your handling code here:
+        // Checks Fields validity
         ArrayList<String> fieldsList = this.getRegisteredUserInfo();
         boolean dataIsCorrect = false;
         for(String info : fieldsList){
@@ -449,19 +473,47 @@ public class ServerInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_registerUserButtonActionPerformed
 
     public void registerUser(ArrayList<String> fields){
+        // Writing User Creation Payload
+        Map<String,String> userPayload = new HashMap<>();
+        userPayload.put("username",fields.get(2));
+        userPayload.put("name",fields.get(0));
+        userPayload.put("surname",fields.get(1));
+        userPayload.put("password",fields.get(3));
+        // Sending request: Create the User (Needed to generate ID)
+        this.rootRequest.createUser(userPayload);
+        /* Associating the user to an initial default group */
+        String selectedGroup = groupSelectAddUser.getItemAt(groupSelectAddUser.getSelectedIndex());
+        FrontUser user = this.rootRequest.createdUser; // Just Created User
+        this.addUserToGroupFromComboBox(user,selectedGroup);
+
+    }
+
+    public void addUserToGroupFromComboBox(FrontUser user, String selectedGroup){
+        // Getting the selected group id
+        for(FrontGroup frontGroup : this.rootRequest.frontGroupsAL){
+            if(frontGroup.name.equals(selectedGroup)){
+                // Writing Group assignment payload
+                Map<String,String> defaultGroupPayload = new HashMap<>();
+                defaultGroupPayload.put("groupId",""+frontGroup.id);
+                defaultGroupPayload.put("userId",""+user.id);
+                this.rootRequest.addUserToGroup(defaultGroupPayload);
+                JOptionPane.showMessageDialog(null, "User Successfully created !");
+                break;
+            }
+        }
 
     }
 
     private ArrayList<String> getRegisteredUserInfo(){
         ArrayList<String> arrayList = new ArrayList<>();
-        String rgstFirstName = firstNameTxtField.getText();
-        arrayList.add(rgstFirstName);
-        String rgstLastName = lastNameTxtField.getText();
-        arrayList.add(rgstLastName);
-        String rgstUsername = usrNameTxtField.getText();
-        arrayList.add(rgstUsername);
-        String rgstPassword = new String( passwordTxtField.getPassword());
-        arrayList.add(rgstPassword);
+        String firstName = firstNameTxtField.getText();
+        arrayList.add(firstName);
+        String lastName = lastNameTxtField.getText();
+        arrayList.add(lastName);
+        String username = usrNameTxtField.getText();
+        arrayList.add(username);
+        String password = new String( passwordTxtField.getPassword());
+        arrayList.add(password);
         return arrayList;
     }
 
@@ -502,13 +554,6 @@ public class ServerInterface extends javax.swing.JFrame {
         pMngGrps.setVisible(true);
     }//GEN-LAST:event_btn3MouseClicked
 
-    private void usrTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usrTableMouseClicked
-        // TODO
-        boolean b = usrTable.isEditing();
-        if(!b){
-            JOptionPane.showMessageDialog(null, "User Information");
-        }
-    }//GEN-LAST:event_usrTableMouseClicked
         //REMOVE USER
     private void btnRmvUsrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRmvUsrActionPerformed
         // TODO add your handling code here:

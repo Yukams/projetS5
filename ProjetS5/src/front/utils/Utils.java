@@ -54,6 +54,7 @@ public class Utils {
             if(socket != null){
                 socket.close();
             }
+            System.out.println("[CONNEXION CLOSED]");
 
         } catch (IOException e){
             e.printStackTrace();
