@@ -43,7 +43,7 @@ public class Utils {
     }
 
     // Avoids long nested try catch statements (Closes Client cx)
-    public void closeAll(Socket socket, BufferedReader in, PrintWriter out){
+    public static void closeAll(Socket socket, BufferedReader in, PrintWriter out){
         try{
             if(in != null){
                 in.close();
@@ -54,7 +54,7 @@ public class Utils {
             if(socket != null){
                 socket.close();
             }
-            System.out.println("[CONNEXION CLOSED]");
+            System.out.println("---[COMMUNICATION CLOSED]---");
 
         } catch (IOException e){
             e.printStackTrace();

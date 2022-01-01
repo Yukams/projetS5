@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import front.frontobjects.FrontGroup;
 import front.frontobjects.FrontUser;
 import front.main.mainFront;
+import front.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class RootRequest {
     /*Front Struct Attributes (AL = Array List)*/
     public ArrayList<FrontUser> allUsersAL = new ArrayList<>();
     public ArrayList<FrontUser> connectedUsersAL = new ArrayList<>();
-    public ArrayList<FrontUser> disconectedUsersAL = new ArrayList<>();
+    public ArrayList<FrontUser> disconectedUsersAL;
     public ArrayList<FrontGroup> frontGroupsAL = new ArrayList<>();
 
     public FrontUser createdUser;
@@ -86,10 +87,12 @@ public class RootRequest {
         // Getting All Users
         ServerResponse getAllUsersPayload = this.sendRequest("/user/getAllDatabaseUsers",null);
         FrontUser[] frontUsers = gson.fromJson(getAllUsersPayload.payload, FrontUser[].class);
+        this.allUsersAL.clear();
         Collections.addAll(this.allUsersAL,frontUsers);
         // Getting All Connected Users
         ServerResponse connectedUsersPayload = this.sendRequest("/user/getAllConnectedUsers",null);
         FrontUser[] connectedUsers = gson.fromJson(connectedUsersPayload.payload,FrontUser[].class);
+        this.connectedUsersAL.clear();
         Collections.addAll(this.connectedUsersAL,connectedUsers);
         // Setting All Disconnected Users
         this.disconectedUsersAL = new ArrayList<>(this.allUsersAL);
