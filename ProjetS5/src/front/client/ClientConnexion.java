@@ -47,7 +47,7 @@ public class ClientConnexion {
             ServerResponse serverPayload = gson.fromJson(serverResponseString, ServerResponse.class);
             System.out.println("[CLIENT] Response from server :\n" + serverPayload.payload);
             if(serverPayload.payload == null) {
-                mainFront.utils.credentialsErrorMessage();
+                Utils.credentialsErrorMessage();
             } else {
                 JsonElement fileElement = JsonParser.parseString(serverPayload.payload);
                 JsonObject fileObject = fileElement.getAsJsonObject();

@@ -8,4 +8,5 @@ module projetS5 {
     exports back.main;
     exports front.client;
     exports back.frontobjects;
+    exports front.frontobjects;
 }

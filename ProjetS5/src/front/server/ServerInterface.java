@@ -5,9 +5,12 @@
 package front.server;
 
 import front.client.RootRequest;
+import front.frontobjects.FrontGroup;
+import front.frontobjects.FrontUser;
+import front.utils.Utils;
 
 import java.util.*;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class ServerInterface extends javax.swing.JFrame {
@@ -15,21 +18,25 @@ public class ServerInterface extends javax.swing.JFrame {
     private int xMouse;
     private int yMouse;
     protected DefaultTableModel dtmUsers = new DefaultTableModel();
-    protected Map<String,String> usersTableData = new HashMap<>();
+    protected Map<FrontUser,String> usersTableData = new HashMap<>();
     protected String[] groups;
+    private FrontUser[] frontUsersArray;
     private final String connected = "Connected";
     private final String disconnected = "Disconnected";
+    Map<String, String> payload = new HashMap<>();
 
     private RootRequest rootRequest;
 
     /**
      * Creates new form ServerInterface
      */
+
     public ServerInterface() {
+        this.rootRequest = new RootRequest();
+        this.groups = this.rootRequest.askGroupsFromServer();
+
         initComponents();
         this.centrePanel.setVisible(false);
-        this.rootRequest = new RootRequest();
-
 
     }
     
@@ -45,23 +52,53 @@ public class ServerInterface extends javax.swing.JFrame {
         String[] header = {"Username","Status"};
         dtmUsers.setColumnIdentifiers(header);
         usrTable.setModel(dtmUsers);
+        usrTable.setAutoCreateRowSorter(true);
     }
     
     private void fillUsersTableData(){ //AL = ArrayList
-        usersTableData.put("root", connected);
+
+        for(FrontUser connectedFrontUser : this.rootRequest.connectedUsersAL){
+            usersTableData.put(connectedFrontUser, connected); //MAP <FrontUser, String> ?
+        }
+        for(FrontUser disconnectedFrontUser : this.rootRequest.disconectedUsersAL){
+            usersTableData.put(disconnectedFrontUser, disconnected);
+        }
+
     }
     
     private void setUsrTblData(){
+        this.rootRequest.setUsersList();
         fillUsersTableData();
         Object[] data = new Object[dtmUsers.getColumnCount()];
-        for (Map.Entry<String, String> entry : usersTableData.entrySet()){
-            String usr = entry.getKey();
+        for (Map.Entry<FrontUser, String> entry : usersTableData.entrySet()){
+            FrontUser usr = entry.getKey();
             String usrStatus = entry.getValue();
             data[0] = usr;
             data[1] = usrStatus;
             dtmUsers.addRow(data); //Ajoute Ligne par ligne !
         }
         usrTable.setModel(dtmUsers);
+    }
+
+    private void usrTableMouseClicked(java.awt.event.MouseEvent evt) {
+        StringBuilder sb = new StringBuilder();
+        boolean b = usrTable.isEditing();
+        if(!b){
+            int row = usrTable.getSelectedRow();
+            int column = usrTable.getSelectedColumn();
+            Object cellValue = dtmUsers.getValueAt(row,column);
+            if(cellValue instanceof FrontUser usr) {
+                if (usr.isAdmin) sb.append("[Admin]" + '\n');
+                else sb.append("[User]" + '\n');
+                sb.append(" -> Name: ").append(usr.name).append('\n');
+                sb.append(" -> Surname: ").append(usr.surname).append('\n');
+                sb.append(" -> ID: ").append(usr.id);
+            } else {
+                sb.append((String)cellValue);
+            }
+            JOptionPane.showMessageDialog(new JFrame(), sb.toString(), "Information",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     private void initComponents() {
@@ -288,7 +325,7 @@ public class ServerInterface extends javax.swing.JFrame {
 
         groupSelectAddUser.setBackground(new java.awt.Color(255, 255, 255));
         groupSelectAddUser.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        groupSelectAddUser.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TD", "SPORT", "SERVICE", "PEDAGOGIQUE" }));
+        groupSelectAddUser.setModel(new javax.swing.DefaultComboBoxModel<>(this.groups));
         pAddUsr.add(groupSelectAddUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 320, 480, 30));
 
         centrePanel.add(pAddUsr, "card2");
@@ -354,7 +391,6 @@ public class ServerInterface extends javax.swing.JFrame {
 
         usrListComboBox.setBackground(new java.awt.Color(255, 255, 255));
         usrListComboBox.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
-        usrListComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Test", "Test2" }));
         pMngUsr.add(usrListComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 20, 310, 50));
 
         btnRmvUsr.setBackground(new java.awt.Color(147, 3, 46));
@@ -401,6 +437,7 @@ public class ServerInterface extends javax.swing.JFrame {
 
     private void quitIconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_quitIconMouseClicked
         dispose();
+        System.exit(0);
     }//GEN-LAST:event_quitIconMouseClicked
 
     private void frameDragMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_frameDragMouseDragged
@@ -428,8 +465,66 @@ public class ServerInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_usrNameTxtFieldActionPerformed
 
     private void registerUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerUserButtonActionPerformed
-        // TODO add your handling code here:
+        // Checks Fields validity
+        ArrayList<String> fieldsList = this.getRegisteredUserInfo();
+        boolean dataIsCorrect = false;
+        for(String info : fieldsList){
+            dataIsCorrect = true;
+            if(info.equals("") || !Utils.isValidString(info)){
+                dataIsCorrect = false;
+                Utils.missingFieldsErrorMessage();
+                break;
+            }
+        }
+        if(dataIsCorrect){
+            registerUser(fieldsList);
+        }
     }//GEN-LAST:event_registerUserButtonActionPerformed
+
+    public void registerUser(ArrayList<String> fields){
+        // Writing User Creation Payload
+        Map<String,String> userPayload = new HashMap<>();
+        userPayload.put("username",fields.get(2));
+        userPayload.put("name",fields.get(0));
+        userPayload.put("surname",fields.get(1));
+        userPayload.put("password",fields.get(3));
+        // Sending request: Create the User (Needed to generate ID)
+        this.rootRequest.createUser(userPayload);
+        /* Associating the user to an initial default group */
+        String selectedGroup = groupSelectAddUser.getItemAt(groupSelectAddUser.getSelectedIndex());
+        FrontUser user = this.rootRequest.createdUser; // Just Created User
+        this.addUserToGroupFromComboBox(user,selectedGroup);
+
+    }
+
+    public void addUserToGroupFromComboBox(FrontUser user, String selectedGroup){
+        // Getting the selected group id
+        for(FrontGroup frontGroup : this.rootRequest.frontGroupsAL){
+            if(frontGroup.name.equals(selectedGroup)){
+                // Writing Group assignment payload
+                Map<String,String> defaultGroupPayload = new HashMap<>();
+                defaultGroupPayload.put("groupId",""+frontGroup.id);
+                defaultGroupPayload.put("userId",""+user.id);
+                this.rootRequest.addUserToGroup(defaultGroupPayload);
+                JOptionPane.showMessageDialog(null, "User Successfully created !");
+                break;
+            }
+        }
+
+    }
+
+    private ArrayList<String> getRegisteredUserInfo(){
+        ArrayList<String> arrayList = new ArrayList<>();
+        String firstName = firstNameTxtField.getText();
+        arrayList.add(firstName);
+        String lastName = lastNameTxtField.getText();
+        arrayList.add(lastName);
+        String username = usrNameTxtField.getText();
+        arrayList.add(username);
+        String password = new String( passwordTxtField.getPassword());
+        arrayList.add(password);
+        return arrayList;
+    }
 
     //Add user
     private void btn1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn1MouseClicked
@@ -444,7 +539,7 @@ public class ServerInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_btn1MouseClicked
 
     //Manage users
-    private void btn2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn2MouseClicked
+    private void btn2MouseClicked(java.awt.event.MouseEvent evt) {
         if(this.centrePanel.isVisible()){
             this.setPagesInvisible();
         } else {
@@ -453,9 +548,11 @@ public class ServerInterface extends javax.swing.JFrame {
         }
         setUsrTblModel(); //Sets table UsersTable Headers
         setUsrTblData(); //Updates data each time clicks on button
+        this.frontUsersArray = new FrontUser[this.rootRequest.allUsersAL.size()];
+        usrListComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(this.rootRequest.allUsersAL.toArray(frontUsersArray))); // Setting the items in the combo box as FrontUser Objects
         btn2.setBackground(new java.awt.Color(72, 159, 181));
         pMngUsr.setVisible(true);
-    }//GEN-LAST:event_btn2MouseClicked
+    }
     //Manage groups
     private void btn3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn3MouseClicked
         if(this.centrePanel.isVisible()){
@@ -468,18 +565,11 @@ public class ServerInterface extends javax.swing.JFrame {
         pMngGrps.setVisible(true);
     }//GEN-LAST:event_btn3MouseClicked
 
-    private void usrTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usrTableMouseClicked
-        // TODO
-        boolean b = usrTable.isEditing();
-        if(!b){
-            JOptionPane.showMessageDialog(null, "User Information");
-        }
-    }//GEN-LAST:event_usrTableMouseClicked
         //REMOVE USER
     private void btnRmvUsrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRmvUsrActionPerformed
         // TODO add your handling code here:
-        String selectedUsername = usrListComboBox.getItemAt(usrListComboBox.getSelectedIndex());
-        JOptionPane.showMessageDialog(null, selectedUsername);
+        FrontUser selectedUser = usrListComboBox.getItemAt(usrListComboBox.getSelectedIndex());
+        JOptionPane.showMessageDialog(null, selectedUser);
     }//GEN-LAST:event_btnRmvUsrActionPerformed
 
     private void btnRmvGrpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRmvGrpActionPerformed
@@ -539,7 +629,7 @@ public class ServerInterface extends javax.swing.JFrame {
     private javax.swing.JLabel textBtn1;
     private javax.swing.JLabel textBtn2;
     private javax.swing.JLabel textBtn4;
-    private javax.swing.JComboBox<String> usrListComboBox;
+    private javax.swing.JComboBox<FrontUser> usrListComboBox;
     private javax.swing.JTextField usrNameTxtField;
     private javax.swing.JTable usrTable;
     // End of variables declaration

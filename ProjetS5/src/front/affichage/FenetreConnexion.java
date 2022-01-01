@@ -71,10 +71,10 @@ public class FenetreConnexion extends JFrame implements ActionListener {
         username = idTexte.getText();
         password = new String( mdpTexte.getPassword());
 
-        if (credentialsNature(username, password) == -1) {
+        if (Utils.credentialsNature(username, password) == -1) {
             mdpTexte.setText("");
-            mainFront.utils.syntaxErrorMessage();
-        } else if (credentialsNature(username, password) == 1) {
+            Utils.syntaxErrorMessage();
+        } else if (Utils.credentialsNature(username, password) == 1) {
             setVisible(false);
             ServerInterface serverInterface = new ServerInterface();
             serverInterface.setVisible(true);
@@ -88,10 +88,5 @@ public class FenetreConnexion extends JFrame implements ActionListener {
             }
         }
     }
-    // Check credentials nature
-    private int credentialsNature(String username, String password) {
-        if(username.equals("") || password.equals("") ||!mainFront.utils.isValidString(username)) return -1;
-        else if(username.equals("root") && password.equals("root")) return 1;
-        return 0;
-    }
+
 }

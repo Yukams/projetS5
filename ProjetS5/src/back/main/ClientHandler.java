@@ -6,6 +6,7 @@ import back.backobjects.thread.IMessage;
 import back.backobjects.thread.IThread;
 import back.backobjects.users.IUser;
 import com.google.gson.Gson;
+import front.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,20 +45,12 @@ public class ClientHandler implements Runnable {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Utils.closeAll(this.client,this.in,this.out);
         } finally {
             if(clientId != -1){
                 Server.disconnect(this);
             }
-
-            try {
-                out.close();
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
-        System.out.println("[SERVER] Client communication closed");
     }
 
     public String treatRequest(ClientRequest request) {

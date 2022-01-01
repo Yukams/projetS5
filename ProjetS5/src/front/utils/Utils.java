@@ -10,7 +10,7 @@ public class Utils {
     /* String must not contain: !@#$%&*()'+,-./:;<=>?[]^`{|}
     * String must be between [4-20] chars */
     public static boolean isValidString(String str){
-        String specialCharactersString = "!@#$%&*()'+,-./:;<=>?[]^`{|} ";
+        String specialCharactersString = "\\!@#$%&*()'+,-./:;<=>?[]^`{|} ";
         if(str.length()>=4 && str.length() <= 20) {
             for (int i = 0; i < str.length(); i++) {
                 char c = str.charAt(i);
@@ -22,18 +22,28 @@ public class Utils {
     }
 
     // Message Error Syntax
-    public void syntaxErrorMessage() {
+    public static void syntaxErrorMessage() {
         JOptionPane.showMessageDialog(new JFrame(), "Invalid Username or Password", "Error Syntax",
+                JOptionPane.WARNING_MESSAGE);
+    }
+    // Message Error missing fields / Syntax Error
+    public static void missingFieldsErrorMessage() {
+        JOptionPane.showMessageDialog(new JFrame(), "Invalid Syntax or Missing Fields", "Error Syntax",
+                JOptionPane.WARNING_MESSAGE);
+    }
+    // Message Error Data
+    public static void credentialsErrorMessage() {
+        JOptionPane.showMessageDialog(new JFrame(), "Wrong Username or Password", "Error Credentials",
                 JOptionPane.ERROR_MESSAGE);
     }
     // Message Error Data
-    public void credentialsErrorMessage() {
-        JOptionPane.showMessageDialog(new JFrame(), "Wrong Username or Password", "Error Credentials",
+    public static void tester(String msg) {
+        JOptionPane.showMessageDialog(new JFrame(), msg, "Error Credentials",
                 JOptionPane.WARNING_MESSAGE);
     }
 
     // Avoids long nested try catch statements (Closes Client cx)
-    public void closeAll(Socket socket, BufferedReader in, PrintWriter out){
+    public static void closeAll(Socket socket, BufferedReader in, PrintWriter out){
         try{
             if(in != null){
                 in.close();
@@ -44,9 +54,17 @@ public class Utils {
             if(socket != null){
                 socket.close();
             }
+            System.out.println("---[COMMUNICATION CLOSED]---");
 
         } catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    // Check credentials nature
+    public static int credentialsNature(String username, String password) {
+        if(username.equals("") || password.equals("") ||!Utils.isValidString(username)) return -1;
+        else if(username.equals("root") && password.equals("root")) return 1;
+        return 0;
     }
 }
