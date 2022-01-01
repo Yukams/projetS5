@@ -436,7 +436,6 @@ public class ServerInterface extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void quitIconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_quitIconMouseClicked
-        setVisible(false);
         dispose();
         System.exit(0);
     }//GEN-LAST:event_quitIconMouseClicked
