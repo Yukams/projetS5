@@ -11,14 +11,9 @@ import back.frontobjects.FrontThread;
 import back.frontobjects.FrontUser;
 import back.main.ClientHandler;
 
-import static back.main.mainBack.gson;
+import static back.main.mainBack.*;
 
 public class Server {
-	private static final String DB_URL_MULTI_QUERY = "jdbc:mysql://localhost:3306/projetS5?allowMultiQueries=true";
-	private static final String DB_URL_SINGLE_QUERY = "jdbc:mysql://localhost:3306/projetS5";
-	private static final String USER = "root";
-	private static final String PASS = "root";
-
 	public static void treatQueryWithoutResponse(String queryString) {
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
@@ -144,7 +139,7 @@ public class Server {
 			DbUser[] dbUser = gson.fromJson(jsonString, DbUser[].class);
 
 			// Build author
-			FrontUser user = new FrontUser(dbUser[0].name, dbUser[0].surname, dbUser[0].id, dbUser[0].isAdmin);
+			FrontUser user = new FrontUser(dbUser[0].name, dbUser[0].surname, dbUser[0].id, dbUser[0].isAdmin.equals("1"));
 
 			// Build status (later)
 			String status = getStatusFromMessageId(message.id);
@@ -325,7 +320,7 @@ public class Server {
 		String jsonString = treatQuery("SELECT * FROM dbUser WHERE id=" + userId + ";");
 		DbUser[] dbObject = gson.fromJson(jsonString, DbUser[].class);
 
-		return new FrontUser(dbObject[0].name, dbObject[0].surname, dbObject[0].id, dbObject[0].isAdmin);
+		return new FrontUser(dbObject[0].name, dbObject[0].surname, dbObject[0].id, dbObject[0].isAdmin.equals("1"));
 	}
 
 	public static List<FrontUser> getUsersFromGroupId(int id) {
@@ -351,7 +346,7 @@ public class Server {
 
 		List<FrontUser> users = new ArrayList<>();
 		for(DbUser user: dbObject) {
-			users.add(new FrontUser(user.name, user.surname, user.id, user.isAdmin));
+			users.add(new FrontUser(user.name, user.surname, user.id, user.isAdmin.equals("1")));
 		}
 
 		return users;
