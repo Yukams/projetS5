@@ -3,7 +3,6 @@ package front.client;
 import com.google.gson.Gson;
 import front.frontobjects.FrontGroup;
 import front.frontobjects.FrontUser;
-import front.main.mainFront;
 import front.utils.Utils;
 
 import java.io.BufferedReader;
@@ -26,19 +25,20 @@ public class RootRequest {
     public ArrayList<FrontUser> allUsersAL = new ArrayList<>();
     public ArrayList<FrontUser> connectedUsersAL = new ArrayList<>();
     public ArrayList<FrontUser> disconectedUsersAL;
+    private ArrayList<FrontUser> allUsersWithoutInstance; // All users without connected User
     public ArrayList<FrontGroup> frontGroupsAL = new ArrayList<>();
 
     public FrontUser createdUser;
 
-
     public RootRequest(){
         try {
+            System.out.println("\n-*-*[ADMIN CONNEXION]*-*-\n");
             this.socket = new Socket(HOST, PORT);
 
             this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             this.out = new PrintWriter(this.socket.getOutputStream(), true);
         } catch (IOException e) {
-            mainFront.utils.closeAll(socket, in, out);
+            Utils.closeAll(socket, in, out);
         }
     }
     // Sends request to server, returns the Response
@@ -61,18 +61,7 @@ public class RootRequest {
         return serverPayload;
     }
 
-    public String[] askGroupsFromServer(){
-        ServerResponse serverPayload = this.sendRequest("/group/getAllDatabaseGroups",null);
-        // Deserialize Data
-        FrontGroup[] frontGroups = gson.fromJson(serverPayload.payload, FrontGroup[].class);
-        ArrayList<String> groups = new ArrayList<>();
-        for(FrontGroup frontGroup : frontGroups){
-            this.frontGroupsAL.add(frontGroup);
-            groups.add(frontGroup.name);
-        }
-        return Arrays.copyOf(groups.toArray(), groups.size(),String[].class);
-    }
-
+    /*-------------- USER MANAGEMENT --------------*/
     public void createUser(Map<String,String> payload){
         ServerResponse serverPayload = this.sendRequest("/user/createUser",payload);
         this.createdUser = gson.fromJson(serverPayload.payload, FrontUser.class);
@@ -83,7 +72,7 @@ public class RootRequest {
         this.sendRequest("/group/addUserToGroup",payload);
     }
 
-    public void setUsersList(){
+    public void setUsersLists(){
         // Getting All Users
         ServerResponse getAllUsersPayload = this.sendRequest("/user/getAllDatabaseUsers",null);
         FrontUser[] frontUsers = gson.fromJson(getAllUsersPayload.payload, FrontUser[].class);
@@ -97,8 +86,28 @@ public class RootRequest {
         // Setting All Disconnected Users
         this.disconectedUsersAL = new ArrayList<>(this.allUsersAL);
         this.disconectedUsersAL.removeAll(this.connectedUsersAL);
+
     }
 
 
-
+    public void removeUser(Map<String,String> payload) {
+        ServerResponse getAllUsersPayload = this.sendRequest("/user/deleteUser",payload);
+        /* UPDATE ARRAY LISTS */
+        FrontUser frontUser = gson.fromJson(getAllUsersPayload.payload, FrontUser.class);
+        this.allUsersAL.remove(frontUser);
+        this.connectedUsersAL.remove(frontUser);
+        this.disconectedUsersAL.remove(frontUser);
+    }
+    /*-------------- GROUP MANAGEMENT --------------*/
+    public String[] askGroupsFromServer(){
+        ServerResponse serverPayload = this.sendRequest("/group/getAllDatabaseGroups",null);
+        // Deserialize Data
+        FrontGroup[] frontGroups = gson.fromJson(serverPayload.payload, FrontGroup[].class);
+        ArrayList<String> groups = new ArrayList<>();
+        for(FrontGroup frontGroup : frontGroups){
+            this.frontGroupsAL.add(frontGroup);
+            groups.add(frontGroup.name);
+        }
+        return Arrays.copyOf(groups.toArray(), groups.size(),String[].class);
+    }
 }

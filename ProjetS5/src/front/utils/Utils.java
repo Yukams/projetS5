@@ -21,25 +21,20 @@ public class Utils {
         return false;
     }
 
-    // Message Error Syntax
-    public static void syntaxErrorMessage() {
-        JOptionPane.showMessageDialog(new JFrame(), "Invalid Username or Password", "Error Syntax",
+    // Warning Window
+    public static void warningWindow(String message, String title) {
+        JOptionPane.showMessageDialog(new JFrame(), message, title,
                 JOptionPane.WARNING_MESSAGE);
     }
-    // Message Error missing fields / Syntax Error
-    public static void missingFieldsErrorMessage() {
-        JOptionPane.showMessageDialog(new JFrame(), "Invalid Syntax or Missing Fields", "Error Syntax",
-                JOptionPane.WARNING_MESSAGE);
-    }
-    // Message Error Data
-    public static void credentialsErrorMessage() {
-        JOptionPane.showMessageDialog(new JFrame(), "Wrong Username or Password", "Error Credentials",
+    // Error Window
+    public static void errorWindow(String message, String title) {
+        JOptionPane.showMessageDialog(new JFrame(), message, title,
                 JOptionPane.ERROR_MESSAGE);
     }
-    // Message Error Data
-    public static void tester(String msg) {
-        JOptionPane.showMessageDialog(new JFrame(), msg, "Error Credentials",
-                JOptionPane.WARNING_MESSAGE);
+    // Error Window
+    public static void informationWindow(String message, String title) {
+        JOptionPane.showMessageDialog(new JFrame(), message, title,
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     // Avoids long nested try catch statements (Closes Client cx)
@@ -62,9 +57,7 @@ public class Utils {
     }
 
     // Check credentials nature
-    public static int credentialsNature(String username, String password) {
-        if(username.equals("") || password.equals("") ||!Utils.isValidString(username)) return -1;
-        else if(username.equals("root") && password.equals("root")) return 1;
-        return 0;
+    public static boolean validCredentials(String username, String password) {
+        return !username.equals("") && !password.equals("") && Utils.isValidString(username);
     }
 }

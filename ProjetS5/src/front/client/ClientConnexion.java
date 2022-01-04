@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import front.frontobjects.FrontUser;
-import front.main.mainFront;
 import front.utils.Utils;
 
 import java.io.*;
@@ -16,18 +15,20 @@ import java.util.Map;
 
 
 public class ClientConnexion {
-    public final static String HOST = "127.0.0.1";
+
     private static final int PORT = 9090;
     private Socket socket;
     private BufferedReader in; //Read
     private PrintWriter out; //Write
     Map<String, String> authPayload = new HashMap<>();
     private static final Gson gson = new Gson();
-    FrontUser frontUser = null;
-
+    /*--------------*/
+    public final static String HOST = "127.0.0.1";
+    public FrontUser connectedUser = null;
 
     public ClientConnexion(String username, String password){
         try {
+            System.out.println("\n-*-*[CONNECTING...]*-*-\n");
             this.socket = new Socket(HOST, PORT);
 
             this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
@@ -47,7 +48,7 @@ public class ClientConnexion {
             ServerResponse serverPayload = gson.fromJson(serverResponseString, ServerResponse.class);
             System.out.println("[CLIENT] Response from server :\n" + serverPayload.payload);
             if(serverPayload.payload == null) {
-                Utils.credentialsErrorMessage();
+                Utils.errorWindow("Wrong Username or Password","Error Credentials");
             } else {
                 JsonElement fileElement = JsonParser.parseString(serverPayload.payload);
                 JsonObject fileObject = fileElement.getAsJsonObject();
@@ -55,17 +56,13 @@ public class ClientConnexion {
                 int userId = fileObject.get("id").getAsInt();
                 String name = fileObject.get("name").getAsString();
                 String surname = fileObject.get("surname").getAsString();
-                boolean isAdmin = fileObject.get("isAdmin").getAsBoolean();
-                this.frontUser = new FrontUser(name,surname,userId, isAdmin);
+                String isAdmin = fileObject.get("isAdmin").getAsString();
+                this.connectedUser = new FrontUser(name,surname,userId, isAdmin.equals("1"));
             }
 
         } catch (IOException e) {
-            mainFront.utils.closeAll(socket, in, out);
+            Utils.closeAll(socket, in, out);
         }
-    }
-
-    public FrontUser getFrontUser(){
-        return this.frontUser;
     }
 
 

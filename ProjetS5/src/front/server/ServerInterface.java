@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package front.server;
 
 import front.client.RootRequest;
@@ -9,44 +5,79 @@ import front.frontobjects.FrontGroup;
 import front.frontobjects.FrontUser;
 import front.utils.Utils;
 
+import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
+import org.netbeans.lib.awtextra.*;
 
-public class ServerInterface extends javax.swing.JFrame {
+public class ServerInterface extends JFrame {
 
     private int xMouse;
     private int yMouse;
-    protected DefaultTableModel dtmUsers = new DefaultTableModel();
-    protected Map<FrontUser,String> usersTableData = new HashMap<>();
-    protected String[] groups;
-    private FrontUser[] frontUsersArray;
-    private final String connected = "Connected";
-    private final String disconnected = "Disconnected";
-    Map<String, String> payload = new HashMap<>();
+    private DefaultTableModel dtmUsers = new DefaultTableModel();
+    private Map<FrontUser,String> usersTableData = new HashMap<>();
+    private String[] groups;
 
-    private RootRequest rootRequest;
+    private final RootRequest rootRequest;
+    private FrontUser connectedUser;
 
-    /**
-     * Creates new form ServerInterface
-     */
-
-    public ServerInterface() {
+    /* CONSTRUCTOR :
+    * - GET DATA BASE INFO
+    * - SET UP THE SERVER INTERFACE FRAME
+    * */
+    public ServerInterface(FrontUser connectedUser) {
         this.rootRequest = new RootRequest();
         this.groups = this.rootRequest.askGroupsFromServer();
+        this.connectedUser = connectedUser;
 
         initComponents();
         this.centrePanel.setVisible(false);
 
     }
-    
+    /* ------------------------------------------START------------------------------------------ */
+
+    /*------------------ {UTILS} ------------------*/
+    // SWITCH PAGES
+    private void setPagesInvisible(){
+        pAddUsr.setVisible(false);
+        pMngUsr.setVisible(false);
+        pMngGrps.setVisible(false);
+        this.setBtnsDefaultColor();
+    }
+    // CHANGE MENU SELECTION BUTTON COLOR
+    private void setBtnsDefaultColor(){
+        btn1.setBackground(new Color(84, 222, 253));
+        btn2.setBackground(new Color(84, 222, 253));
+        btn3.setBackground(new Color(84, 222, 253));
+        btn3.setBackground(new Color(84, 222, 253));
+    }
+    // QUIT ICON
+    private void quitIconMouseClicked(MouseEvent evt) {
+        dispose();
+        System.exit(0);
+    }
+    // DRAG WINDOW WORKAROUND
+    private void frameDragMouseDragged(MouseEvent evt) {
+        int x = evt.getXOnScreen();
+        int y = evt.getYOnScreen();
+
+        this.setLocation(x - xMouse, y - yMouse);
+    }
+    // GET MOUSE POSITION
+    private void frameDragMousePressed(MouseEvent evt) {
+        xMouse = evt.getX();
+        yMouse = evt.getY();
+    }
+    // CLEAR USER TABLE DATA
     private void resetUsrTbl(){
         int nbRows = dtmUsers.getRowCount();
         for(int i = nbRows - 1; i >= 0; i--){
             dtmUsers.removeRow(i);
         }
     }
-    
+    // USER TABLE MODEL
     private void setUsrTblModel(){
         resetUsrTbl();
         String[] header = {"Username","Status"};
@@ -54,20 +85,19 @@ public class ServerInterface extends javax.swing.JFrame {
         usrTable.setModel(dtmUsers);
         usrTable.setAutoCreateRowSorter(true);
     }
-    
+    // FILL USER TABLE MAP WITH DATA FROM DATA BASE
     private void fillUsersTableData(){ //AL = ArrayList
-
+        this.usersTableData.clear();
         for(FrontUser connectedFrontUser : this.rootRequest.connectedUsersAL){
-            usersTableData.put(connectedFrontUser, connected); //MAP <FrontUser, String> ?
+            usersTableData.put(connectedFrontUser, "Connected"); //MAP <FrontUser, String>
         }
         for(FrontUser disconnectedFrontUser : this.rootRequest.disconectedUsersAL){
-            usersTableData.put(disconnectedFrontUser, disconnected);
+            usersTableData.put(disconnectedFrontUser, "Disconnected");
         }
-
     }
-    
+    // FILL JTABLE
     private void setUsrTblData(){
-        this.rootRequest.setUsersList();
+        this.rootRequest.setUsersLists();
         fillUsersTableData();
         Object[] data = new Object[dtmUsers.getColumnCount()];
         for (Map.Entry<FrontUser, String> entry : usersTableData.entrySet()){
@@ -79,8 +109,354 @@ public class ServerInterface extends javax.swing.JFrame {
         }
         usrTable.setModel(dtmUsers);
     }
+    // UPDATE INTERFACE DATA FROM DATABASE
+    private void updateWindowData(){
+        // UPDATES GROUPS LISTS
+        this.groups = this.rootRequest.askGroupsFromServer();
+        groupSelectAddUser.setModel(new DefaultComboBoxModel<>(this.groups));
+        grpListAdd2Usr.setModel(new DefaultComboBoxModel<>(this.groups));
+        grpListToRemove.setModel(new DefaultComboBoxModel<>(this.groups));
+        // UPDATE LIST OF USERS
+        FrontUser[] frontUsersArray = new FrontUser[this.rootRequest.allUsersAL.size()]; // Get size of users without the connected user
+        usrListComboBox.setModel(new DefaultComboBoxModel<>(this.rootRequest.allUsersAL.toArray(frontUsersArray)));
+        //UPDATE JTABLE LIST OF USERS
+        this.centrePanel.setVisible(false);
+        setUsrTblModel(); //Sets table UsersTable Headers
+        setUsrTblData(); //Updates data each time clicks on button
+        this.centrePanel.setVisible(true);
 
-    private void usrTableMouseClicked(java.awt.event.MouseEvent evt) {
+    }
+    /*------------------ {END} ------------------*/
+
+    private void initComponents() {
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
+
+        mainPanel = new JPanel();
+        sideBarPanel = new JPanel();
+        iconLabel = new JLabel();
+        jLabel1 = new JLabel();
+        btn1 = new JPanel();
+        iconBtn1 = new JLabel();
+        textBtn1 = new JLabel();
+        btn2 = new JPanel();
+        iconBtn2 = new JLabel();
+        textBtn2 = new JLabel();
+        btn3 = new JPanel();
+        iconBtn4 = new JLabel();
+        textBtn4 = new JLabel();
+        headerPanel = new JPanel();
+        quitIcon = new JLabel();
+        frameDrag = new JLabel();
+        centrePanel = new JPanel();
+        pAddUsr = new JPanel();
+        firstNameTxtField = new JTextField();
+        jLabel2 = new JLabel();
+        lastNameTxtField = new JTextField();
+        jLabel3 = new JLabel();
+        usrNameTxtField = new JTextField();
+        jLabel4 = new JLabel();
+        jLabel5 = new JLabel();
+        jLabel6 = new JLabel();
+        registerUserButton = new JButton();
+        passwordTxtField = new JPasswordField();
+        groupSelectAddUser = new JComboBox<>();
+        pMngGrps = new JPanel();
+        grpNameTextFieldCreate = new JTextField();
+        jLabel7 = new JLabel();
+        createGroupBtn = new JButton();
+        grpListToRemove = new JComboBox<>();
+        btnRmvGrp = new JButton();
+        pMngUsr = new JPanel();
+        jScrollPane2 = new JScrollPane();
+        usrTable = new JTable();
+        usrListComboBox = new JComboBox<>();
+        btnRmvUsr = new JButton();
+        grpListAdd2Usr = new JComboBox<>();
+        btnAddGroup = new JButton();
+        isUserAdminCheckBox = new JCheckBox();
+
+        mainPanel.setLayout(new AbsoluteLayout());
+
+        sideBarPanel.setBackground(new Color(73, 198, 229));
+        sideBarPanel.setLayout(new AbsoluteLayout());
+
+        iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        iconLabel.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-admin-64.png")));
+        sideBarPanel.add(iconLabel, new AbsoluteConstraints(-2, 5, 130, 67));
+
+        jLabel1.setBackground(new Color(255, 251, 250));
+        jLabel1.setFont(new Font("Segoe UI Semibold", 2, 18));
+        jLabel1.setForeground(new Color(255, 251, 250));
+        jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
+        jLabel1.setText("Dash Board");
+        sideBarPanel.add(jLabel1, new AbsoluteConstraints(0, 70, 130, 20));
+
+        btn1.setBackground(new Color(84, 222, 253));
+        btn1.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn1.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                btn1MouseClicked(evt);
+            }
+        });
+        btn1.setLayout(new AbsoluteLayout());
+
+        iconBtn1.setHorizontalAlignment(SwingConstants.CENTER);
+        iconBtn1.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-add-user-male-50 (1).png")));
+        btn1.add(iconBtn1, new AbsoluteConstraints(0, 0, 130, 40));
+
+        textBtn1.setFont(new Font("Calibri", 1, 18));
+        textBtn1.setForeground(new Color(255, 251, 250));
+        textBtn1.setHorizontalAlignment(SwingConstants.CENTER);
+        textBtn1.setText("Add User");
+        btn1.add(textBtn1, new AbsoluteConstraints(0, 36, 124, 20));
+
+        sideBarPanel.add(btn1, new AbsoluteConstraints(3, 100, 124, 60));
+
+        btn2.setBackground(new Color(84, 222, 253));
+        btn2.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn2.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                btn2MouseClicked(evt);
+            }
+        });
+        btn2.setLayout(new AbsoluteLayout());
+
+        iconBtn2.setHorizontalAlignment(SwingConstants.CENTER);
+        iconBtn2.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-registration-50 (1).png")));
+        btn2.add(iconBtn2, new AbsoluteConstraints(0, 0, 130, 40));
+
+        textBtn2.setFont(new Font("Calibri", 1, 18));
+        textBtn2.setForeground(new Color(255, 251, 250));
+        textBtn2.setHorizontalAlignment(SwingConstants.CENTER);
+        textBtn2.setText("Manage Users");
+        btn2.add(textBtn2, new AbsoluteConstraints(0, 36, 124, 20));
+
+        sideBarPanel.add(btn2, new AbsoluteConstraints(3, 165, 124, 60));
+
+        btn3.setBackground(new Color(84, 222, 253));
+        btn3.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn3.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                btn3MouseClicked(evt);
+            }
+        });
+        btn3.setLayout(new AbsoluteLayout());
+
+        iconBtn4.setHorizontalAlignment(SwingConstants.CENTER);
+        iconBtn4.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-add-user-group-man-man-50 (1).png")));
+        btn3.add(iconBtn4, new AbsoluteConstraints(0, 0, 130, 40));
+
+        textBtn4.setFont(new Font("Calibri", 1, 18));
+        textBtn4.setForeground(new Color(255, 251, 250));
+        textBtn4.setHorizontalAlignment(SwingConstants.CENTER);
+        textBtn4.setText("Manage Groups");
+        btn3.add(textBtn4, new AbsoluteConstraints(0, 36, 124, 20));
+
+        sideBarPanel.add(btn3, new AbsoluteConstraints(3, 230, 124, 60));
+
+        mainPanel.add(sideBarPanel, new AbsoluteConstraints(0, 0, 130, 600));
+
+        headerPanel.setBackground(new Color(255, 251, 250));
+        headerPanel.setLayout(new AbsoluteLayout());
+
+        quitIcon.setHorizontalAlignment(SwingConstants.CENTER);
+        quitIcon.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-button-64 (1).png")));
+        quitIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        quitIcon.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                quitIconMouseClicked(evt);
+            }
+        });
+        headerPanel.add(quitIcon, new AbsoluteConstraints(862, 1, 40, -1));
+
+        frameDrag.setText("jLabel2");
+        frameDrag.addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent evt) {
+                frameDragMouseDragged(evt);
+            }
+        });
+        frameDrag.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent evt) {
+                frameDragMousePressed(evt);
+            }
+        });
+        headerPanel.add(frameDrag, new AbsoluteConstraints(1, 1, 900, 35));
+
+        mainPanel.add(headerPanel, new AbsoluteConstraints(1, 1, 900, 35));
+
+        centrePanel.setLayout(new CardLayout());
+
+        pAddUsr.setBackground(new Color(162, 221, 210));
+        pAddUsr.setLayout(new AbsoluteLayout());
+
+        firstNameTxtField.setBackground(new Color(222, 229, 229));
+        pAddUsr.add(firstNameTxtField, new AbsoluteConstraints(130, 120, 480, -1));
+
+        jLabel2.setFont(new Font("Segoe UI", 3, 14));
+        jLabel2.setForeground(new Color(255, 251, 250));
+        jLabel2.setText("First Name");
+        pAddUsr.add(jLabel2, new AbsoluteConstraints(130, 100, -1, -1));
+
+        pAddUsr.add(lastNameTxtField, new AbsoluteConstraints(130, 170, 480, -1));
+
+        jLabel3.setFont(new Font("Segoe UI", 3, 14));
+        jLabel3.setForeground(new Color(255, 251, 250));
+        jLabel3.setText("Last Name");
+        pAddUsr.add(jLabel3, new AbsoluteConstraints(130, 150, -1, -1));
+
+        usrNameTxtField.setBackground(new Color(222, 229, 229));
+        pAddUsr.add(usrNameTxtField, new AbsoluteConstraints(130, 220, 480, -1));
+
+        jLabel4.setFont(new Font("Segoe UI", 3, 14));
+        jLabel4.setForeground(new Color(255, 251, 250));
+        jLabel4.setText("Username");
+        pAddUsr.add(jLabel4, new AbsoluteConstraints(130, 200, -1, -1));
+
+        jLabel5.setFont(new Font("Segoe UI", 3, 14));
+        jLabel5.setForeground(new Color(255, 251, 250));
+        jLabel5.setText("Password");
+        pAddUsr.add(jLabel5, new AbsoluteConstraints(130, 250, -1, -1));
+
+        jLabel6.setFont(new Font("Segoe UI", 3, 14));
+        jLabel6.setForeground(new Color(255, 251, 250));
+        jLabel6.setText("Default Group");
+        pAddUsr.add(jLabel6, new AbsoluteConstraints(130, 300, -1, -1));
+        
+        isUserAdminCheckBox.setFont(new Font("Segoe UI", 3, 14));
+        isUserAdminCheckBox.setForeground(new Color(255, 251, 250));
+        isUserAdminCheckBox.setBackground(new Color(168, 220, 212));
+        isUserAdminCheckBox.setText("Administrator");
+        pAddUsr.add(isUserAdminCheckBox, new AbsoluteConstraints(130, 370, -1, -1));
+        
+
+        registerUserButton.setBackground(new Color(84, 222, 253));
+        registerUserButton.setFont(new Font("Candara", 3, 18));
+        registerUserButton.setForeground(new Color(255, 255, 255));
+        registerUserButton.setText("Register User");
+        registerUserButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                registerUserButtonActionPerformed(evt);
+            }
+        });
+        pAddUsr.add(registerUserButton, new AbsoluteConstraints(450, 370, 160, 40));
+        pAddUsr.add(passwordTxtField, new AbsoluteConstraints(130, 270, 480, -1));
+
+        groupSelectAddUser.setBackground(new Color(255, 255, 255));
+        groupSelectAddUser.setFont(new Font("Segoe UI", 0, 14));
+        groupSelectAddUser.setModel(new DefaultComboBoxModel<>(this.groups));
+        pAddUsr.add(groupSelectAddUser, new AbsoluteConstraints(130, 320, 480, 30));
+
+        centrePanel.add(pAddUsr, "card2");
+
+        pMngGrps.setBackground(new Color(162, 221, 210));
+        pMngGrps.setLayout(new AbsoluteLayout());
+        pMngGrps.add(grpNameTextFieldCreate, new AbsoluteConstraints(40, 60, 500, 40));
+
+        jLabel7.setFont(new Font("Segoe UI", 3, 18)); 
+        jLabel7.setForeground(new Color(255, 251, 250));
+        jLabel7.setText("Group Name");
+        pMngGrps.add(jLabel7, new AbsoluteConstraints(40, 30, -1, -1));
+
+        createGroupBtn.setBackground(new Color(132, 137, 74));
+        createGroupBtn.setFont(new Font("Candara", 3, 20)); 
+        createGroupBtn.setForeground(new Color(255, 255, 255));
+        createGroupBtn.setText("Create Group");
+        pMngGrps.add(createGroupBtn, new AbsoluteConstraints(550, 60, 180, 40));
+
+        grpListToRemove.setBackground(new Color(255, 255, 255));
+        grpListToRemove.setFont(new Font("Candara", 0, 20)); 
+        grpListToRemove.setModel(new DefaultComboBoxModel<>(this.groups));
+        pMngGrps.add(grpListToRemove, new AbsoluteConstraints(40, 220, 500, 40));
+
+        btnRmvGrp.setBackground(new Color(147, 3, 46));
+        btnRmvGrp.setFont(new Font("Candara", 3, 18)); 
+        btnRmvGrp.setForeground(new Color(255, 255, 255));
+        btnRmvGrp.setText("Remove Group");
+        btnRmvGrp.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                btnRmvGrpActionPerformed(evt);
+            }
+        });
+        pMngGrps.add(btnRmvGrp, new AbsoluteConstraints(560, 220, 180, 40));
+
+        centrePanel.add(pMngGrps, "card2");
+
+        pMngUsr.setBackground(new Color(162, 221, 210));
+        pMngUsr.setLayout(new AbsoluteLayout());
+
+        usrTable.setForeground(new Color(3, 76, 60));
+        usrTable.setModel(new DefaultTableModel(
+            new Object [][] {
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        usrTable.setGridColor(new Color(84, 222, 253));
+        usrTable.setRowSelectionAllowed(false);
+        usrTable.setSelectionBackground(new Color(84, 222, 253));
+        usrTable.setSelectionForeground(new Color(148, 197, 149));
+        usrTable.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                usrTableMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(usrTable);
+
+        pMngUsr.add(jScrollPane2, new AbsoluteConstraints(20, 20, 420, 530));
+
+        usrListComboBox.setBackground(new Color(255, 255, 255));
+        usrListComboBox.setFont(new Font("Candara", 0, 20)); 
+        pMngUsr.add(usrListComboBox, new AbsoluteConstraints(450, 20, 310, 50));
+
+        btnRmvUsr.setBackground(new Color(147, 3, 46));
+        btnRmvUsr.setFont(new Font("Candara", 3, 18)); 
+        btnRmvUsr.setForeground(new Color(255, 255, 255));
+        btnRmvUsr.setText("Remove User");
+        btnRmvUsr.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                btnRmvUsrActionPerformed(evt);
+            }
+        });
+        pMngUsr.add(btnRmvUsr, new AbsoluteConstraints(450, 80, 140, 50));
+
+        grpListAdd2Usr.setBackground(new Color(255, 255, 255));
+        grpListAdd2Usr.setFont(new Font("Segoe UI", 0, 18)); 
+        grpListAdd2Usr.setForeground(new Color(0, 0, 0));
+        grpListAdd2Usr.setModel(new DefaultComboBoxModel<>(this.groups));
+        pMngUsr.add(grpListAdd2Usr, new AbsoluteConstraints(450, 140, 310, 50));
+
+        btnAddGroup.setBackground(new Color(84, 222, 253));
+        btnAddGroup.setFont(new Font("Candara", 3, 20)); 
+        btnAddGroup.setForeground(new Color(255, 255, 255));
+        btnAddGroup.setText("Add Group");
+        pMngUsr.add(btnAddGroup, new AbsoluteConstraints(450, 200, 140, 50));
+
+        centrePanel.add(pMngUsr, "card2");
+
+        mainPanel.add(centrePanel, new AbsoluteConstraints(130, 35, 769, 565));
+
+        GroupLayout layout = new GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addComponent(mainPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addComponent(mainPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }
+
+    /*------------------ {MANAGE USERS} ------------------*/
+    // DISPLAY USER INFO WHEN CLICKED ON JTABLE
+    private void usrTableMouseClicked(MouseEvent evt) {
         StringBuilder sb = new StringBuilder();
         boolean b = usrTable.isEditing();
         if(!b){
@@ -100,387 +476,7 @@ public class ServerInterface extends javax.swing.JFrame {
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
-    private void initComponents() {
-
-        mainPanel = new javax.swing.JPanel();
-        sideBarPanel = new javax.swing.JPanel();
-        iconLabel = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        btn1 = new javax.swing.JPanel();
-        iconBtn1 = new javax.swing.JLabel();
-        textBtn1 = new javax.swing.JLabel();
-        btn2 = new javax.swing.JPanel();
-        iconBtn2 = new javax.swing.JLabel();
-        textBtn2 = new javax.swing.JLabel();
-        btn3 = new javax.swing.JPanel();
-        iconBtn4 = new javax.swing.JLabel();
-        textBtn4 = new javax.swing.JLabel();
-        headerPanel = new javax.swing.JPanel();
-        quitIcon = new javax.swing.JLabel();
-        frameDrag = new javax.swing.JLabel();
-        centrePanel = new javax.swing.JPanel();
-        pAddUsr = new javax.swing.JPanel();
-        firstNameTxtField = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        lastNameTxtField = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        usrNameTxtField = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        registerUserButton = new javax.swing.JButton();
-        passwordTxtField = new javax.swing.JPasswordField();
-        groupSelectAddUser = new javax.swing.JComboBox<>();
-        pMngGrps = new javax.swing.JPanel();
-        grpNameTextFieldCreate = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        createGroupBtn = new javax.swing.JButton();
-        grpListToRemove = new javax.swing.JComboBox<>();
-        btnRmvGrp = new javax.swing.JButton();
-        pMngUsr = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        usrTable = new javax.swing.JTable();
-        usrListComboBox = new javax.swing.JComboBox<>();
-        btnRmvUsr = new javax.swing.JButton();
-        grpListAdd2Usr = new javax.swing.JComboBox<>();
-        btnAddGroup = new javax.swing.JButton();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setUndecorated(true);
-
-        mainPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        sideBarPanel.setBackground(new java.awt.Color(73, 198, 229));
-        sideBarPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        iconLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        iconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-admin-64.png"))); // NOI18N
-        sideBarPanel.add(iconLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(-2, 5, 130, 67));
-
-        jLabel1.setBackground(new java.awt.Color(255, 251, 250));
-        jLabel1.setFont(new java.awt.Font("Segoe UI Semibold", 2, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 251, 250));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Dash Board");
-        sideBarPanel.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, 130, 20));
-
-        btn1.setBackground(new java.awt.Color(84, 222, 253));
-        btn1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btn1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btn1MouseClicked(evt);
-            }
-        });
-        btn1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        iconBtn1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        iconBtn1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-add-user-male-50 (1).png"))); // NOI18N
-        btn1.add(iconBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 130, 40));
-
-        textBtn1.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
-        textBtn1.setForeground(new java.awt.Color(255, 251, 250));
-        textBtn1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        textBtn1.setText("Add User");
-        btn1.add(textBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 36, 124, 20));
-
-        sideBarPanel.add(btn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(3, 100, 124, 60));
-
-        btn2.setBackground(new java.awt.Color(84, 222, 253));
-        btn2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btn2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btn2MouseClicked(evt);
-            }
-        });
-        btn2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        iconBtn2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        iconBtn2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-registration-50 (1).png"))); // NOI18N
-        btn2.add(iconBtn2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 130, 40));
-
-        textBtn2.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
-        textBtn2.setForeground(new java.awt.Color(255, 251, 250));
-        textBtn2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        textBtn2.setText("Manage Users");
-        btn2.add(textBtn2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 36, 124, 20));
-
-        sideBarPanel.add(btn2, new org.netbeans.lib.awtextra.AbsoluteConstraints(3, 165, 124, 60));
-
-        btn3.setBackground(new java.awt.Color(84, 222, 253));
-        btn3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btn3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btn3MouseClicked(evt);
-            }
-        });
-        btn3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        iconBtn4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        iconBtn4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-add-user-group-man-man-50 (1).png"))); // NOI18N
-        btn3.add(iconBtn4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 130, 40));
-
-        textBtn4.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
-        textBtn4.setForeground(new java.awt.Color(255, 251, 250));
-        textBtn4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        textBtn4.setText("Manage Groups");
-        btn3.add(textBtn4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 36, 124, 20));
-
-        sideBarPanel.add(btn3, new org.netbeans.lib.awtextra.AbsoluteConstraints(3, 230, 124, 60));
-
-        mainPanel.add(sideBarPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 130, 600));
-
-        headerPanel.setBackground(new java.awt.Color(255, 251, 250));
-        headerPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        quitIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        quitIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8-button-64 (1).png"))); // NOI18N
-        quitIcon.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        quitIcon.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                quitIconMouseClicked(evt);
-            }
-        });
-        headerPanel.add(quitIcon, new org.netbeans.lib.awtextra.AbsoluteConstraints(862, 1, 40, -1));
-
-        frameDrag.setText("jLabel2");
-        frameDrag.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseDragged(java.awt.event.MouseEvent evt) {
-                frameDragMouseDragged(evt);
-            }
-        });
-        frameDrag.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                frameDragMousePressed(evt);
-            }
-        });
-        headerPanel.add(frameDrag, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 1, 900, 35));
-
-        mainPanel.add(headerPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(1, 1, 900, 35));
-
-        centrePanel.setLayout(new java.awt.CardLayout());
-
-        pAddUsr.setBackground(new java.awt.Color(162, 221, 210));
-        pAddUsr.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        firstNameTxtField.setBackground(new java.awt.Color(222, 229, 229));
-        firstNameTxtField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                firstNameTxtFieldActionPerformed(evt);
-            }
-        });
-        pAddUsr.add(firstNameTxtField, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 120, 480, -1));
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 251, 250));
-        jLabel2.setText("First Name");
-        pAddUsr.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 100, -1, -1));
-
-        lastNameTxtField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lastNameTxtFieldActionPerformed(evt);
-            }
-        });
-        pAddUsr.add(lastNameTxtField, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 170, 480, -1));
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 251, 250));
-        jLabel3.setText("Last Name");
-        pAddUsr.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 150, -1, -1));
-
-        usrNameTxtField.setBackground(new java.awt.Color(222, 229, 229));
-        usrNameTxtField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                usrNameTxtFieldActionPerformed(evt);
-            }
-        });
-        pAddUsr.add(usrNameTxtField, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 220, 480, -1));
-
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 251, 250));
-        jLabel4.setText("Username");
-        pAddUsr.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 200, -1, -1));
-
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 251, 250));
-        jLabel5.setText("Password");
-        pAddUsr.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 250, -1, -1));
-
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 251, 250));
-        jLabel6.setText("Default Group");
-        pAddUsr.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 300, -1, -1));
-
-        registerUserButton.setBackground(new java.awt.Color(84, 222, 253));
-        registerUserButton.setFont(new java.awt.Font("Candara", 3, 18)); // NOI18N
-        registerUserButton.setForeground(new java.awt.Color(255, 255, 255));
-        registerUserButton.setText("Register User");
-        registerUserButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                registerUserButtonActionPerformed(evt);
-            }
-        });
-        pAddUsr.add(registerUserButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 370, 160, 40));
-        pAddUsr.add(passwordTxtField, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 270, 480, -1));
-
-        groupSelectAddUser.setBackground(new java.awt.Color(255, 255, 255));
-        groupSelectAddUser.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        groupSelectAddUser.setModel(new javax.swing.DefaultComboBoxModel<>(this.groups));
-        pAddUsr.add(groupSelectAddUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 320, 480, 30));
-
-        centrePanel.add(pAddUsr, "card2");
-
-        pMngGrps.setBackground(new java.awt.Color(162, 221, 210));
-        pMngGrps.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        pMngGrps.add(grpNameTextFieldCreate, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 500, 40));
-
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(255, 251, 250));
-        jLabel7.setText("Group Name");
-        pMngGrps.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, -1, -1));
-
-        createGroupBtn.setBackground(new java.awt.Color(132, 137, 74));
-        createGroupBtn.setFont(new java.awt.Font("Candara", 3, 20)); // NOI18N
-        createGroupBtn.setForeground(new java.awt.Color(255, 255, 255));
-        createGroupBtn.setText("Create Group");
-        pMngGrps.add(createGroupBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 60, 180, 40));
-
-        grpListToRemove.setBackground(new java.awt.Color(255, 255, 255));
-        grpListToRemove.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
-        grpListToRemove.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TD", "SPORT", "SERVICE", "PEDAGOGIQUE" }));
-        pMngGrps.add(grpListToRemove, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 220, 500, 40));
-
-        btnRmvGrp.setBackground(new java.awt.Color(147, 3, 46));
-        btnRmvGrp.setFont(new java.awt.Font("Candara", 3, 18)); // NOI18N
-        btnRmvGrp.setForeground(new java.awt.Color(255, 255, 255));
-        btnRmvGrp.setText("Remove Group");
-        btnRmvGrp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRmvGrpActionPerformed(evt);
-            }
-        });
-        pMngGrps.add(btnRmvGrp, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 220, 180, 40));
-
-        centrePanel.add(pMngGrps, "card2");
-
-        pMngUsr.setBackground(new java.awt.Color(162, 221, 210));
-        pMngUsr.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        usrTable.setForeground(new java.awt.Color(3, 76, 60));
-        usrTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {},
-                {}
-            },
-            new String [] {
-
-            }
-        ));
-        usrTable.setGridColor(new java.awt.Color(84, 222, 253));
-        usrTable.setRowSelectionAllowed(false);
-        usrTable.setSelectionBackground(new java.awt.Color(84, 222, 253));
-        usrTable.setSelectionForeground(new java.awt.Color(148, 197, 149));
-        usrTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                usrTableMouseClicked(evt);
-            }
-        });
-        jScrollPane2.setViewportView(usrTable);
-
-        pMngUsr.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 420, 530));
-
-        usrListComboBox.setBackground(new java.awt.Color(255, 255, 255));
-        usrListComboBox.setFont(new java.awt.Font("Candara", 0, 20)); // NOI18N
-        pMngUsr.add(usrListComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 20, 310, 50));
-
-        btnRmvUsr.setBackground(new java.awt.Color(147, 3, 46));
-        btnRmvUsr.setFont(new java.awt.Font("Candara", 3, 18)); // NOI18N
-        btnRmvUsr.setForeground(new java.awt.Color(255, 255, 255));
-        btnRmvUsr.setText("Remove User");
-        btnRmvUsr.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRmvUsrActionPerformed(evt);
-            }
-        });
-        pMngUsr.add(btnRmvUsr, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 80, 140, 50));
-
-        grpListAdd2Usr.setBackground(new java.awt.Color(255, 255, 255));
-        grpListAdd2Usr.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        grpListAdd2Usr.setForeground(new java.awt.Color(0, 0, 0));
-        grpListAdd2Usr.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TD", "SPORT", "SERVICE", "PEDAGOGIQUE" }));
-        pMngUsr.add(grpListAdd2Usr, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 140, 310, 50));
-
-        btnAddGroup.setBackground(new java.awt.Color(84, 222, 253));
-        btnAddGroup.setFont(new java.awt.Font("Candara", 3, 20)); // NOI18N
-        btnAddGroup.setForeground(new java.awt.Color(255, 255, 255));
-        btnAddGroup.setText("Add Group");
-        pMngUsr.add(btnAddGroup, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 200, 140, 50));
-
-        centrePanel.add(pMngUsr, "card2");
-
-        mainPanel.add(centrePanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 35, 769, 565));
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-
-        pack();
-        setLocationRelativeTo(null);
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void quitIconMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_quitIconMouseClicked
-        dispose();
-        System.exit(0);
-    }//GEN-LAST:event_quitIconMouseClicked
-
-    private void frameDragMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_frameDragMouseDragged
-        int x = evt.getXOnScreen();
-        int y = evt.getYOnScreen();
-        
-        this.setLocation(x - xMouse, y - yMouse);
-    }//GEN-LAST:event_frameDragMouseDragged
-
-    private void frameDragMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_frameDragMousePressed
-        xMouse = evt.getX();
-        yMouse = evt.getY();
-    }//GEN-LAST:event_frameDragMousePressed
-
-    private void firstNameTxtFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstNameTxtFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_firstNameTxtFieldActionPerformed
-
-    private void lastNameTxtFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lastNameTxtFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_lastNameTxtFieldActionPerformed
-
-    private void usrNameTxtFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usrNameTxtFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_usrNameTxtFieldActionPerformed
-
-    private void registerUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerUserButtonActionPerformed
-        // Checks Fields validity
-        ArrayList<String> fieldsList = this.getRegisteredUserInfo();
-        boolean dataIsCorrect = false;
-        for(String info : fieldsList){
-            dataIsCorrect = true;
-            if(info.equals("") || !Utils.isValidString(info)){
-                dataIsCorrect = false;
-                Utils.missingFieldsErrorMessage();
-                break;
-            }
-        }
-        if(dataIsCorrect){
-            registerUser(fieldsList);
-        }
-    }//GEN-LAST:event_registerUserButtonActionPerformed
-
+    // REGISTER USER REQUEST + SET DEFAULT GROUP
     public void registerUser(ArrayList<String> fields){
         // Writing User Creation Payload
         Map<String,String> userPayload = new HashMap<>();
@@ -494,7 +490,53 @@ public class ServerInterface extends javax.swing.JFrame {
         String selectedGroup = groupSelectAddUser.getItemAt(groupSelectAddUser.getSelectedIndex());
         FrontUser user = this.rootRequest.createdUser; // Just Created User
         this.addUserToGroupFromComboBox(user,selectedGroup);
+    }
+    // SET USER INFO
+    private ArrayList<String> getRegisteredUserInfo(){
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add(firstNameTxtField.getText()); // First Name
+        arrayList.add(lastNameTxtField.getText()); // Las Name
+        arrayList.add(usrNameTxtField.getText()); // UserName
+        arrayList.add(new String( passwordTxtField.getPassword())); // Password
+        return arrayList;
+    }
+    // CHECK DATA VALIDITY
+    private void registerUserButtonActionPerformed(ActionEvent evt) {
+        // Checks Fields validity
+        ArrayList<String> fieldsList = this.getRegisteredUserInfo();
+        boolean dataIsCorrect = false;
+        for(String info : fieldsList){
+            dataIsCorrect = true;
+            if(info.equals("") || !Utils.isValidString(info)){
+                dataIsCorrect = false;
+                Utils.warningWindow("Invalid Syntax or Missing Fields","Error Syntax");
+                break;
+            }
+        }
+        if(dataIsCorrect){
+            registerUser(fieldsList); // REGISTER USER (+ affect default group to a User)
+        }
+    }
 
+    //REMOVE USER
+    private void btnRmvUsrActionPerformed(ActionEvent evt) {
+        FrontUser selectedUser = usrListComboBox.getItemAt(usrListComboBox.getSelectedIndex());
+        if(!selectedUser.equals(this.connectedUser)) {
+            Map<String, String> payload = new HashMap<>();
+            payload.put("id", "" + selectedUser.id);
+            this.rootRequest.removeUser(payload);
+            this.updateWindowData();
+            Utils.informationWindow("User removed successfully", "Information");
+        }
+        else {
+            Utils.errorWindow("You cannot remove yourself !", "Error");
+        }
+    }
+    /*------------------ {END} ------------------*/
+
+    /*------------------ {MANAGE GROUPS} ------------------*/
+    private void btnRmvGrpActionPerformed(ActionEvent evt) {
+        // TODO add your handling code here:
     }
 
     public void addUserToGroupFromComboBox(FrontUser user, String selectedGroup){
@@ -506,40 +548,28 @@ public class ServerInterface extends javax.swing.JFrame {
                 defaultGroupPayload.put("groupId",""+frontGroup.id);
                 defaultGroupPayload.put("userId",""+user.id);
                 this.rootRequest.addUserToGroup(defaultGroupPayload);
-                JOptionPane.showMessageDialog(null, "User Successfully created !");
+                Utils.informationWindow("User Successfully created !","Information");
                 break;
             }
         }
-
     }
+    /*------------------ {END} ------------------*/
 
-    private ArrayList<String> getRegisteredUserInfo(){
-        ArrayList<String> arrayList = new ArrayList<>();
-        String firstName = firstNameTxtField.getText();
-        arrayList.add(firstName);
-        String lastName = lastNameTxtField.getText();
-        arrayList.add(lastName);
-        String username = usrNameTxtField.getText();
-        arrayList.add(username);
-        String password = new String( passwordTxtField.getPassword());
-        arrayList.add(password);
-        return arrayList;
-    }
-
+    /*------------------ {SELECTION MENU} ------------------*/
     //Add user
-    private void btn1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn1MouseClicked
+    private void btn1MouseClicked(MouseEvent evt) {
         if(this.centrePanel.isVisible()){
             this.setPagesInvisible();
         } else {
             this.centrePanel.setVisible(true);
             this.setPagesInvisible();
         }
-        btn1.setBackground(new java.awt.Color(72, 159, 181));
+        btn1.setBackground(new Color(72, 159, 181));
         pAddUsr.setVisible(true);
-    }//GEN-LAST:event_btn1MouseClicked
+    }
 
     //Manage users
-    private void btn2MouseClicked(java.awt.event.MouseEvent evt) {
+    private void btn2MouseClicked(MouseEvent evt) {
         if(this.centrePanel.isVisible()){
             this.setPagesInvisible();
         } else {
@@ -548,89 +578,69 @@ public class ServerInterface extends javax.swing.JFrame {
         }
         setUsrTblModel(); //Sets table UsersTable Headers
         setUsrTblData(); //Updates data each time clicks on button
-        this.frontUsersArray = new FrontUser[this.rootRequest.allUsersAL.size()];
-        usrListComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(this.rootRequest.allUsersAL.toArray(frontUsersArray))); // Setting the items in the combo box as FrontUser Objects
-        btn2.setBackground(new java.awt.Color(72, 159, 181));
+        /* Setting the items in the combo box as FrontUser Objects*/
+        FrontUser[] frontUsersArray = new FrontUser[this.rootRequest.allUsersAL.size()]; // Get size of users without the connected user
+        usrListComboBox.setModel(new DefaultComboBoxModel<>(this.rootRequest.allUsersAL.toArray(frontUsersArray)));
+        /*-------------------------------------------------------*/
+        btn2.setBackground(new Color(72, 159, 181));
         pMngUsr.setVisible(true);
     }
     //Manage groups
-    private void btn3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn3MouseClicked
+    private void btn3MouseClicked(MouseEvent evt) {
         if(this.centrePanel.isVisible()){
             this.setPagesInvisible();
         } else {
             this.centrePanel.setVisible(true);
             this.setPagesInvisible();
         }
-        btn3.setBackground(new java.awt.Color(72, 159, 181));
+        btn3.setBackground(new Color(72, 159, 181));
         pMngGrps.setVisible(true);
-    }//GEN-LAST:event_btn3MouseClicked
-
-        //REMOVE USER
-    private void btnRmvUsrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRmvUsrActionPerformed
-        // TODO add your handling code here:
-        FrontUser selectedUser = usrListComboBox.getItemAt(usrListComboBox.getSelectedIndex());
-        JOptionPane.showMessageDialog(null, selectedUser);
-    }//GEN-LAST:event_btnRmvUsrActionPerformed
-
-    private void btnRmvGrpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRmvGrpActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnRmvGrpActionPerformed
-    
-    private void setPagesInvisible(){
-        pAddUsr.setVisible(false);
-        pMngUsr.setVisible(false);
-        pMngGrps.setVisible(false);
-        this.setBtnsDefaultColor();
     }
-    private void setBtnsDefaultColor(){
-        btn1.setBackground(new java.awt.Color(84, 222, 253));
-        btn2.setBackground(new java.awt.Color(84, 222, 253));
-        btn3.setBackground(new java.awt.Color(84, 222, 253));
-        btn3.setBackground(new java.awt.Color(84, 222, 253));
-    }
+    /*------------------ {END} ------------------*/
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel btn1;
-    private javax.swing.JPanel btn2;
-    private javax.swing.JPanel btn3;
-    private javax.swing.JButton btnAddGroup;
-    private javax.swing.JButton btnRmvGrp;
-    private javax.swing.JButton btnRmvUsr;
-    private javax.swing.JPanel centrePanel;
-    private javax.swing.JButton createGroupBtn;
-    private javax.swing.JTextField firstNameTxtField;
-    private javax.swing.JLabel frameDrag;
-    private javax.swing.JComboBox<String> groupSelectAddUser;
-    private javax.swing.JComboBox<String> grpListAdd2Usr;
-    private javax.swing.JComboBox<String> grpListToRemove;
-    private javax.swing.JTextField grpNameTextFieldCreate;
-    private javax.swing.JPanel headerPanel;
-    private javax.swing.JLabel iconBtn1;
-    private javax.swing.JLabel iconBtn2;
-    private javax.swing.JLabel iconBtn4;
-    private javax.swing.JLabel iconLabel;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField lastNameTxtField;
-    private javax.swing.JPanel mainPanel;
-    private javax.swing.JPanel pAddUsr;
-    private javax.swing.JPanel pMngGrps;
-    private javax.swing.JPanel pMngUsr;
-    private javax.swing.JPasswordField passwordTxtField;
-    private javax.swing.JLabel quitIcon;
-    private javax.swing.JButton registerUserButton;
-    private javax.swing.JPanel sideBarPanel;
-    private javax.swing.JLabel textBtn1;
-    private javax.swing.JLabel textBtn2;
-    private javax.swing.JLabel textBtn4;
-    private javax.swing.JComboBox<FrontUser> usrListComboBox;
-    private javax.swing.JTextField usrNameTxtField;
-    private javax.swing.JTable usrTable;
-    // End of variables declaration
+
+
+    private JPanel btn1;
+    private JPanel btn2;
+    private JPanel btn3;
+    private JButton btnAddGroup;
+    private JButton btnRmvGrp;
+    private JButton btnRmvUsr;
+    private JPanel centrePanel;
+    private JButton createGroupBtn;
+    private JTextField firstNameTxtField;
+    private JLabel frameDrag;
+    private JComboBox<String> groupSelectAddUser;
+    private JComboBox<String> grpListAdd2Usr;
+    private JComboBox<String> grpListToRemove;
+    private JTextField grpNameTextFieldCreate;
+    private JPanel headerPanel;
+    private JLabel iconBtn1;
+    private JLabel iconBtn2;
+    private JLabel iconBtn4;
+    private JLabel iconLabel;
+    private JLabel jLabel1;
+    private JLabel jLabel2;
+    private JLabel jLabel3;
+    private JLabel jLabel4;
+    private JLabel jLabel5;
+    private JLabel jLabel6;
+    private JLabel jLabel7;
+    private JScrollPane jScrollPane2;
+    private JTextField lastNameTxtField;
+    private JPanel mainPanel;
+    private JPanel pAddUsr;
+    private JPanel pMngGrps;
+    private JPanel pMngUsr;
+    private JPasswordField passwordTxtField;
+    private JLabel quitIcon;
+    private JButton registerUserButton;
+    private JPanel sideBarPanel;
+    private JLabel textBtn1;
+    private JLabel textBtn2;
+    private JLabel textBtn4;
+    private JComboBox<FrontUser> usrListComboBox;
+    private JTextField usrNameTxtField;
+    private JTable usrTable;
+    private JCheckBox isUserAdminCheckBox;
 }

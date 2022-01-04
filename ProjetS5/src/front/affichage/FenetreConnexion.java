@@ -1,8 +1,6 @@
 package front.affichage;
 
 import front.client.ClientConnexion;
-import front.frontobjects.FrontUser;
-import front.main.mainFront;
 import front.server.ServerInterface;
 import front.utils.Utils;
 
@@ -14,16 +12,8 @@ import java.awt.event.ActionListener;
 public class FenetreConnexion extends JFrame implements ActionListener {
 
 
-    private JLabel seCo = new JLabel("Se connecter !",SwingConstants.CENTER);
-    private JLabel id = new JLabel("Identifiant : ");
-    private JLabel mdp = new JLabel("Mot de passe : ");
-    private JTextField idTexte = new JTextField(10);
-    private JPasswordField mdpTexte = new JPasswordField(10);
-    private JButton connexionButton = new JButton("Connexion");
-    private String username;
-    private String password;
-    private ClientConnexion clientConnexion;
-    private FrontUser frontUser;
+    private final JTextField idTexte = new JTextField(10);
+    private final JPasswordField mdpTexte = new JPasswordField(10);
 
     public FenetreConnexion(){
         //titre
@@ -41,16 +31,20 @@ public class FenetreConnexion extends JFrame implements ActionListener {
         JPanel connex = (JPanel) this.getContentPane();
         connex.setLayout(null);
 
+        JLabel seCo = new JLabel("Se connecter !", SwingConstants.CENTER);
         seCo.setBounds(250,10,400,60);
         seCo.setFont(new Font("Serif", Font.BOLD,50));
+        JLabel id = new JLabel("Identifiant : ");
         id.setBounds(175,175,200,30);
         id.setFont(new Font("Serif",Font.PLAIN,30));
         idTexte.setBounds(450,175,200,30);
         idTexte.setFont(new Font("Serif",Font.PLAIN,20));
+        JLabel mdp = new JLabel("Mot de passe : ");
         mdp.setBounds(175,250,200,30);
         mdp.setFont(new Font("Serif",Font.PLAIN,30));
         mdpTexte.setBounds(450,250,200,30);
         mdpTexte.setFont(new Font("Serif",Font.PLAIN,20));
+        JButton connexionButton = new JButton("Connexion");
         connexionButton.setBounds(600,375,200,30);
 
 
@@ -68,23 +62,25 @@ public class FenetreConnexion extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        username = idTexte.getText();
-        password = new String( mdpTexte.getPassword());
+        String username = idTexte.getText();
+        String password = new String(mdpTexte.getPassword());
 
-        if (Utils.credentialsNature(username, password) == -1) {
+        if (!Utils.validCredentials(username, password)) {
             mdpTexte.setText("");
-            Utils.syntaxErrorMessage();
-        } else if (Utils.credentialsNature(username, password) == 1) {
-            setVisible(false);
-            ServerInterface serverInterface = new ServerInterface();
-            serverInterface.setVisible(true);
+            Utils.warningWindow("Invalid Username or Password","Error Syntax");
         } else {
-            this.clientConnexion = new ClientConnexion(username, password);
-            this.frontUser = clientConnexion.getFrontUser();
-            if(this.frontUser != null){
-                setVisible(false);
-                Messagerie mess = new Messagerie(this.frontUser);
-                mess.setVisible(true);
+            ClientConnexion clientConnexion = new ClientConnexion(username, password);
+
+            if(clientConnexion.connectedUser != null){
+                if(clientConnexion.connectedUser.isAdmin){
+                    setVisible(false);
+                    ServerInterface serverInterface = new ServerInterface(clientConnexion.connectedUser);
+                    serverInterface.setVisible(true);
+                } else {
+                    setVisible(false);
+                    Messagerie mess = new Messagerie(clientConnexion.connectedUser);
+                    mess.setVisible(true);
+                }
             }
         }
     }
