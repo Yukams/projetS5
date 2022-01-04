@@ -6,7 +6,7 @@ import back.backobjects.thread.IMessage;
 import back.backobjects.thread.IThread;
 import back.backobjects.users.IUser;
 import com.google.gson.Gson;
-import front.utils.Utils;
+import back.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,19 +34,26 @@ public class ClientHandler implements Runnable {
         try {
             while (request != null) {
                 request = in.readLine();
-                System.out.println("request -> " + request);
+                System.out.println("[SERVER] Received request from client (" + clientId + ") => " + request);
 
                 if(request != null) {
-                    System.out.println("[SERVER] Received request from client => " + request);
                     ClientRequest serverPayload = gson.fromJson(request, ClientRequest.class);
                     String response = treatRequest(serverPayload);
-                    System.out.println("[SERVER] Sending response to client => " + response);
+
+                    // Close connection if user is not connected and requests anything else than a connection
+                    if(response == null) {
+                        break;
+                    }
+
+                    System.out.println("[SERVER] Sending response to client (" + clientId + ") => " + response);
                     out.println(response);
                 }
             }
         } catch (IOException e) {
-            Utils.closeAll(this.client,this.in,this.out);
+            e.printStackTrace();
         } finally {
+            Utils.closeAll(this.client, this.in, this.out, this.clientId);
+
             if(clientId != -1){
                 Server.disconnect(this);
             }
@@ -54,13 +61,19 @@ public class ClientHandler implements Runnable {
     }
 
     public String treatRequest(ClientRequest request) {
+
         String address = request.address;
         Map<String,String> payload = request.payload;
+
+        // Don't answer if client is not connected and not requesting a connexion
+        if(clientId == -1 && !address.equals("/connect")) {
+            return null;
+        }
+
         String toClient = switch (address) {
             // CONNECTIVITY
             // { "username": String, "password": String }
             case "/connect" -> Server.connect(this ,payload);
-
 
             // USER
             // { "id": int }
