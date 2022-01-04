@@ -66,7 +66,7 @@ public class ClientHandler implements Runnable {
             // { "id": int }
             case "/user/getUserById" -> IUser.getUserById(payload);
 
-            // { "username": String, "name": String, "surname": String, "password": String }
+            // { "username": String, "name": String, "surname": String, "password": String, "isAdmin": boolean }
             case "/user/createUser" -> IUser.createUser(payload);
 
             // { "id": int }
