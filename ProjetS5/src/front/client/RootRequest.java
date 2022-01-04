@@ -25,8 +25,6 @@ public class RootRequest {
     public ArrayList<FrontUser> allUsersAL = new ArrayList<>();
     public ArrayList<FrontUser> connectedUsersAL = new ArrayList<>();
     public ArrayList<FrontUser> disconectedUsersAL;
-    private ArrayList<FrontUser> allUsersWithoutInstance; // All users without connected User
-    public ArrayList<FrontGroup> frontGroupsAL = new ArrayList<>();
 
     public FrontUser createdUser;
 
@@ -81,6 +79,7 @@ public class RootRequest {
         // Getting All Connected Users
         ServerResponse connectedUsersPayload = this.sendRequest("/user/getAllConnectedUsers",null);
         FrontUser[] connectedUsers = gson.fromJson(connectedUsersPayload.payload,FrontUser[].class);
+        System.out.println(connectedUsers);
         this.connectedUsersAL.clear();
         Collections.addAll(this.connectedUsersAL,connectedUsers);
         // Setting All Disconnected Users
@@ -99,15 +98,15 @@ public class RootRequest {
         this.disconectedUsersAL.remove(frontUser);
     }
     /*-------------- GROUP MANAGEMENT --------------*/
-    public String[] askGroupsFromServer(){
+    public FrontGroup[] askGroupsFromServer(){
         ServerResponse serverPayload = this.sendRequest("/group/getAllDatabaseGroups",null);
-        // Deserialize Data
         FrontGroup[] frontGroups = gson.fromJson(serverPayload.payload, FrontGroup[].class);
-        ArrayList<String> groups = new ArrayList<>();
-        for(FrontGroup frontGroup : frontGroups){
-            this.frontGroupsAL.add(frontGroup);
-            groups.add(frontGroup.name);
-        }
-        return Arrays.copyOf(groups.toArray(), groups.size(),String[].class);
+        return frontGroups;
+    }
+    public void removeGroup(Map<String,String> payload){
+        this.sendRequest("/group/deleteGroup",payload);
+    }
+    public void createGroup(Map<String,String> payload){
+        this.sendRequest("/group/createGroup",payload);
     }
 }

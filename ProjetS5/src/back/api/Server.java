@@ -108,6 +108,7 @@ public class Server {
 	}
 
 	public static void disconnect(ClientHandler clientHandler) {
+		System.out.println("----------------------------------->bite");
 		treatQueryWithoutResponse("DELETE FROM dbConnectionToken WHERE userId=" + clientHandler.getClientId() + ";");
 	}
 
