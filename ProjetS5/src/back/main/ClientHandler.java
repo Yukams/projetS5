@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ClientHandler implements Runnable {
@@ -21,6 +23,7 @@ public class ClientHandler implements Runnable {
     private PrintWriter out;
     private Gson gson = new Gson();
     private int clientId = -1;
+    private boolean clientIsAdmin = false;
     private boolean doUpdate = false;
 
     public ClientHandler(Socket clientSocket) throws IOException {
@@ -43,12 +46,9 @@ public class ClientHandler implements Runnable {
 
                     // Close connection if user is not connected and requests anything else than a connection
                     if(response != null) {
-                        System.out.println("[SERVER] Sending response to client (" + clientId + ") => " + response);
+                        System.out.println("[SERVER] Sending response to client (" + clientId + ") => " + response.payload);
                         out.println(gson.toJson(response));
-
-                        if(doUpdate) {
-                            updateAllClients(response);
-                        }
+                        doUpdateIfNeeded(serverPayload);
                     }
                 }
             }
@@ -58,18 +58,20 @@ public class ClientHandler implements Runnable {
             Utils.closeAll(this.client, this.in, this.out, this.clientId);
 
             if(clientId != -1){
+                System.out.println("[SERVER] Disconnecting client " + clientId);
                 Server.disconnect(this);
             }
             mainBack.clients.remove(this);
         }
     }
 
-    private void updateAllClients(ServerResponse serverResponse) {
+    private void updateAllClients(ServerResponse serverResponse, boolean adminOnly) {
         for(ClientHandler client : mainBack.clients) {
-            System.out.println("Client num " + client.getClientId() + " -> " + client.getSocket());
-            ServerResponse update = new ServerResponse("", "{}", "update");
-            PrintWriter out = client.getPrinterOut();
-            out.println(gson.toJson(update));
+            if(!adminOnly || this.clientIsAdmin) {
+                ServerResponse update = new ServerResponse(serverResponse.address, serverResponse.payload, "update");
+                System.out.println("[SERVER] Sending update to client (" + client.getClientId() + ") => " + update.payload);
+                client.getPrinterOut().println(gson.toJson(update));
+            }
         }
     }
 
@@ -85,7 +87,7 @@ public class ClientHandler implements Runnable {
         String toClient = switch (address) {
             // CONNECTIVITY
             // { "username": String, "password": String }
-            case "/connect" -> Server.connect(this ,payload);
+            case "/connect" -> Server.connect(this, payload);
 
             // USER
             // { "id": int }
@@ -141,14 +143,22 @@ public class ClientHandler implements Runnable {
             default -> "\"null\"";
         };
 
-        doUpdateIfNeededSwitch(address);
-
-        return new ServerResponse(address, gson.toJson(toClient), "response");
+        return new ServerResponse(address, toClient, "response");
     }
 
-    private void doUpdateIfNeededSwitch(String address) {
+    private void doUpdateIfNeeded(ClientRequest request) {
+        String address = request.address;
+
         switch (address) {
-            case "/user/getAllDatabaseUsers", "/group/addUserToGroup" -> this.doUpdate = true;
+            // CONNECTIVITY
+            case "/connect" -> {
+                updateAllClients(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())), true);
+            }
+
+            // USER
+            case "/user/createUser" -> {
+                updateAllClients(treatRequest(new ClientRequest("/user/getAllDatabaseUsers", new HashMap<>())), true);
+            }
         }
     }
 
@@ -166,5 +176,9 @@ public class ClientHandler implements Runnable {
 
     public PrintWriter getPrinterOut() {
         return this.out;
+    }
+
+    public void setClientIsAdmin(boolean bool) {
+        this.clientIsAdmin = bool;
     }
 }

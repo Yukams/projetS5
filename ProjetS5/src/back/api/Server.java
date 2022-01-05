@@ -90,9 +90,13 @@ public class Server {
 			}
 		}
 
-		// Save id for disconnection
+
 		if(objectList.length != 0) {
+			// Save id for disconnection
 			clientHandler.setClientId(objectList[0].id);
+			// Save adminRole for updates
+			clientHandler.setClientIsAdmin(objectList[0].isAdmin.equals("1"));
+
 			createConnectionToken(objectList[0].id);
 			return gson.toJson(objectList[0]);
 		}

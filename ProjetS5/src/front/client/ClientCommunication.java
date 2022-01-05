@@ -28,8 +28,8 @@ public class ClientCommunication {
 
         // Connect to the server
         Map<String, String> payload = new HashMap<>();
-        payload.put("username", "Jean31");
-        payload.put("password", "123");
+        payload.put("username", "root");
+        payload.put("password", "root");
         ServerRequest serverRequestConnect = new ServerRequest("/connect", payload);
         String request = gson.toJson(serverRequestConnect);
         out.println(request);
@@ -39,6 +39,18 @@ public class ClientCommunication {
         ServerRequest serverRequestUsers = new ServerRequest("/user/getAllDatabaseUsers", payload);
         request = gson.toJson(serverRequestUsers);
         System.out.println("[CLIENT] Do request to server /user/getAllDatabaseUsers" + request);
+        out.println(request);
+
+        // Create a new user (update should be received after it IF isAdmin set to true)
+        payload = new HashMap<>();
+        payload.put("username", "testUser");
+        payload.put("name", "Valentin");
+        payload.put("surname", "Tahon");
+        payload.put("password", "123");
+        payload.put("isAdmin", "true");
+        ServerRequest serverRequestAddUser = new ServerRequest("/user/createUser", payload);
+        request = gson.toJson(serverRequestAddUser);
+        System.out.println("[CLIENT] Do request to server /user/createUser" + request);
         out.println(request);
 
 
