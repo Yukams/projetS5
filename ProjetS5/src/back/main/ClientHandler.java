@@ -156,6 +156,7 @@ public class ClientHandler implements Runnable {
             // { "userId": int }
             case "/group/getGroupsOfUserById" -> IGroup.getGroupsOfUserById(payload);
 
+            // {}
             case "/group/getGroupsOfUser" -> IGroup.getGroupsOfUser(this.clientId);
 
             default -> "\"null\"";

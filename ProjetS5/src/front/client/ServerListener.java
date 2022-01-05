@@ -92,6 +92,8 @@ public class ServerListener implements Runnable {
             case "/group/deleteGroup" -> System.out.println("/group/deleteGroup");
             case "/group/addUserToGroup" -> System.out.println("/group/addUserToGroup");
             case "/group/getAllDatabaseGroups" -> System.out.println("/group/getAllDatabaseGroups");
+            case "/group/getGroupsOfUserById" -> System.out.println("/group/getGroupsOfUserById");
+            case "/group/getGroupsOfUser" -> System.out.println("/group/getGroupsOfUser");
         }
     }
 }
