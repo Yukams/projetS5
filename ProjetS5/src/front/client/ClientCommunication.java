@@ -41,13 +41,13 @@ public class ClientCommunication {
         System.out.println("[CLIENT] Do request to server /user/getAllDatabaseUsers" + request);
         out.println(request);
 
-        // Create a new user (update should be received after it IF isAdmin set to true)
+        // Create a new user (update should be received after it IF an admin is connected)
         payload = new HashMap<>();
         payload.put("username", "testUser");
         payload.put("name", "Valentin");
         payload.put("surname", "Tahon");
         payload.put("password", "123");
-        payload.put("isAdmin", "true");
+        payload.put("isAdmin", "false");
         ServerRequest serverRequestAddUser = new ServerRequest("/user/createUser", payload);
         request = gson.toJson(serverRequestAddUser);
         System.out.println("[CLIENT] Do request to server /user/createUser" + request);

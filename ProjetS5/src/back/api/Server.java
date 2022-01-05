@@ -97,8 +97,11 @@ public class Server {
 			// Save adminRole for updates
 			clientHandler.setClientIsAdmin(objectList[0].isAdmin.equals("1"));
 
+
+
+
 			createConnectionToken(objectList[0].id);
-			return gson.toJson(objectList[0]);
+			return gson.toJson(new FrontUser(objectList[0].name, objectList[0].surname, objectList[0].id, objectList[0].isAdmin.equals("1")));
 		}
 
 		return null;

@@ -73,11 +73,6 @@ public class ServerListener implements Runnable {
                 FrontUser[] serverUsers = gson.fromJson(payload, FrontUser[].class);
                 ClientCommunication.allUsers = new ArrayList<>();
                 ClientCommunication.allUsers.addAll(Arrays.asList(serverUsers));
-
-                // Verifying print
-                for (FrontUser user : ClientCommunication.allUsers) {
-                    System.out.println("user => " + gson.toJson(user));
-                }
             }
 
             // THREAD
