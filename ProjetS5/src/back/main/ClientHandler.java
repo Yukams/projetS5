@@ -21,6 +21,7 @@ public class ClientHandler implements Runnable {
     private PrintWriter out;
     private Gson gson = new Gson();
     private int clientId = -1;
+    private boolean doUpdate = false;
 
     public ClientHandler(Socket clientSocket) throws IOException {
         client = clientSocket;
@@ -38,15 +39,17 @@ public class ClientHandler implements Runnable {
 
                 if(request != null) {
                     ClientRequest serverPayload = gson.fromJson(request, ClientRequest.class);
-                    String response = treatRequest(serverPayload);
+                    ServerResponse response = treatRequest(serverPayload);
 
                     // Close connection if user is not connected and requests anything else than a connection
-                    if(response == null) {
-                        break;
-                    }
+                    if(response != null) {
+                        System.out.println("[SERVER] Sending response to client (" + clientId + ") => " + response);
+                        out.println(gson.toJson(response));
 
-                    System.out.println("[SERVER] Sending response to client (" + clientId + ") => " + response);
-                    out.println(response);
+                        if(doUpdate) {
+                            updateAllClients(response);
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
@@ -57,11 +60,20 @@ public class ClientHandler implements Runnable {
             if(clientId != -1){
                 Server.disconnect(this);
             }
+            mainBack.clients.remove(this);
         }
     }
 
-    public String treatRequest(ClientRequest request) {
+    private void updateAllClients(ServerResponse serverResponse) {
+        for(ClientHandler client : mainBack.clients) {
+            System.out.println("Client num " + client.getClientId() + " -> " + client.getSocket());
+            ServerResponse update = new ServerResponse("", "{}", "update");
+            PrintWriter out = client.getPrinterOut();
+            out.println(gson.toJson(update));
+        }
+    }
 
+    private ServerResponse treatRequest(ClientRequest request) {
         String address = request.address;
         Map<String,String> payload = request.payload;
 
@@ -90,7 +102,6 @@ public class ClientHandler implements Runnable {
 
             // {}
             case "/user/getAllDatabaseUsers" -> IUser.getAllDatabaseUsers();
-
 
             // THREAD
             // { "id": int }
@@ -130,7 +141,15 @@ public class ClientHandler implements Runnable {
             default -> "\"null\"";
         };
 
-        return "{ \"payload\": " + gson.toJson(toClient) + "}";
+        doUpdateIfNeededSwitch(address);
+
+        return new ServerResponse(address, gson.toJson(toClient), "response");
+    }
+
+    private void doUpdateIfNeededSwitch(String address) {
+        switch (address) {
+            case "/user/getAllDatabaseUsers", "/group/addUserToGroup" -> this.doUpdate = true;
+        }
     }
 
     public void setClientId(int id) {
@@ -139,5 +158,13 @@ public class ClientHandler implements Runnable {
 
     public int getClientId() {
         return this.clientId;
+    }
+
+    public Socket getSocket() {
+        return this.client;
+    }
+
+    public PrintWriter getPrinterOut() {
+        return this.out;
     }
 }

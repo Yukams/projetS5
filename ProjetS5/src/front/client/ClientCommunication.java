@@ -1,61 +1,50 @@
 package front.client;
 
 import com.google.gson.Gson;
+import front.frontobjects.FrontUser;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ClientCommunication {
     private static final Gson gson = new Gson();
+    public static List<FrontUser> allUsers = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         String serverIp = "localhost";
         int serverPort = 9090;
 
         Socket s = new Socket(serverIp, serverPort);
-        BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
         PrintWriter out = new PrintWriter(s.getOutputStream(), true);
 
-        // Get User By Id example
+        /* IMPLEMENTING SERVER UPDATES LISTENER */
+        ServerListener serverConn = new ServerListener(s);
+        new Thread(serverConn).start();
+
+        // Connect to the server
         Map<String, String> payload = new HashMap<>();
-        //payload.put("id", "11");
-        //ServerRequest serverRequest = new ServerRequest("/user/getUserById", payload);
-        //ServerRequest serverRequest = new ServerRequest("/thread/getThreadsByUserId", payload);
-        //payload.put("username", "Jean31");
-        //payload.put("password", "123");
-        //ServerRequest serverRequest = new ServerRequest("/connect", payload);
-        payload.put("authorId", "11");
-        payload.put("content", "je suis un nouveau message");
-        //payload.put("threadId", "30");
-        //ServerRequest serverRequest = new ServerRequest("/message/createMessage", payload);
-        payload.put("groupId", "92");
-        payload.put("title", "je suis un nouveau thread");
-        ServerRequest serverRequest = new ServerRequest("/thread/createThread", payload);
-        String request = gson.toJson(serverRequest);
-        System.out.println("[CLIENT] Do request to server" + request);
+        payload.put("username", "Jean31");
+        payload.put("password", "123");
+        ServerRequest serverRequestConnect = new ServerRequest("/connect", payload);
+        String request = gson.toJson(serverRequestConnect);
         out.println(request);
 
-        String serverResponseString = in.readLine();
-        ServerResponse serverPayload = gson.fromJson(serverResponseString, ServerResponse.class);
-        System.out.println("[CLIENT] Response from server :\n" + serverPayload.payload);
-
-        //////// SECOND CALL
-        serverRequest = new ServerRequest("/user/getAllConnectedUsers", payload);
-        request = gson.toJson(serverRequest);
-        System.out.println("[CLIENT] Do request to server" + request);
+        // getAllDatabaseUsers
+        payload = new HashMap<>();
+        ServerRequest serverRequestUsers = new ServerRequest("/user/getAllDatabaseUsers", payload);
+        request = gson.toJson(serverRequestUsers);
+        System.out.println("[CLIENT] Do request to server /user/getAllDatabaseUsers" + request);
         out.println(request);
 
-        serverResponseString = in.readLine();
-        serverPayload = gson.fromJson(serverResponseString, ServerResponse.class);
-        System.out.println("[CLIENT] Response from server :\n" + serverPayload.payload);
-        //while(true);
 
-        out.close();
-        in.close();
+        System.out.println("[CLIENT] Entering waiting state...");
+        while(true);
+
+        //out.close();
     }
 }
