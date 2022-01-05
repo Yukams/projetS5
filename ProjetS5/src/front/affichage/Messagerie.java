@@ -9,6 +9,8 @@ import front.users.Utilisateur;
 
 import javax.swing.*;
 
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -57,7 +59,9 @@ public class Messagerie extends JFrame {
         listTest.add(messTest2);
         FilDeDiscussion test1 = new FilDeDiscussion(1,"Probleme tuyau", groupTest,utiTest,listTest);
 
-        DefaultMutableTreeNode filTest = new DefaultMutableTreeNode(test1,false);
+        DefaultMutableTreeNode filTest = new DefaultMutableTreeNode(test1);
+
+                //new DefaultMutableTreeNode(test1,false);
         peda.add(filTest);
 
 
@@ -97,7 +101,7 @@ public class Messagerie extends JFrame {
 
         splitPane.getRightComponent().setBackground(Color.gray);
 
-        /*tree.addTreeSelectionListener(new TreeSelectionListener() {
+        tree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
@@ -105,11 +109,12 @@ public class Messagerie extends JFrame {
                     return;
                 }
                 if (node.isLeaf()){
-                    JPanel panel=new JPanel();
+
                     FilDeDiscussion f = (FilDeDiscussion) node.getUserObject();
                     BorderLayout layout = new BorderLayout();
+                    JPanel panel=new JPanel(layout);
+
                     //For the title
-                    //panel.setLayout(layout);
                     JTextPane title = new JTextPane();
                     title.setText(f.getTitre());
                     title.setEditable(false);
@@ -122,6 +127,8 @@ public class Messagerie extends JFrame {
                     title.setBackground(Color.gray);
                     panel.add(title,BorderLayout.PAGE_START);
 
+
+
                     //For the writing part
                     JTextField enterMess = new JTextField("Envoyer un message dans "+f.getTitre());
                     enterMess.setFont(new Font("Serif", Font.ITALIC, 10));
@@ -130,11 +137,17 @@ public class Messagerie extends JFrame {
                     //For the messages
                     JList<Message> messList= (JList<Message>) f.getMessages();
                     JScrollPane messScroll = new JScrollPane(messList,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                    panel.add(messScroll,BorderLayout.CENTER);
-                    //splitPane.setRightComponent(panel);
+                    panel.add(new JLabel(),BorderLayout.CENTER);
+
+                    panel.add(new JLabel(),
+                            BorderLayout.LINE_START);
+                    panel.add(new JLabel(),
+                            BorderLayout.LINE_END);
+                    splitPane.setRightComponent(panel);
+
                 }
             }
-        });*/
+        });
 
         this.setLayout(new BorderLayout());
         this.add(splitPane,BorderLayout.CENTER);
