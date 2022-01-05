@@ -1,7 +1,6 @@
 package front.affichage;
 
 import front.client.ClientConnexion;
-import front.client.UserRequest;
 import front.server.ServerInterface;
 import front.utils.Utils;
 
@@ -10,14 +9,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class FenetreConnexion extends JFrame implements ActionListener {
+public class ConnexionWindow extends JFrame implements ActionListener {
 
 
     private final JTextField idTexte = new JTextField(10);
     private final JPasswordField mdpTexte = new JPasswordField(10);
     public ClientConnexion clientConnexion;
 
-    public FenetreConnexion(){
+    public ConnexionWindow(){
         //titre
         super("Se connecter");
         //taille fenetre
@@ -80,8 +79,8 @@ public class FenetreConnexion extends JFrame implements ActionListener {
                     serverInterface.setVisible(true);
                 } else {
                     setVisible(false);
-                    Messagerie mess = new Messagerie(this.clientConnexion);
-                    mess.setVisible(true);
+                    ChatWindow chatWindow = new ChatWindow(this.clientConnexion);
+                    chatWindow.setVisible(true);
                 }
             }
         }

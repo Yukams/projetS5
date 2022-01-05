@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import front.affichage.FenetreConnexion;
 import front.frontobjects.FrontUser;
 import front.utils.Utils;
 
@@ -66,11 +65,6 @@ public class ClientConnexion {
             Utils.closeAll(socket, in, out);
         }
     }
-
-    public Socket getSocket() {
-        return this.socket;
-    }
-
     public BufferedReader getIn() {
         return this.in;
     }

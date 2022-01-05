@@ -1,6 +1,6 @@
 package front.client;
 
-import front.affichage.FenetreConnexion;
+import front.affichage.ConnexionWindow;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,7 +12,7 @@ public class ClientHandler implements Runnable{
     private Socket socket;
     private DataOutputStream dataOutputStream; //writer
     private ObjectInputStream objectInputStream; //reader
-    private FenetreConnexion connexionWindow;
+    private ConnexionWindow connexionWindow;
     private String usernamePasswordToken;
 
     public ClientHandler(Socket socket) {
@@ -36,7 +36,7 @@ public class ClientHandler implements Runnable{
 
     private void launchConnexionWindow() {
         System.out.println("Launching Window");
-        this.connexionWindow = new FenetreConnexion();
+        this.connexionWindow = new ConnexionWindow();
         connexionWindow.setVisible(true);
     }
 

@@ -1,6 +1,6 @@
 package front.main;
 
-import front.affichage.FenetreConnexion;
+import front.affichage.ConnexionWindow;
 import front.utils.Utils;
 
 public class mainFront {
@@ -13,7 +13,7 @@ public class mainFront {
 
 	// Launch connexion window
 	private static void launchConnexionWindow() {
-		FenetreConnexion fen = new FenetreConnexion();
+		ConnexionWindow fen = new ConnexionWindow();
 		fen.setVisible(true);
 	}
 

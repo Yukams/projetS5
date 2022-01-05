@@ -7,10 +7,19 @@ package front.affichage;
 
 
 
+import front.client.ClientConnexion;
+import front.client.UserRequest;
+import front.frontobjects.FrontGroup;
+import front.frontobjects.FrontThread;
+import front.frontobjects.FrontUser;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,19 +35,27 @@ import javax.swing.tree.DefaultTreeModel;
  *
  * @author Utilisateur
  */
-public class Mess extends JFrame {
-    private String groupSelectedNewFil;
+public class ChatWindow extends JFrame {
+    private FrontGroup groupSelectedNewFil;
     private String [] listGroupe;
     private String titleAdd;
     private Map<String,JPanel> componentForTicket = new HashMap<>();
     private boolean firstClick = true;
 
+    private UserRequest userRequest;
+    private FrontUser connectedUser;
+    private FrontGroup allFrontGroup[];
+    private FrontThread frontThreadArrayList[];
 
-    /**
-     * Creates new form Mess
-     */
 
-    public Mess() {
+
+    public ChatWindow(ClientConnexion clientConnexion) {
+        super("Chat: "+clientConnexion.connectedUser.toString());
+        this.userRequest = new UserRequest(clientConnexion);
+        this.connectedUser = clientConnexion.connectedUser;
+        this.allFrontGroup = this.userRequest.askGroupsFromServer();
+        this.frontThreadArrayList = this.userRequest.askThreadsFromServer(this.connectedUser);
+
 
         initComponents();
 
@@ -100,7 +117,7 @@ public class Mess extends JFrame {
         labelAjoutTitre.setHorizontalTextPosition(SwingConstants.CENTER);
 
         //TO DO remplacer valeur item par string de tous les groupes
-        comboBoxGroup.setModel(new DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboBoxGroup.setModel(new DefaultComboBoxModel<>(this.allFrontGroup));
 
 
         labelChoixGroupeAjout.setFont(new java.awt.Font("Tahoma", 2, 18)); // NOI18N
@@ -180,7 +197,6 @@ public class Mess extends JFrame {
         );
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Messagerie ");
 
         splitPaneMessagerie.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
@@ -221,9 +237,8 @@ public class Mess extends JFrame {
 
 
         //ici tree a faire
-        //remplacer listGroupe par les groupes de l'utilisateur
-        listGroupe=new String[] { "Item 1", "Item 2", "Item 3", "Item 4" };
-        initTree(listGroupe);
+        //remplacer listGroupe par les groupes de l'utilisateur // Group of User
+        initTree(this.allFrontGroup);
         scrollPaneTicket.setViewportView(treeTicket);
         treeTicket.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
@@ -231,6 +246,7 @@ public class Mess extends JFrame {
                 ticketSelected(e);
             }
         });
+        treeTicket.setAutoscrolls(true);
 
         GroupLayout panelLeftLayout = new GroupLayout(panelLeft);
         panelLeft.setLayout(panelLeftLayout);
@@ -384,12 +400,17 @@ public class Mess extends JFrame {
 
 
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {
+        /*---Date format--*/
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
+        Date date = new Date();
+        String dayStr = dayFormat.format(date);
+        /*----------------*/
+
         titleAdd = zoneTextTitre.getText();
         String messageAdd = zoneTextNewMessage.getText();
-        Object group = comboBoxGroup.getSelectedItem();
 
         //avoir le groupe choisi pour ajouter un fil
-        groupSelectedNewFil= (String) comboBoxGroup.getSelectedItem();
+        groupSelectedNewFil= (FrontGroup)comboBoxGroup.getSelectedItem();
         //System.out.println("groupe choisi :"+groupSelectedNewFil);
 
 
@@ -405,7 +426,7 @@ public class Mess extends JFrame {
 
         JScrollPane scrollPaneNewMessage = new JScrollPane();
         JTextPane textPaneNewMessage = new JTextPane();
-        textPaneNewMessage.setText("User, date\n\n"+messageAdd);
+        textPaneNewMessage.setText(this.connectedUser.toString()+", "+dayStr+"\n\n"+messageAdd);
         textPaneNewMessage.setEditable(false);
         scrollPaneNewMessage.setViewportView(textPaneNewMessage);
 
@@ -423,9 +444,9 @@ public class Mess extends JFrame {
 
 
             int i = 0;
-            for (String groupe : listGroupe) {
+            for (FrontGroup group : this.allFrontGroup) {
 
-                if (groupe.equals(groupSelectedNewFil)) {
+                if (group.equals(groupSelectedNewFil)) {
                     DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
                     DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
 
@@ -437,12 +458,8 @@ public class Mess extends JFrame {
             }
         }
 
-
-
-
         //System.out.println("text="+zoneTexteMessage.getText());
         zoneTexteMessage.setText("");
-
 
     }
     private void zoneTexteMessageMouseClicked(MouseEvent evt){
@@ -453,15 +470,18 @@ public class Mess extends JFrame {
     }
 
     private void zoneTexteMessageActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
-
+        /*---Date format--*/
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
+        Date date = new Date();
+        String dayStr = dayFormat.format(date);
+        /*----------------*/
 
         DefaultMutableTreeNode selectedItemTree = (DefaultMutableTreeNode) treeTicket.getLastSelectedPathComponent();
         if(selectedItemTree!= null) {
 
             JScrollPane scrollPaneNewMessage = new JScrollPane();
             JTextPane textPaneNewMessage = new JTextPane();
-            textPaneNewMessage.setText("User, date\n\n"+zoneTexteMessage.getText());
+            textPaneNewMessage.setText(this.connectedUser.toString()+", "+dayStr+"\n\n"+zoneTexteMessage.getText());
             textPaneNewMessage.setEditable(false);
             scrollPaneNewMessage.setViewportView(textPaneNewMessage);
 
@@ -478,12 +498,11 @@ public class Mess extends JFrame {
         }
     }
 
-    private void initTree(String [] listMessage) {
+    private void initTree(FrontGroup[] groupList) {
         DefaultMutableTreeNode rootTree = new DefaultMutableTreeNode("Groups");
-        for (String mess : listMessage) {
-            DefaultMutableTreeNode groupe = new DefaultMutableTreeNode(mess);
-
-            rootTree.add(groupe);
+        for (FrontGroup group : groupList) {
+            DefaultMutableTreeNode groupDMTN = new DefaultMutableTreeNode(group);
+            rootTree.add(groupDMTN);
         }
         treeTicket = new JTree(rootTree);
         treeTicket.setBackground(new java.awt.Color(102, 102, 102));
@@ -491,43 +510,10 @@ public class Mess extends JFrame {
         treeTicket.setRootVisible(false);
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Mess.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Mess.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Mess.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Mess.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            new Mess().setVisible(true);
-        });
-    }
-
     // Variables declaration - do not modify
     private JButton buttonAddNewFil;
     private JButton buttonAjoutTicket;
-    private JComboBox<String> comboBoxGroup;
+    private JComboBox<FrontGroup> comboBoxGroup;
     private JFrame FrameAjout;
     private JLabel labelAjoutTitre;
     private JLabel labelChoixGroupeAjout;

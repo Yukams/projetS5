@@ -2,23 +2,25 @@ package front.client;
 
 import com.google.gson.Gson;
 import front.frontobjects.FrontGroup;
+import front.frontobjects.FrontThread;
+import front.frontobjects.FrontUser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class UserRequest {
     /* Server Attributes Declaration */
-    private Socket socket;
     private BufferedReader in; //Read
     private PrintWriter out; //Write
     private static final Gson gson = new Gson();
 
     public UserRequest(ClientConnexion clientConnexion){
         System.out.println("\n-*-*[User Services]*-*-\n");
-        this.socket = clientConnexion.getSocket();
         this.in = clientConnexion.getIn();
         this.out = clientConnexion.getOut();
     }
@@ -48,4 +50,13 @@ public class UserRequest {
         FrontGroup[] frontGroups = gson.fromJson(serverPayload.payload, FrontGroup[].class);
         return frontGroups;
     }
+    /*-------------- THREAD MANAGEMENT --------------*/
+    public FrontThread[] askThreadsFromServer(FrontUser frontUser){
+        Map<String,String> payload = new HashMap<>();
+        payload.put("id",""+frontUser.id);
+        ServerResponse serverPayload = this.sendRequest("/thread/getThreadsByUserId",payload);
+        FrontThread[] frontThreads = gson.fromJson(serverPayload.payload, FrontThread[].class);
+        return frontThreads;
+    }
+
 }

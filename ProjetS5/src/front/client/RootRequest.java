@@ -1,14 +1,11 @@
 package front.client;
 
 import com.google.gson.Gson;
-import front.affichage.FenetreConnexion;
 import front.frontobjects.FrontGroup;
 import front.frontobjects.FrontUser;
-import front.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.*;
@@ -16,7 +13,6 @@ import java.util.*;
 
 public class RootRequest{
     /* Server Attributes Declaration */
-    private Socket socket;
     private BufferedReader in; //Read
     private PrintWriter out; //Write
     Map<String, String> payload = new HashMap<>();
@@ -29,7 +25,6 @@ public class RootRequest{
 
     public RootRequest(ClientConnexion clientConnexion){
         System.out.println("\n-*-*[Admin Services]*-*-\n");
-        this.socket = clientConnexion.getSocket();
         this.in = clientConnexion.getIn();
         this.out = clientConnexion.getOut();
     }
