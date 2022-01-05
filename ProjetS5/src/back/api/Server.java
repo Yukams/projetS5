@@ -322,6 +322,18 @@ public class Server {
 		return group;
 	}
 
+	public static List<FrontGroup> getGroupsOfUserById(int userId) {
+		String jsonString = treatQuery("SELECT id FROM dbGroup WHERE userId=" + userId + ";");
+		DbGroup[] dbGroups = gson.fromJson(jsonString, DbGroup[].class);
+
+		List<FrontGroup> groups = new ArrayList<>();
+		for(DbGroup group: dbGroups) {
+			groups.add(getGroup(group.id));
+		}
+
+		return groups;
+	}
+
 	/* Users */
 	public static FrontUser getUser(int userId) {
 		String jsonString = treatQuery("SELECT * FROM dbUser WHERE id=" + userId + ";");

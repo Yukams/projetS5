@@ -76,9 +76,9 @@ public class ServerListener implements Runnable {
             }
 
             // THREAD
-            case "/thread/getThreadsByUserId" -> System.out.println("/thread/getThreadsByUserId");
+            case "/thread/getAllThreadsForUser" -> System.out.println("/thread/getAllThreadsForUser");
             case "/thread/createThread" -> System.out.println("/thread/createThread");
-            case "/user/deleteThread" -> System.out.println("/user/deleteThread");
+            case "/thread/deleteThread" -> System.out.println("/thread/deleteThread");
             case "/thread/updateMessagesOfThread" -> System.out.println("/thread/updateMessagesOfThread");
 
 
@@ -92,6 +92,8 @@ public class ServerListener implements Runnable {
             case "/group/deleteGroup" -> System.out.println("/group/deleteGroup");
             case "/group/addUserToGroup" -> System.out.println("/group/addUserToGroup");
             case "/group/getAllDatabaseGroups" -> System.out.println("/group/getAllDatabaseGroups");
+            case "/group/getGroupsOfUserById" -> System.out.println("/group/getGroupsOfUserById");
+            case "/group/getGroupsOfUser" -> System.out.println("/group/getGroupsOfUser");
         }
     }
 }

@@ -59,14 +59,17 @@ public class ClientHandler implements Runnable {
             if(clientId != -1){
                 System.out.println("[SERVER] Disconnecting client " + clientId);
                 Server.disconnect(this);
+                updateAllClients(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())), true, false, true);
             }
             mainBack.clients.remove(this);
         }
     }
 
-    private void updateAllClients(ServerResponse serverResponse, boolean adminOnly) {
+    private void updateAllClients(ServerResponse serverResponse, boolean adminOnly, boolean usersOnly, boolean withoutSelf) {
         for(ClientHandler client : mainBack.clients) {
-            if(!adminOnly || this.clientIsAdmin) {
+            boolean isAdmin = client.getClientIsAdmin();
+
+            if((!adminOnly || isAdmin) && (!usersOnly || !isAdmin) && (!withoutSelf || client.getClientId() != this.clientId)) {
                 ServerResponse update = new ServerResponse(serverResponse.address, serverResponse.payload, "update");
                 System.out.println("[SERVER] Sending update to client (" + client.getClientId() + ") => " + update.payload);
                 client.getPrinterOut().println(gson.toJson(update));
@@ -86,6 +89,7 @@ public class ClientHandler implements Runnable {
         String toClient = switch (address) {
             // CONNECTIVITY
             // { "username": String, "password": String }
+            // Updates
             case "/connect" -> Server.connect(this, payload);
 
             // USER
@@ -93,9 +97,11 @@ public class ClientHandler implements Runnable {
             case "/user/getUserById" -> IUser.getUserById(payload);
 
             // { "username": String, "name": String, "surname": String, "password": String, "isAdmin": boolean }
+            // Updates
             case "/user/createUser" -> IUser.createUser(payload);
 
             // { "id": int }
+            // Updates
             case "/user/deleteUser" -> IUser.deleteUser(payload);
 
             // {}
@@ -105,39 +111,53 @@ public class ClientHandler implements Runnable {
             case "/user/getAllDatabaseUsers" -> IUser.getAllDatabaseUsers();
 
             // THREAD
-            // { "id": int }
-            case "/thread/getThreadsByUserId" -> IThread.getAllThreadForUser(payload);
+            // {}
+            case "/thread/getAllThreadsForUser" -> IThread.getAllThreadForUser(this.clientId);
 
             // { "authorId": int, "groupId": int, "title": String, "content": String }
+            // Updates
             case "/thread/createThread" -> IThread.createThread(payload);
 
             // { "id": int }
-            case "/user/deleteThread" -> IThread.deleteThread(payload);
+            // Updates
+            case "/thread/deleteThread" -> IThread.deleteThread(payload);
 
             // { "userId": int, "threadId": int }
+            // Updates
             case "/thread/updateMessagesOfThread" -> IThread.updateMessages(payload);
 
 
             // MESSAGE
             // { "authorId": int, "content": String, "threadId": int }
+            // Updates
             case "/message/createMessage" -> IMessage.createMessage(payload);
 
             // { "id": int }
+            // Updates
             case "/message/deleteMessage" -> IMessage.deleteMessage(payload);
 
 
             // GROUP
             // { "name": String }
+            // Updates
             case "/group/createGroup" -> IGroup.createGroup(payload);
 
             // { "id": int }
+            // Updates
             case "/group/deleteGroup" -> IGroup.deleteGroup(payload);
 
             // { "groupId": int, "userId": int }
+            // Updates
             case "/group/addUserToGroup" -> IGroup.addUserToGroup(payload);
 
             // {}
             case "/group/getAllDatabaseGroups" -> IGroup.getAllDatabaseGroups();
+
+            // { "userId": int }
+            case "/group/getGroupsOfUserById" -> IGroup.getGroupsOfUserById(payload);
+
+            // {}
+            case "/group/getGroupsOfUser" -> IGroup.getGroupsOfUser(this.clientId);
 
             default -> "\"null\"";
         };
@@ -150,13 +170,32 @@ public class ClientHandler implements Runnable {
 
         switch (address) {
             // CONNECTIVITY
-            case "/connect" -> {
-                updateAllClients(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())), true);
-            }
+            case "/connect" -> updateAllClients(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())), true, false, false);
 
             // USER
-            case "/user/createUser" -> {
-                updateAllClients(treatRequest(new ClientRequest("/user/getAllDatabaseUsers", new HashMap<>())), true);
+            case "/user/createUser" -> updateAllClients(treatRequest(new ClientRequest("/user/getAllDatabaseUsers", new HashMap<>())), true, false, false);
+            case "/user/deleteUser" -> {
+                updateAllClients(treatRequest(new ClientRequest("/user/getAllDatabaseUsers", new HashMap<>())), true, false, false);
+                // TODO only for affected users
+                updateAllClients(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())), false, true, false);
+            }
+
+            // THREAD & MESSAGE & addUserToGroup
+            // TODO only for affected users
+            case "/thread/createThread", "/thread/deleteThread", "/thread/updateMessagesOfThread", "/message/createMessage", "/message/deleteMessage"
+                    -> updateAllClients(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())), false, true, false);
+
+            // GROUP
+            case "/group/createGroup" ->
+                    updateAllClients(treatRequest(new ClientRequest("/group/getAllDatabaseGroups", new HashMap<>())), true, false, false);
+            case "/group/deleteGroup" -> {
+                // TODO only for affected users
+                updateAllClients(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())), false, true, false);
+                updateAllClients(treatRequest(new ClientRequest("/group/getAllDatabaseGroups", new HashMap<>())), true, false, false);
+            }
+            // TODO do it only for the selected user
+            case "/group/addUserToGroup" -> {
+                updateAllClients(treatRequest(new ClientRequest("/group/getGroupsOfUser", new HashMap<>())), false, true, false);
             }
         }
     }
@@ -169,15 +208,15 @@ public class ClientHandler implements Runnable {
         return this.clientId;
     }
 
-    public Socket getSocket() {
-        return this.client;
-    }
-
     public PrintWriter getPrinterOut() {
         return this.out;
     }
 
     public void setClientIsAdmin(boolean bool) {
         this.clientIsAdmin = bool;
+    }
+
+    public boolean getClientIsAdmin() {
+        return this.clientIsAdmin;
     }
 }
