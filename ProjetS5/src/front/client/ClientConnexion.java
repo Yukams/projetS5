@@ -18,22 +18,22 @@ public class ClientConnexion {
 
 
     private Socket socket;
-    private BufferedReader in; //Read
     private PrintWriter out; //Write
     Map<String, String> authPayload = new HashMap<>();
     private static final Gson gson = new Gson();
     /*--------------*/
     public final static String HOST = "127.0.0.1";
     public static final int PORT = 9090;
-    public FrontUser connectedUser = null;
+    public static FrontUser connectedUser = null;
 
     public ClientConnexion(String username, String password){
         try {
             System.out.println("\n-*-*[CONNECTING...]*-*-\n");
             this.socket = new Socket(HOST, PORT);
-
-            this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             this.out = new PrintWriter(this.socket.getOutputStream(), true);
+            /* IMPLEMENTING SERVER UPDATES LISTENER */
+            ServerListener serverConn = new ServerListener(this.socket);
+            new Thread(serverConn).start();
             authPayload.put("username", username);
             authPayload.put("password", password);
             // Sending Payload
@@ -43,30 +43,10 @@ public class ClientConnexion {
             System.out.println("[CLIENT] Do request to server" + request);
             // Sending Request
             out.println(request);
-            // Waiting for response
-            String serverResponseString = in.readLine();
-            // Deserialize Data
-            ServerResponse serverPayload = gson.fromJson(serverResponseString, ServerResponse.class);
-            System.out.println("[CLIENT] Response from server :\n" + serverPayload.payload);
-            if(serverPayload.payload == null) {
-                Utils.errorWindow("Wrong Username or Password","Error Credentials");
-            } else {
-                JsonElement fileElement = JsonParser.parseString(serverPayload.payload);
-                JsonObject fileObject = fileElement.getAsJsonObject();
-                // Extracting the fields
-                int userId = fileObject.get("id").getAsInt();
-                String name = fileObject.get("name").getAsString();
-                String surname = fileObject.get("surname").getAsString();
-                String isAdmin = fileObject.get("isAdmin").getAsString();
-                this.connectedUser = new FrontUser(name,surname,userId, isAdmin.equals("1"));
-            }
 
         } catch (IOException e) {
-            Utils.closeAll(socket, in, out);
+            e.printStackTrace();
         }
-    }
-    public BufferedReader getIn() {
-        return this.in;
     }
     public PrintWriter getOut(){
         return this.out;

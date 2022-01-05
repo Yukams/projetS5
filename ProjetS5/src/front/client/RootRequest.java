@@ -25,7 +25,6 @@ public class RootRequest{
 
     public RootRequest(ClientConnexion clientConnexion){
         System.out.println("\n-*-*[Admin Services]*-*-\n");
-        this.in = clientConnexion.getIn();
         this.out = clientConnexion.getOut();
     }
     // Sends request to server, returns the Response

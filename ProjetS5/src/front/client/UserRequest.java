@@ -21,7 +21,6 @@ public class UserRequest {
 
     public UserRequest(ClientConnexion clientConnexion){
         System.out.println("\n-*-*[User Services]*-*-\n");
-        this.in = clientConnexion.getIn();
         this.out = clientConnexion.getOut();
     }
     // Sends request to server, returns the Response

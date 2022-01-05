@@ -4,7 +4,11 @@ import back.backobjects.groups.IGroup;
 import back.backobjects.thread.IMessage;
 import back.backobjects.thread.IThread;
 import back.backobjects.users.IUser;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import front.frontobjects.FrontUser;
+import front.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -61,7 +65,21 @@ public class ServerListener implements Runnable {
 
         switch (address) {
             // CONNECTIVITY
-            case "/connect" -> System.out.println("/connect");
+            case "/connect" -> {
+                // Deserialize Data
+                if(payload == null) {
+                    Utils.errorWindow("Wrong Username or Password","Error Credentials");
+                } else {
+                    JsonElement fileElement = JsonParser.parseString(payload);
+                    JsonObject fileObject = fileElement.getAsJsonObject();
+                    // Extracting the fields
+                    int userId = fileObject.get("id").getAsInt();
+                    String name = fileObject.get("name").getAsString();
+                    String surname = fileObject.get("surname").getAsString();
+                    boolean isAdmin = fileObject.get("isAdmin").getAsBoolean();
+                    ClientConnexion.connectedUser = new FrontUser(name,surname,userId, isAdmin);
+                }
+            }
 
 
             // USER
