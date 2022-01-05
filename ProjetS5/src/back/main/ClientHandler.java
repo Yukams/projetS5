@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ClientHandler implements Runnable {
@@ -21,6 +22,8 @@ public class ClientHandler implements Runnable {
     private PrintWriter out;
     private Gson gson = new Gson();
     private int clientId = -1;
+    private boolean clientIsAdmin = false;
+    private boolean doUpdate = false;
 
     public ClientHandler(Socket clientSocket) throws IOException {
         client = clientSocket;
@@ -38,15 +41,14 @@ public class ClientHandler implements Runnable {
 
                 if(request != null) {
                     ClientRequest serverPayload = gson.fromJson(request, ClientRequest.class);
-                    String response = treatRequest(serverPayload);
+                    ServerResponse response = treatRequest(serverPayload);
 
                     // Close connection if user is not connected and requests anything else than a connection
-                    if(response == null) {
-                        break;
+                    if(response != null) {
+                        System.out.println("[SERVER] Sending response to client (" + clientId + ") => " + response.payload);
+                        out.println(gson.toJson(response));
+                        doUpdateIfNeeded(serverPayload);
                     }
-
-                    System.out.println("[SERVER] Sending response to client (" + clientId + ") => " + response);
-                    out.println(response);
                 }
             }
         } catch (IOException e) {
@@ -55,13 +57,24 @@ public class ClientHandler implements Runnable {
             Utils.closeAll(this.client, this.in, this.out, this.clientId);
 
             if(clientId != -1){
+                System.out.println("[SERVER] Disconnecting client " + clientId);
                 Server.disconnect(this);
+            }
+            mainBack.clients.remove(this);
+        }
+    }
+
+    private void updateAllClients(ServerResponse serverResponse, boolean adminOnly) {
+        for(ClientHandler client : mainBack.clients) {
+            if(!adminOnly || this.clientIsAdmin) {
+                ServerResponse update = new ServerResponse(serverResponse.address, serverResponse.payload, "update");
+                System.out.println("[SERVER] Sending update to client (" + client.getClientId() + ") => " + update.payload);
+                client.getPrinterOut().println(gson.toJson(update));
             }
         }
     }
 
-    public String treatRequest(ClientRequest request) {
-
+    private ServerResponse treatRequest(ClientRequest request) {
         String address = request.address;
         Map<String,String> payload = request.payload;
 
@@ -73,7 +86,7 @@ public class ClientHandler implements Runnable {
         String toClient = switch (address) {
             // CONNECTIVITY
             // { "username": String, "password": String }
-            case "/connect" -> Server.connect(this ,payload);
+            case "/connect" -> Server.connect(this, payload);
 
             // USER
             // { "id": int }
@@ -90,7 +103,6 @@ public class ClientHandler implements Runnable {
 
             // {}
             case "/user/getAllDatabaseUsers" -> IUser.getAllDatabaseUsers();
-
 
             // THREAD
             // { "id": int }
@@ -130,7 +142,23 @@ public class ClientHandler implements Runnable {
             default -> "\"null\"";
         };
 
-        return "{ \"payload\": " + gson.toJson(toClient) + "}";
+        return new ServerResponse(address, toClient, "response");
+    }
+
+    private void doUpdateIfNeeded(ClientRequest request) {
+        String address = request.address;
+
+        switch (address) {
+            // CONNECTIVITY
+            case "/connect" -> {
+                updateAllClients(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())), true);
+            }
+
+            // USER
+            case "/user/createUser" -> {
+                updateAllClients(treatRequest(new ClientRequest("/user/getAllDatabaseUsers", new HashMap<>())), true);
+            }
+        }
     }
 
     public void setClientId(int id) {
@@ -139,5 +167,17 @@ public class ClientHandler implements Runnable {
 
     public int getClientId() {
         return this.clientId;
+    }
+
+    public Socket getSocket() {
+        return this.client;
+    }
+
+    public PrintWriter getPrinterOut() {
+        return this.out;
+    }
+
+    public void setClientIsAdmin(boolean bool) {
+        this.clientIsAdmin = bool;
     }
 }

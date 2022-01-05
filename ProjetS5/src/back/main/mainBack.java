@@ -18,12 +18,15 @@ import com.google.gson.GsonBuilder;
 
 
 public class mainBack {
+	/* Database connection */
 	public static final String DB_URL_MULTI_QUERY = "jdbc:mysql://localhost:3306/projetS5?allowMultiQueries=true";
 	private static final String DB_URL_SINGLE_QUERY = "jdbc:mysql://localhost:3306/projetS5";
 	public static final String USER = "root";
 	public static final String PASS = "root";
+
+	/* Client connection */
 	private static final int PORT = 9090;
-	private static ArrayList<ClientHandler> clients = new ArrayList<>();
+	static ArrayList<ClientHandler> clients = new ArrayList<>();
 	private static ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
