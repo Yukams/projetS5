@@ -1,5 +1,6 @@
 package front.affichage;
 
+import front.client.ClientConnexion;
 import front.fil.FilDeDiscussion;
 import front.fil.Message;
 import front.frontobjects.FrontUser;
@@ -24,8 +25,8 @@ import java.util.List;
 
 public class Messagerie extends JFrame {
 
-    public Messagerie(FrontUser frontUser){
-        super("Messagerie: "+frontUser.name +" "+frontUser.surname);
+    public Messagerie(ClientConnexion clientConnexion){
+        super("Messagerie: "+clientConnexion.connectedUser.name +" "+clientConnexion.connectedUser.surname);
 
         Dimension currentScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

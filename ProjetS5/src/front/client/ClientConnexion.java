@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import front.affichage.FenetreConnexion;
 import front.frontobjects.FrontUser;
 import front.utils.Utils;
 
@@ -16,7 +17,7 @@ import java.util.Map;
 
 public class ClientConnexion {
 
-    private static final int PORT = 9090;
+
     private Socket socket;
     private BufferedReader in; //Read
     private PrintWriter out; //Write
@@ -24,6 +25,7 @@ public class ClientConnexion {
     private static final Gson gson = new Gson();
     /*--------------*/
     public final static String HOST = "127.0.0.1";
+    public static final int PORT = 9090;
     public FrontUser connectedUser = null;
 
     public ClientConnexion(String username, String password){
@@ -65,6 +67,14 @@ public class ClientConnexion {
         }
     }
 
+    public Socket getSocket() {
+        return this.socket;
+    }
 
-
+    public BufferedReader getIn() {
+        return this.in;
+    }
+    public PrintWriter getOut(){
+        return this.out;
+    }
 }

@@ -1,6 +1,7 @@
 package front.affichage;
 
 import front.client.ClientConnexion;
+import front.client.UserRequest;
 import front.server.ServerInterface;
 import front.utils.Utils;
 
@@ -14,6 +15,7 @@ public class FenetreConnexion extends JFrame implements ActionListener {
 
     private final JTextField idTexte = new JTextField(10);
     private final JPasswordField mdpTexte = new JPasswordField(10);
+    public ClientConnexion clientConnexion;
 
     public FenetreConnexion(){
         //titre
@@ -69,16 +71,16 @@ public class FenetreConnexion extends JFrame implements ActionListener {
             mdpTexte.setText("");
             Utils.warningWindow("Invalid Username or Password","Error Syntax");
         } else {
-            ClientConnexion clientConnexion = new ClientConnexion(username, password);
+            this.clientConnexion = new ClientConnexion(username, password);
 
             if(clientConnexion.connectedUser != null){
                 if(clientConnexion.connectedUser.isAdmin){
                     setVisible(false);
-                    ServerInterface serverInterface = new ServerInterface(clientConnexion.connectedUser);
+                    ServerInterface serverInterface = new ServerInterface(this.clientConnexion);
                     serverInterface.setVisible(true);
                 } else {
                     setVisible(false);
-                    Messagerie mess = new Messagerie(clientConnexion.connectedUser);
+                    Messagerie mess = new Messagerie(this.clientConnexion);
                     mess.setVisible(true);
                 }
             }

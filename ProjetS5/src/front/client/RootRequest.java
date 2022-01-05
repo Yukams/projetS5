@@ -1,6 +1,7 @@
 package front.client;
 
 import com.google.gson.Gson;
+import front.affichage.FenetreConnexion;
 import front.frontobjects.FrontGroup;
 import front.frontobjects.FrontUser;
 import front.utils.Utils;
@@ -13,9 +14,8 @@ import java.net.Socket;
 import java.util.*;
 
 
-public class RootRequest {
-    public final static String HOST = "127.0.0.1";
-    private static final int PORT = 9090;
+public class RootRequest{
+    /* Server Attributes Declaration */
     private Socket socket;
     private BufferedReader in; //Read
     private PrintWriter out; //Write
@@ -25,19 +25,13 @@ public class RootRequest {
     public ArrayList<FrontUser> allUsersAL = new ArrayList<>();
     public ArrayList<FrontUser> connectedUsersAL = new ArrayList<>();
     public ArrayList<FrontUser> disconectedUsersAL;
-
     public FrontUser createdUser;
 
-    public RootRequest(){
-        try {
-            System.out.println("\n-*-*[ADMIN CONNEXION]*-*-\n");
-            this.socket = new Socket(HOST, PORT);
-
-            this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-            this.out = new PrintWriter(this.socket.getOutputStream(), true);
-        } catch (IOException e) {
-            Utils.closeAll(socket, in, out);
-        }
+    public RootRequest(ClientConnexion clientConnexion){
+        System.out.println("\n-*-*[Admin Services]*-*-\n");
+        this.socket = clientConnexion.getSocket();
+        this.in = clientConnexion.getIn();
+        this.out = clientConnexion.getOut();
     }
     // Sends request to server, returns the Response
     private ServerResponse sendRequest(String adress, Map<String, String> payload){
@@ -79,7 +73,6 @@ public class RootRequest {
         // Getting All Connected Users
         ServerResponse connectedUsersPayload = this.sendRequest("/user/getAllConnectedUsers",null);
         FrontUser[] connectedUsers = gson.fromJson(connectedUsersPayload.payload,FrontUser[].class);
-        System.out.println(connectedUsers);
         this.connectedUsersAL.clear();
         Collections.addAll(this.connectedUsersAL,connectedUsers);
         // Setting All Disconnected Users

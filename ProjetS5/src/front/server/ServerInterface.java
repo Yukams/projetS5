@@ -1,5 +1,6 @@
 package front.server;
 
+import front.client.ClientConnexion;
 import front.client.RootRequest;
 import front.frontobjects.FrontGroup;
 import front.frontobjects.FrontUser;
@@ -27,11 +28,11 @@ public class ServerInterface extends JFrame {
     * - GET DATA BASE INFO
     * - SET UP THE SERVER INTERFACE FRAME
     * */
-    public ServerInterface(FrontUser connectedUser) {
-        this.rootRequest = new RootRequest();
+    public ServerInterface(ClientConnexion clientConnexion) {
+        this.rootRequest = new RootRequest(clientConnexion);
         this.groups = this.rootRequest.askGroupsFromServer();
         this.rootRequest.setUsersLists();
-        this.connectedUser = connectedUser;
+        this.connectedUser = clientConnexion.connectedUser;
 
         initComponents();
         this.centrePanel.setVisible(false);
