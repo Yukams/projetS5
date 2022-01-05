@@ -30,8 +30,7 @@ public interface IThread {
 		return gson.toJson(thread);
 	}
 
-	static String getAllThreadForUser(Map<String, String> payload) {
-		int id = Integer.parseInt(payload.get("id"));
+	static String getAllThreadForUser(int id) {
 		List<FrontThread> threads = Server.getAllThreadForUser(id);
 
 		return gson.toJson(threads);

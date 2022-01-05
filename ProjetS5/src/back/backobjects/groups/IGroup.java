@@ -36,4 +36,17 @@ public interface IGroup {
 
         return gson.toJson(group);
     }
+
+    static String getGroupsOfUserById(Map<String, String> payload) {
+        int id = Integer.parseInt(payload.get("userId"));
+        List<FrontGroup> groups = Server.getGroupsOfUserById(id);
+
+        return gson.toJson(groups);
+    }
+
+    static String getGroupsOfUser(int clientId) {
+        List<FrontGroup> groups = Server.getGroupsOfUserById(clientId);
+
+        return gson.toJson(groups);
+    }
 }

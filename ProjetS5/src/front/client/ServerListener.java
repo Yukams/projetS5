@@ -76,9 +76,9 @@ public class ServerListener implements Runnable {
             }
 
             // THREAD
-            case "/thread/getThreadsByUserId" -> System.out.println("/thread/getThreadsByUserId");
+            case "/thread/getAllThreadsForUser" -> System.out.println("/thread/getAllThreadsForUser");
             case "/thread/createThread" -> System.out.println("/thread/createThread");
-            case "/user/deleteThread" -> System.out.println("/user/deleteThread");
+            case "/thread/deleteThread" -> System.out.println("/thread/deleteThread");
             case "/thread/updateMessagesOfThread" -> System.out.println("/thread/updateMessagesOfThread");
 
 

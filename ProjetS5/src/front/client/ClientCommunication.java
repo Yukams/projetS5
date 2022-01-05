@@ -28,12 +28,12 @@ public class ClientCommunication {
 
         // Connect to the server
         Map<String, String> payload = new HashMap<>();
-        payload.put("username", "root");
-        payload.put("password", "root");
+        payload.put("username", "Jean31");
+        payload.put("password", "123");
         ServerRequest serverRequestConnect = new ServerRequest("/connect", payload);
         String request = gson.toJson(serverRequestConnect);
         out.println(request);
-
+/*
         // getAllDatabaseUsers
         payload = new HashMap<>();
         ServerRequest serverRequestUsers = new ServerRequest("/user/getAllDatabaseUsers", payload);
@@ -56,7 +56,7 @@ public class ClientCommunication {
 
         System.out.println("[CLIENT] Entering waiting state...");
         while(true);
-
+*/
         //out.close();
     }
 }
