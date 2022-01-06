@@ -8,8 +8,6 @@ import front.frontobjects.FrontUser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,9 +17,9 @@ public class UserRequest {
     private PrintWriter out; //Write
     private static final Gson gson = new Gson();
 
-    public UserRequest(ClientConnexion clientConnexion){
+    public UserRequest(ClientConnexionRequest clientConnexionRequest){
         System.out.println("\n-*-*[User Services]*-*-\n");
-        this.out = clientConnexion.getOut();
+        this.out = clientConnexionRequest.getOut();
     }
     // Sends request to server, returns the Response
     private ServerResponse sendRequest(String adress, Map<String, String> payload){

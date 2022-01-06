@@ -7,7 +7,7 @@ package front.affichage;
 
 
 
-import front.client.ClientConnexion;
+import front.client.ClientConnexionRequest;
 import front.client.UserRequest;
 import front.frontobjects.FrontGroup;
 import front.frontobjects.FrontThread;
@@ -18,7 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,10 +48,10 @@ public class ChatWindow extends JFrame {
 
 
 
-    public ChatWindow(ClientConnexion clientConnexion) {
-        super("Chat: "+clientConnexion.connectedUser.toString());
-        this.userRequest = new UserRequest(clientConnexion);
-        this.connectedUser = clientConnexion.connectedUser;
+    public ChatWindow(ClientConnexionRequest clientConnexionRequest) {
+        super("Chat: "+ clientConnexionRequest.connectedUser.toString());
+        this.userRequest = new UserRequest(clientConnexionRequest);
+        this.connectedUser = clientConnexionRequest.connectedUser;
         this.allFrontGroup = this.userRequest.askGroupsFromServer();
         this.frontThreadArrayList = this.userRequest.askThreadsFromServer(this.connectedUser);
 

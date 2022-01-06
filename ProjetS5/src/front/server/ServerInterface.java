@@ -1,6 +1,6 @@
 package front.server;
 
-import front.client.ClientConnexion;
+import front.client.ClientConnexionRequest;
 import front.client.RootRequest;
 import front.frontobjects.FrontGroup;
 import front.frontobjects.FrontUser;
@@ -19,22 +19,19 @@ public class ServerInterface extends JFrame {
     private int yMouse;
     private DefaultTableModel dtmUsers = new DefaultTableModel();
     private Map<FrontUser,String> usersTableData = new HashMap<>();
-    private FrontGroup[] groups;
 
     private final RootRequest rootRequest;
-    private FrontUser connectedUser;
+    private final FrontUser connectedUser;
 
     /* CONSTRUCTOR :
     * - GET DATA BASE INFO
     * - SET UP THE SERVER INTERFACE FRAME
     * */
-    public ServerInterface(ClientConnexion clientConnexion) {
-        this.rootRequest = new RootRequest(clientConnexion);
-        this.groups = this.rootRequest.askGroupsFromServer();
-        this.rootRequest.setUsersLists();
-        this.connectedUser = clientConnexion.connectedUser;
-
+    public ServerInterface(ClientConnexionRequest clientConnexionRequest) {
         initComponents();
+        this.rootRequest = new RootRequest(clientConnexionRequest);
+        this.connectedUser = ClientConnexionRequest.connectedUser;
+
         this.centrePanel.setVisible(false);
 
     }
@@ -112,14 +109,9 @@ public class ServerInterface extends JFrame {
     }
     // UPDATE INTERFACE DATA FROM DATABASE
     private void updateWindowData(){
-        // UPDATES GROUPS LISTS
-        this.groups = this.rootRequest.askGroupsFromServer();
-        grpSelectAddUser.setModel(new DefaultComboBoxModel<>(this.groups));
-        grpListAdd2Usr.setModel(new DefaultComboBoxModel<>(this.groups));
-        grpListToRemove.setModel(new DefaultComboBoxModel<>(this.groups));
         // UPDATE LIST OF USERS
-        FrontUser[] frontUsersArray = new FrontUser[this.rootRequest.allUsersAL.size()]; // Get size of users without the connected user
-        usrListComboBox.setModel(new DefaultComboBoxModel<>(this.rootRequest.allUsersAL.toArray(frontUsersArray)));
+        FrontUser[] frontUsersArray = new FrontUser[RootRequest.allUsersAL.size()]; // Get size of users without the connected user
+        usrListComboBox.setModel(new DefaultComboBoxModel<>(RootRequest.allUsersAL.toArray(frontUsersArray)));
         //UPDATE JTABLE LIST OF USERS
         this.rootRequest.setUsersLists(); // Updates List of users
         setUsrTblModel(); //Sets table UsersTable Headers
@@ -343,7 +335,7 @@ public class ServerInterface extends JFrame {
 
         grpSelectAddUser.setBackground(new Color(255, 255, 255));
         grpSelectAddUser.setFont(new Font("Segoe UI", 0, 14));
-        grpSelectAddUser.setModel(new DefaultComboBoxModel<>(this.groups));
+        grpSelectAddUser.setModel(new DefaultComboBoxModel<>());
         pAddUsr.add(grpSelectAddUser, new AbsoluteConstraints(130, 320, 480, 30));
 
         centrePanel.add(pAddUsr, "card2");
@@ -370,7 +362,7 @@ public class ServerInterface extends JFrame {
 
         grpListToRemove.setBackground(new Color(255, 255, 255));
         grpListToRemove.setFont(new Font("Candara", 0, 20)); 
-        grpListToRemove.setModel(new DefaultComboBoxModel<>(this.groups));
+        grpListToRemove.setModel(new DefaultComboBoxModel<>());
         pMngGrps.add(grpListToRemove, new AbsoluteConstraints(40, 255, 500, 40));
 
         btnRmvGrp.setBackground(new Color(147, 3, 46));
@@ -430,7 +422,7 @@ public class ServerInterface extends JFrame {
         grpListAdd2Usr.setBackground(new Color(255, 255, 255));
         grpListAdd2Usr.setFont(new Font("Segoe UI", 0, 18)); 
         grpListAdd2Usr.setForeground(new Color(0, 0, 0));
-        grpListAdd2Usr.setModel(new DefaultComboBoxModel<>(this.groups));
+        grpListAdd2Usr.setModel(new DefaultComboBoxModel<>());
         pMngUsr.add(grpListAdd2Usr, new AbsoluteConstraints(450, 80, 310, 50));
 
         btnAddUserToGrp.setBackground(new Color(84, 222, 253));
@@ -654,9 +646,9 @@ public class ServerInterface extends JFrame {
     private JButton createGroupBtn;
     private JTextField firstNameTxtField;
     private JLabel frameDrag;
-    private JComboBox<FrontGroup> grpSelectAddUser;
-    private JComboBox<FrontGroup> grpListAdd2Usr;
-    private JComboBox<FrontGroup> grpListToRemove;
+    public static JComboBox<FrontGroup> grpSelectAddUser;
+    public static JComboBox<FrontGroup> grpListAdd2Usr;
+    public static JComboBox<FrontGroup> grpListToRemove;
     private JTextField grpNameTextFieldCreate;
     private JPanel headerPanel;
     private JLabel iconBtn1;
@@ -683,7 +675,7 @@ public class ServerInterface extends JFrame {
     private JLabel textBtn1;
     private JLabel textBtn2;
     private JLabel textBtn4;
-    private JComboBox<FrontUser> usrListComboBox;
+    public static JComboBox<FrontUser> usrListComboBox;
     private JTextField usrNameTxtField;
     private JTable usrTable;
     private JCheckBox isUserAdminCheckBox;

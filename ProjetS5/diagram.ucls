@@ -10,7 +10,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="2" language="java" name="front.main.mainFront" project="ProjetS5" 
+  <class id="2" language="java" name="front.main.m" project="ProjetS5"
     file="/ProjetS5/src/front/main/mainFront.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="701" y="117"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
