@@ -17,8 +17,8 @@ public class ServerInterface extends JFrame {
 
     private int xMouse;
     private int yMouse;
-    private DefaultTableModel dtmUsers = new DefaultTableModel();
-    private Map<FrontUser,String> usersTableData = new HashMap<>();
+    private static DefaultTableModel dtmUsers = new DefaultTableModel();
+    private static Map<FrontUser,String> usersTableData = new HashMap<>();
 
     private final RootRequest rootRequest;
     private final FrontUser connectedUser;
@@ -70,32 +70,24 @@ public class ServerInterface extends JFrame {
         yMouse = evt.getY();
     }
     // CLEAR USER TABLE DATA
-    private void resetUsrTbl(){
+    private static void resetUsrTbl(){
         int nbRows = dtmUsers.getRowCount();
         for(int i = nbRows - 1; i >= 0; i--){
             dtmUsers.removeRow(i);
         }
     }
-    // USER TABLE MODEL
-    private void setUsrTblModel(){
-        resetUsrTbl();
-        String[] header = {"Username","Status"};
-        dtmUsers.setColumnIdentifiers(header);
-        usrTable.setModel(dtmUsers);
-        usrTable.setAutoCreateRowSorter(true);
-    }
     // FILL USER TABLE MAP WITH DATA FROM DATA BASE
-    private void fillUsersTableData(){ //AL = ArrayList
-        this.usersTableData.clear();
-        for(FrontUser connectedFrontUser : this.rootRequest.connectedUsersAL){
+    private static void fillUsersTableData(){ //AL = ArrayList
+        usersTableData.clear();
+        for(FrontUser connectedFrontUser : RootRequest.connectedUsersAL){
             usersTableData.put(connectedFrontUser, "Connected"); //MAP <FrontUser, String>
         }
-        for(FrontUser disconnectedFrontUser : this.rootRequest.disconectedUsersAL){
+        for(FrontUser disconnectedFrontUser : RootRequest.disconectedUsersAL){
             usersTableData.put(disconnectedFrontUser, "Disconnected");
         }
     }
     // FILL JTABLE
-    private void setUsrTblData(){
+    private static void setUsrTblData(){
         fillUsersTableData();
         Object[] data = new Object[dtmUsers.getColumnCount()];
         for (Map.Entry<FrontUser, String> entry : usersTableData.entrySet()){
@@ -107,6 +99,18 @@ public class ServerInterface extends JFrame {
         }
         usrTable.setModel(dtmUsers);
     }
+    // USER TABLE MODEL
+    public static void setUsrsList(){
+        /* Set up of usrTblModel */
+        resetUsrTbl();
+        String[] header = {"Username","Status"};
+        dtmUsers.setColumnIdentifiers(header);
+        usrTable.setModel(dtmUsers);
+        usrTable.setAutoCreateRowSorter(true);
+        /* Fill table with data */
+        setUsrTblData();
+    }
+
     // UPDATE INTERFACE DATA FROM DATABASE
     private void updateWindowData(){
         // UPDATE LIST OF USERS
@@ -114,8 +118,7 @@ public class ServerInterface extends JFrame {
         usrListComboBox.setModel(new DefaultComboBoxModel<>(RootRequest.allUsersAL.toArray(frontUsersArray)));
         //UPDATE JTABLE LIST OF USERS
         this.rootRequest.setUsersLists(); // Updates List of users
-        setUsrTblModel(); //Sets table UsersTable Headers
-        setUsrTblData(); //Updates data each time clicks on button
+        setUsrsList();
     }
     /*------------------ {END} ------------------*/
 
@@ -405,7 +408,8 @@ public class ServerInterface extends JFrame {
         pMngUsr.add(jScrollPane2, new AbsoluteConstraints(20, 20, 420, 530));
 
         usrListComboBox.setBackground(new Color(255, 255, 255));
-        usrListComboBox.setFont(new Font("Candara", 0, 20)); 
+        usrListComboBox.setFont(new Font("Candara", 0, 20));
+        usrListComboBox.setModel(new DefaultComboBoxModel<>());
         pMngUsr.add(usrListComboBox, new AbsoluteConstraints(450, 20, 310, 50));
 
         btnRmvUsr.setBackground(new Color(147, 3, 46));
@@ -492,7 +496,7 @@ public class ServerInterface extends JFrame {
             this.rootRequest.createUser(userPayload);
             /* Associating the user to an initial default group if said user is not Admin */
             if (!isUserAdminCheckBox.isSelected()) {
-                FrontUser user = this.rootRequest.createdUser; // User just created
+                FrontUser user = RootRequest.createdUser; // User just created
                 this.addUserToGroupFromComboBox(user, selectedGroup);
             }
             Utils.informationWindow("User Successfully created !", "Information");
@@ -524,7 +528,6 @@ public class ServerInterface extends JFrame {
         }
         if(dataIsCorrect){
             registerUser(fieldsList); // REGISTER USER (+ affect default group to a User)
-            this.updateWindowData();
         }
     }
 
@@ -535,7 +538,6 @@ public class ServerInterface extends JFrame {
             Map<String, String> payload = new HashMap<>();
             payload.put("id", "" + selectedUser.id);
             this.rootRequest.removeUser(payload);
-            this.updateWindowData();
             Utils.informationWindow("User removed successfully", "Information");
         }
         else {
@@ -573,7 +575,6 @@ public class ServerInterface extends JFrame {
         if(Utils.isValidString(groupName)){
             payload.put("name",groupName);
             this.rootRequest.createGroup(payload);
-            updateWindowData();
             Utils.informationWindow("Group successfully created !", "Information");
         }
     }
@@ -583,7 +584,6 @@ public class ServerInterface extends JFrame {
             Map<String, String> payload = new HashMap<>();
             payload.put("id", "" + selectedGroup.id);
             this.rootRequest.removeGroup(payload);
-            updateWindowData();
             Utils.informationWindow("Group successfully removed !", "Information");
         }
     }
@@ -612,11 +612,7 @@ public class ServerInterface extends JFrame {
             this.centrePanel.setVisible(true);
             this.setPagesInvisible();
         }
-        setUsrTblModel(); //Sets table UsersTable Headers
-        setUsrTblData(); //Updates data each time clicks on button
-        /* Setting the items in the combo box as FrontUser Objects*/
-        FrontUser[] frontUsersArray = new FrontUser[this.rootRequest.allUsersAL.size()]; // Get size of users without the connected user
-        usrListComboBox.setModel(new DefaultComboBoxModel<>(this.rootRequest.allUsersAL.toArray(frontUsersArray)));
+        setUsrsList(); //Sets table UsersTable: list of users
         /*-------------------------------------------------------*/
         btn2.setBackground(new Color(72, 159, 181));
         pMngUsr.setVisible(true);
@@ -677,6 +673,6 @@ public class ServerInterface extends JFrame {
     private JLabel textBtn4;
     public static JComboBox<FrontUser> usrListComboBox;
     private JTextField usrNameTxtField;
-    private JTable usrTable;
+    private static JTable usrTable;
     private JCheckBox isUserAdminCheckBox;
 }

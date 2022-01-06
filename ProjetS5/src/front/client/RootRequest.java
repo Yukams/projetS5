@@ -18,7 +18,6 @@ public class RootRequest{
     public static ArrayList<FrontUser> allUsersAL = new ArrayList<>();
     public static ArrayList<FrontUser> connectedUsersAL = new ArrayList<>();
     public static ArrayList<FrontUser> disconectedUsersAL;
-    public static ArrayList<FrontGroup> frontGroupsAL = new ArrayList<>();
     public static FrontUser createdUser;
 
     public RootRequest(ClientConnexionRequest clientConnexionRequest){

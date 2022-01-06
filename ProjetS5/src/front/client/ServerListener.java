@@ -3,7 +3,6 @@ package front.client;
 import front.frontobjects.FrontGroup;
 import front.frontobjects.FrontUser;
 import front.server.ServerInterface;
-import front.utils.Utils;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -48,6 +47,16 @@ public class ServerListener implements Runnable {
         }
     }
 
+    /* UPDATE FUNCTIONS */
+    private void updateUsers(){
+        // UPDATE COMBO BOX
+        FrontUser[] frontUsersArray = new FrontUser[RootRequest.allUsersAL.size()];
+        ServerInterface.usrListComboBox.setModel(new DefaultComboBoxModel<>(RootRequest.allUsersAL.toArray(frontUsersArray)));
+        // UPDATE LIST OF USERS
+        ServerInterface.setUsrsList();
+    }
+    /*------------------*/
+
     private void treatResponse(ServerResponse serverResponse) throws IOException {
         String address = serverResponse.address;
         String payload = serverResponse.payload;
@@ -65,19 +74,25 @@ public class ServerListener implements Runnable {
             case "/user/createUser" -> {
                 RootRequest.createdUser = gson.fromJson(payload, FrontUser.class);
                 RootRequest.allUsersAL.add(RootRequest.createdUser); // Adds the created user to the list of users
-
+                RootRequest.disconectedUsersAL.add(RootRequest.createdUser);
+                this.updateUsers();
             }
             case "/user/deleteUser" -> {
                 FrontUser removedUser = gson.fromJson(payload, FrontUser.class);
+                RootRequest.allUsersAL.remove(removedUser);
                 RootRequest.disconectedUsersAL.remove(removedUser);
+                this.updateUsers();
             }
             case "/user/getAllConnectedUsers" -> {
                 FrontUser[] connectedUsers = gson.fromJson(payload,FrontUser[].class);
+
                 RootRequest.connectedUsersAL = new ArrayList<>();
                 RootRequest.connectedUsersAL.addAll(Arrays.asList(connectedUsers));
                 // Setting All Disconnected Users
                 RootRequest.disconectedUsersAL = new ArrayList<>(RootRequest.allUsersAL);
                 RootRequest.disconectedUsersAL.removeAll(RootRequest.connectedUsersAL);
+                this.updateUsers();
+
             }
             case "/user/getAllDatabaseUsers" -> {
                 FrontUser[] serverUsers = gson.fromJson(payload, FrontUser[].class);
@@ -105,12 +120,9 @@ public class ServerListener implements Runnable {
             case "/group/getAllDatabaseGroups" -> {
                 FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
 
-                RootRequest.frontGroupsAL = new ArrayList<>();
-                RootRequest.frontGroupsAL.addAll(Arrays.asList(frontGroups));
-
-                ServerInterface.grpSelectAddUser.setModel(new DefaultComboBoxModel<>(RootRequest.frontGroupsAL.toArray(new FrontGroup[RootRequest.frontGroupsAL.size()])));
-                ServerInterface.grpListAdd2Usr.setModel(new DefaultComboBoxModel<>(RootRequest.frontGroupsAL.toArray(new FrontGroup[RootRequest.frontGroupsAL.size()])));
-                ServerInterface.grpListToRemove.setModel(new DefaultComboBoxModel<>(RootRequest.frontGroupsAL.toArray(new FrontGroup[RootRequest.frontGroupsAL.size()])));
+                ServerInterface.grpSelectAddUser.setModel(new DefaultComboBoxModel<>(frontGroups));
+                ServerInterface.grpListAdd2Usr.setModel(new DefaultComboBoxModel<>(frontGroups));
+                ServerInterface.grpListToRemove.setModel(new DefaultComboBoxModel<>(frontGroups));
             }
             case "/group/getGroupsOfUserById" -> System.out.println("/group/getGroupsOfUserById");
             case "/group/getGroupsOfUser" -> System.out.println("/group/getGroupsOfUser");
