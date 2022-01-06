@@ -41,13 +41,14 @@ public class ChatWindow extends JFrame {
     private String [] listGroupe;
     private String titleAdd;
     private Map<String,JPanel> componentForTicket = new HashMap<>();
-    private DefaultMutableTreeNode rootTree = new DefaultMutableTreeNode("Groups");
+    private static DefaultMutableTreeNode rootTree = new DefaultMutableTreeNode("Groups");
     private boolean firstClick = true;
 
     private UserRequest userRequest;
     private FrontUser connectedUser;
     public static FrontGroup allFrontGroup[];
-    private FrontThread frontThreadArrayList[];
+    public static FrontGroup userFrontGroups[];
+    public static FrontThread userThreads[];
 
 
 
@@ -56,6 +57,8 @@ public class ChatWindow extends JFrame {
         initComponents();
         this.userRequest = new UserRequest(clientConnexion);
         this.connectedUser = ClientConnexionRequest.connectedUser;
+        this.userRequest.askThreadsFromServer(ClientConnexionRequest.connectedUser);
+        this.userRequest.getUserGroups(ClientConnexionRequest.connectedUser);
 
         setLocationRelativeTo(null);
         FrameAjout.setLocation(this.getX(),this.getY());
@@ -239,7 +242,11 @@ public class ChatWindow extends JFrame {
         //ici tree a faire
         //remplacer listGroupe par les groupes de l'utilisateur // Group of User
         //this.allFrontGroup
-        initTree();
+
+        treeTicket = new JTree(rootTree);
+        treeTicket.setBackground(new java.awt.Color(102, 102, 102));
+        treeTicket.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        treeTicket.setRootVisible(false);
         scrollPaneTicket.setViewportView(treeTicket);
         treeTicket.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
@@ -382,7 +389,6 @@ public class ChatWindow extends JFrame {
     }// </editor-fold>
 
     private void buttonAjoutTicketActionPerformed(java.awt.event.ActionEvent evt) {
-
         FrameAjout.pack();
         FrameAjout.setVisible(true);
     }
@@ -486,7 +492,6 @@ public class ChatWindow extends JFrame {
                             DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
                             DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
 
-
                             DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(racine, i);
                             DefaultMutableTreeNode ticket = new DefaultMutableTreeNode(titleAdd);
                             ticket.setAllowsChildren(false);
@@ -544,31 +549,35 @@ public class ChatWindow extends JFrame {
         }
     }
 
-    private void initTree() {
-//FrontGroup[] groupList
-        /*for (FrontGroup group : groupList) {
-
-            addNodeToTree(group);
-        }*/
-        treeTicket = new JTree(rootTree);
-        treeTicket.setBackground(new java.awt.Color(102, 102, 102));
-        treeTicket.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        treeTicket.setRootVisible(false);
+    public static void fillTree() {
+        if(userThreads.length > 0) {
+            for (FrontGroup group : userFrontGroups) {
+                addGroupToRoot(group);
+            }
+        }
     }
 
-    private void addGroupToRoot(FrontGroup node){
+    private static void addGroupToRoot(FrontGroup node){
         DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(node);
         //DefaultMutableTreeNode forNode = new DefaultMutableTreeNode();
         //forNode.setAllowsChildren(false);
         //newGroup.add(forNode);
         DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
         DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
-        if (rootTree.getChildCount()==0){
+        /*if (rootTree.getChildCount()==0){
             model.insertNodeInto(newGroup, rootTree, 0);
         }
         else {
             DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(rootTree, rootTree.getChildCount());
             model.insertNodeInto(newGroup, gp, gp.getChildCount());
+        }*/
+        for(FrontThread frontThread : userThreads){
+            if(frontThread.groupId == node.id){
+                newGroup.add(new DefaultMutableTreeNode(frontThread));
+            }
+        }
+        if(newGroup.getChildCount() > 0){
+            racine.add(newGroup);
         }
 
         model.reload();
@@ -647,6 +656,6 @@ public class ChatWindow extends JFrame {
     private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private final double width = screenSize.getWidth();
     private final double height = screenSize.getHeight();
-    private JTree treeTicket;
+    private static JTree treeTicket;
     // End of variables declaration
 }

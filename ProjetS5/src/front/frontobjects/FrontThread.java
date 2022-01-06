@@ -15,4 +15,9 @@ public class FrontThread extends FrontObject {
         this.groupId = groupId;
         this.messages = messagesList;
     }
+
+    @Override
+    public String toString() {
+        return this.title;
+    }
 }

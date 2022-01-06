@@ -37,11 +37,16 @@ public class UserRequest {
     public void askGroupsFromServer(){
         sendRequest("/group/getAllDatabaseGroups",null);
     }
+    public void getUserGroups(FrontUser frontUser){
+        Map<String,String> payload = new HashMap<>();
+        payload.put("userId",""+frontUser.id);
+        sendRequest("/group/getGroupsOfUserById",payload);
+    }
     /*-------------- THREAD MANAGEMENT --------------*/
     public void askThreadsFromServer(FrontUser frontUser){
         Map<String,String> payload = new HashMap<>();
         payload.put("id",""+frontUser.id);
-        this.sendRequest("/thread/getAllThreadsForUser",payload);
+        sendRequest("/thread/getAllThreadsForUser",payload);
     }
 
 }
