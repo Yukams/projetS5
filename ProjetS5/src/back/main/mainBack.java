@@ -20,9 +20,9 @@ import com.google.gson.GsonBuilder;
 public class mainBack {
 	/* Database connection */
 	public static final String DB_URL_MULTI_QUERY = "jdbc:mysql://localhost:3306/projetS5?allowMultiQueries=true";
-	private static final String DB_URL_SINGLE_QUERY = "jdbc:mysql://localhost:3306/projetS5";
+	private static final String DB_BEFORE_CREATE = "jdbc:mysql://localhost:3306";
 	public static final String USER = "root";
-	public static final String PASS = "root";
+	public static final String PASS = "";
 
 	/* Client connection */
 	private static final int PORT = 9090;
@@ -31,15 +31,15 @@ public class mainBack {
 	public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public static void main(String[] args) throws IOException {
-		// Etape 1 : Creer la database
+		// Create database
 		createDatabase();
-		// Etape 2 : Peupler la database
+		// Fill database with tables and default values
 		fillDatabase();
-		// Etape 3 : Lancer l'application
+		// Application is launching
 		launchApplication();
 	}
 
-	// Lance l'application
+	// Entry point for the program
 	private static void launchApplication() throws IOException {
 		ServerSocket incoming = new ServerSocket(PORT);
 
@@ -60,6 +60,18 @@ public class mainBack {
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
+			System.out.println("[SERVER] Filling database if needed");
+			String sql = new String(Files.readAllBytes(Paths.get("ProjetS5/src/back/main/database_setup.sql")));
+			stmt.execute(sql);
+
+			System.out.println("Tables created successfully.");
+		} catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+	/*
+		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
+			Statement stmt = conn.createStatement()
+		) {
 			String sqlFillDb = new String(Files.readAllBytes(Paths.get("ProjetS5/src/back/main/database_fill.sql")));
 			stmt.execute(sqlFillDb);
 
@@ -67,32 +79,19 @@ public class mainBack {
 		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 
-	// Cree la base de donnee
+	// Create and fill the database if it doesn't exist
 	private static void createDatabase() {
-		// Open a connection
-		try(Connection conn = DriverManager.getConnection(DB_URL_SINGLE_QUERY, USER, PASS);
+		try(Connection conn = DriverManager.getConnection(DB_BEFORE_CREATE, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
-			// Create empty database
+			System.out.println("[SERVER] Creating database if needed");
+			// TODO => DROP FOR TESTING PURPOSE, COMMENT IT OTHERWISE
 			stmt.execute("DROP DATABASE IF EXISTS projetS5;");
-			stmt.execute("CREATE DATABASE projetS5;");
-
-			System.out.println("Database created successfully.");
+			stmt.execute("CREATE DATABASE IF NOT EXISTS projetS5;");
 		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
-			Statement stmt = conn.createStatement()
-		) {
-			// Create empty tables
-			String sql = new String(Files.readAllBytes(Paths.get("ProjetS5/src/back/main/database_setup.sql")));
-			stmt.execute(sql);
-
-			System.out.println("Tables created successfully.");
-		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
 	}
