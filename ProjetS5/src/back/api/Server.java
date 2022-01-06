@@ -15,6 +15,7 @@ import static back.main.mainBack.*;
 
 public class Server {
 	public static void treatQueryWithoutResponse(String queryString) {
+		System.out.println("[SQL] Query executed -> " + queryString);
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
@@ -331,7 +332,7 @@ public class Server {
 	}
 
 	public static List<FrontGroup> getGroupsOfUserById(int userId) {
-		String jsonString = treatQuery("SELECT id FROM dbGroup WHERE userId=" + userId + ";");
+		String jsonString = treatQuery("SELECT g.id FROM dbLinkUserGroup l JOIN dbGroup g ON l.groupId WHERE userId=" + userId + ";");
 		DbGroup[] dbGroups = gson.fromJson(jsonString, DbGroup[].class);
 
 		List<FrontGroup> groups = new ArrayList<>();
