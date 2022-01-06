@@ -111,16 +111,6 @@ public class ServerInterface extends JFrame {
         /* Fill table with data */
         setUsrTblData();
     }
-
-    // UPDATE INTERFACE DATA FROM DATABASE
-    private void updateWindowData(){
-        // UPDATE LIST OF USERS
-        FrontUser[] frontUsersArray = new FrontUser[RootRequest.allUsersAL.size()]; // Get size of users without the connected user
-        usrListComboBox.setModel(new DefaultComboBoxModel<>(RootRequest.allUsersAL.toArray(frontUsersArray)));
-        //UPDATE JTABLE LIST OF USERS
-        this.rootRequest.setUsersLists(); // Updates List of users
-        setUsrsList();
-    }
     /*------------------ {END} ------------------*/
 
     private void initComponents() {
@@ -529,14 +519,14 @@ public class ServerInterface extends JFrame {
     //REMOVE USER
     private void btnRmvUsrActionPerformed(ActionEvent evt) {
         FrontUser selectedUser = usrListComboBox.getItemAt(usrListComboBox.getSelectedIndex());
-        if(!selectedUser.equals(this.connectedUser)) {
+        if(!RootRequest.connectedUsersAL.contains(selectedUser)) {
             Map<String, String> payload = new HashMap<>();
             payload.put("id", "" + selectedUser.id);
             this.rootRequest.removeUser(payload);
             Utils.informationWindow("User removed successfully", "Information");
         }
         else {
-            Utils.errorWindow("You cannot remove yourself !", "Error");
+            Utils.errorWindow("You cannot remove a connected user !", "Error");
         }
     }
     /*------------------ {END} ------------------*/
@@ -555,7 +545,7 @@ public class ServerInterface extends JFrame {
         FrontGroup selectedGroup = grpListAdd2Usr.getItemAt(grpListAdd2Usr.getSelectedIndex());
         if(!selectedUser.equals(this.connectedUser)) {
             if(selectedGroup != null) {
-                this.addUserToGroupFromComboBox(selectedUser, selectedGroup);
+                addUserToGroupFromComboBox(selectedUser, selectedGroup);
                 String msg = selectedUser.toString() + " successfully added to " + selectedGroup + " !";
                 Utils.informationWindow(msg, "Information");
             } else { Utils.errorWindow("No group is selected","Error"); }

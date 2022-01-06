@@ -1,11 +1,14 @@
 package front.client;
 
+import front.affichage.ChatWindow;
 import front.frontobjects.FrontGroup;
+import front.frontobjects.FrontThread;
 import front.frontobjects.FrontUser;
 import front.server.ServerInterface;
 import front.utils.Utils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,6 +45,8 @@ public class ServerListener implements Runnable {
         } finally {
             try {
                 in.close();
+                Utils.errorWindow("Server closed","Error");
+                System.exit(-1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -83,8 +88,6 @@ public class ServerListener implements Runnable {
                 }
                 Utils.informationWindow("User Successfully created !", "Information");
                 this.updateUsers();
-
-                // TODO appeler la route pour ajouter le user a son groupe de base ici, il faut passer par une variable globale je suppose (pour l'id du groupe)
             }
             case "/user/deleteUser" -> {
                 FrontUser removedUser = gson.fromJson(payload, FrontUser.class);
@@ -111,7 +114,9 @@ public class ServerListener implements Runnable {
             }
 
             // THREAD
-            case "/thread/getAllThreadsForUser" -> System.out.println("/thread/getAllThreadsForUser");
+            case "/thread/getAllThreadsForUser" -> {
+                FrontThread[] frontThreads = gson.fromJson(payload, FrontThread[].class);
+            }
             case "/thread/createThread" -> System.out.println("/thread/createThread");
             case "/thread/deleteThread" -> System.out.println("/thread/deleteThread");
             case "/thread/updateMessagesOfThread" -> System.out.println("/thread/updateMessagesOfThread");
@@ -129,9 +134,16 @@ public class ServerListener implements Runnable {
             case "/group/getAllDatabaseGroups" -> {
                 FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
 
-                ServerInterface.grpSelectAddUser.setModel(new DefaultComboBoxModel<>(frontGroups));
-                ServerInterface.grpListAdd2Usr.setModel(new DefaultComboBoxModel<>(frontGroups));
-                ServerInterface.grpListToRemove.setModel(new DefaultComboBoxModel<>(frontGroups));
+                if(ServerInterface.grpSelectAddUser != null) ServerInterface.grpSelectAddUser.setModel(new DefaultComboBoxModel<>(frontGroups));
+                if(ServerInterface.grpListAdd2Usr != null) ServerInterface.grpListAdd2Usr.setModel(new DefaultComboBoxModel<>(frontGroups));
+                if(ServerInterface.grpListToRemove != null) ServerInterface.grpListToRemove.setModel(new DefaultComboBoxModel<>(frontGroups));
+                if(ChatWindow.comboBoxGroup != null) ChatWindow.comboBoxGroup.setModel(new DefaultComboBoxModel<>(frontGroups));
+
+                ChatWindow.allFrontGroup = frontGroups;
+                for (FrontGroup frontGroup : ChatWindow.allFrontGroup){
+                    System.out.println("------->"+frontGroup.name);
+                }
+                System.out.println(ChatWindow.allFrontGroup);
             }
             case "/group/getGroupsOfUserById" -> System.out.println("/group/getGroupsOfUserById");
             case "/group/getGroupsOfUser" -> System.out.println("/group/getGroupsOfUser");

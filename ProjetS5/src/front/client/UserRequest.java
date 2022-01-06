@@ -13,47 +13,35 @@ import java.util.Map;
 
 public class UserRequest {
     /* Server Attributes Declaration */
-    private BufferedReader in; //Read
     private PrintWriter out; //Write
     private static final Gson gson = new Gson();
 
     public UserRequest(ClientConnexionRequest clientConnexionRequest){
         System.out.println("\n-*-*[User Services]*-*-\n");
         this.out = clientConnexionRequest.getOut();
+        /* IMPLEMENTING SERVER UPDATES LISTENER */
+        new Thread(clientConnexionRequest.getServerListener()).start();
+        this.askGroupsFromServer();
+        //this.askThreadsFromServer(ClientConnexionRequest.connectedUser);
     }
     // Sends request to server, returns the Response
-    private ServerResponse sendRequest(String adress, Map<String, String> payload){
+    private void sendRequest(String adress, Map<String, String> payload){
         /*Sending Request*/
         ServerRequest serverRequest = new ServerRequest(adress,payload);
         String request = gson.toJson(serverRequest);
         System.out.println("[USER] Do request to server" + request);
         out.println(request);
-        /*Wait for response*/
-        String serverResponseString = null;
-        try {
-            serverResponseString = in.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Erreur readline");
-        }
-        ServerResponse serverPayload = gson.fromJson(serverResponseString, ServerResponse.class);
-        System.out.println("[USER] Response from server :\n" + serverPayload.payload);
-        return serverPayload;
     }
 
     /*-------------- GROUP MANAGEMENT --------------*/
-    public FrontGroup[] askGroupsFromServer(){
-        ServerResponse serverPayload = this.sendRequest("/group/getAllDatabaseGroups",null);
-        FrontGroup[] frontGroups = gson.fromJson(serverPayload.payload, FrontGroup[].class);
-        return frontGroups;
+    public void askGroupsFromServer(){
+        sendRequest("/group/getAllDatabaseGroups",null);
     }
     /*-------------- THREAD MANAGEMENT --------------*/
-    public FrontThread[] askThreadsFromServer(FrontUser frontUser){
+    public void askThreadsFromServer(FrontUser frontUser){
         Map<String,String> payload = new HashMap<>();
         payload.put("id",""+frontUser.id);
-        ServerResponse serverPayload = this.sendRequest("/thread/getThreadsByUserId",payload);
-        FrontThread[] frontThreads = gson.fromJson(serverPayload.payload, FrontThread[].class);
-        return frontThreads;
+        this.sendRequest("/thread/getAllThreadsForUser",payload);
     }
 
 }
