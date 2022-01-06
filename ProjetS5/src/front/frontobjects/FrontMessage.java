@@ -7,6 +7,7 @@ public class FrontMessage extends FrontObject {
     public long date;
     public String status;
 
+    public FrontMessage(){}
     public FrontMessage(int id, FrontUser user, String text, long date, String status) {
         this.id = id;
         this.user = user;

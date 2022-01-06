@@ -1,6 +1,6 @@
 package front.affichage;
 
-import front.client.ClientConnexion;
+import front.client.ClientConnexionRequest;
 import front.server.ServerInterface;
 import front.utils.Utils;
 
@@ -9,13 +9,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class FenetreConnexion extends JFrame implements ActionListener {
+public class ConnexionWindow extends JFrame implements ActionListener {
 
 
     private final JTextField idTexte = new JTextField(10);
     private final JPasswordField mdpTexte = new JPasswordField(10);
+    public ClientConnexionRequest clientConnexionRequest;
 
-    public FenetreConnexion(){
+    public ConnexionWindow(){
         //titre
         super("Se connecter");
         //taille fenetre
@@ -69,17 +70,17 @@ public class FenetreConnexion extends JFrame implements ActionListener {
             mdpTexte.setText("");
             Utils.warningWindow("Invalid Username or Password","Error Syntax");
         } else {
-            ClientConnexion clientConnexion = new ClientConnexion(username, password);
+            this.clientConnexionRequest = new ClientConnexionRequest(username, password);
 
-            if(clientConnexion.connectedUser != null){
-                if(clientConnexion.connectedUser.isAdmin){
+            if(clientConnexionRequest.connectedUser != null){
+                if(clientConnexionRequest.connectedUser.isAdmin){
                     setVisible(false);
-                    ServerInterface serverInterface = new ServerInterface(clientConnexion.connectedUser);
+                    ServerInterface serverInterface = new ServerInterface(this.clientConnexionRequest);
                     serverInterface.setVisible(true);
                 } else {
                     setVisible(false);
-                    Messagerie mess = new Messagerie(clientConnexion.connectedUser);
-                    mess.setVisible(true);
+                    ChatWindow chatWindow = new ChatWindow(this.clientConnexionRequest);
+                    chatWindow.setVisible(true);
                 }
             }
         }

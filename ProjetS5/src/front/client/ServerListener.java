@@ -1,11 +1,14 @@
 package front.client;
 
-import back.backobjects.groups.IGroup;
-import back.backobjects.thread.IMessage;
-import back.backobjects.thread.IThread;
-import back.backobjects.users.IUser;
+import front.affichage.ChatWindow;
+import front.frontobjects.FrontGroup;
+import front.frontobjects.FrontThread;
 import front.frontobjects.FrontUser;
+import front.server.ServerInterface;
+import front.utils.Utils;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,11 +45,23 @@ public class ServerListener implements Runnable {
         } finally {
             try {
                 in.close();
+                Utils.errorWindow("Server closed","Error");
+                System.exit(-1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
+    /* UPDATE FUNCTIONS */
+    private void updateUsers(){
+        // UPDATE COMBO BOX
+        FrontUser[] frontUsersArray = new FrontUser[RootRequest.allUsersAL.size()];
+        ServerInterface.usrListComboBox.setModel(new DefaultComboBoxModel<>(RootRequest.allUsersAL.toArray(frontUsersArray)));
+        // UPDATE LIST OF USERS
+        ServerInterface.setUsrsList();
+    }
+    /*------------------*/
 
     private void treatResponse(ServerResponse serverResponse) throws IOException {
         String address = serverResponse.address;
@@ -60,23 +75,48 @@ public class ServerListener implements Runnable {
         }
 
         switch (address) {
-            // CONNECTIVITY
-            case "/connect" -> System.out.println("/connect");
-
-
             // USER
             case "/user/getUserById" -> System.out.println("/user/getUserById");
-            case "/user/createUser" -> System.out.println("/user/createUser");
-            case "/user/deleteUser" -> System.out.println("/user/deleteUser");
-            case "/user/getAllConnectedUsers" -> System.out.println("/user/getAllConnectedUsers");
+            case "/user/createUser" -> {
+                RootRequest.createdUser = gson.fromJson(payload, FrontUser.class);
+                RootRequest.allUsersAL.add(RootRequest.createdUser); // Adds the created user to the list of users
+                RootRequest.disconectedUsersAL.add(RootRequest.createdUser);
+                /* Associating the user to an initial default group if said user is not Admin */
+                if (!ServerInterface.isUserAdminCheckBox.isSelected()) {
+                    FrontUser user = RootRequest.createdUser; // User just created
+                    ServerInterface.addUserToGroupFromComboBox(user, ServerInterface.selectedDefaultGroup);
+                }
+                Utils.informationWindow("User Successfully created !", "Information");
+                this.updateUsers();
+            }
+            case "/user/deleteUser" -> {
+                FrontUser removedUser = gson.fromJson(payload, FrontUser.class);
+                RootRequest.allUsersAL.remove(removedUser);
+                RootRequest.disconectedUsersAL.remove(removedUser);
+                this.updateUsers();
+            }
+            case "/user/getAllConnectedUsers" -> {
+                FrontUser[] connectedUsers = gson.fromJson(payload,FrontUser[].class);
+
+                RootRequest.connectedUsersAL = new ArrayList<>();
+                RootRequest.connectedUsersAL.addAll(Arrays.asList(connectedUsers));
+                // Setting All Disconnected Users
+                RootRequest.disconectedUsersAL = new ArrayList<>(RootRequest.allUsersAL);
+                RootRequest.disconectedUsersAL.removeAll(RootRequest.connectedUsersAL);
+                this.updateUsers();
+
+            }
             case "/user/getAllDatabaseUsers" -> {
                 FrontUser[] serverUsers = gson.fromJson(payload, FrontUser[].class);
-                ClientCommunication.allUsers = new ArrayList<>();
-                ClientCommunication.allUsers.addAll(Arrays.asList(serverUsers));
+                RootRequest.allUsersAL = new ArrayList<>();
+                RootRequest.allUsersAL.addAll(Arrays.asList(serverUsers));
+                ServerInterface.usrListComboBox.setModel(new DefaultComboBoxModel<>(serverUsers));
             }
 
             // THREAD
-            case "/thread/getAllThreadsForUser" -> System.out.println("/thread/getAllThreadsForUser");
+            case "/thread/getAllThreadsForUser" -> {
+                FrontThread[] frontThreads = gson.fromJson(payload, FrontThread[].class);
+            }
             case "/thread/createThread" -> System.out.println("/thread/createThread");
             case "/thread/deleteThread" -> System.out.println("/thread/deleteThread");
             case "/thread/updateMessagesOfThread" -> System.out.println("/thread/updateMessagesOfThread");
@@ -91,9 +131,27 @@ public class ServerListener implements Runnable {
             case "/group/createGroup" -> System.out.println("/group/createGroup");
             case "/group/deleteGroup" -> System.out.println("/group/deleteGroup");
             case "/group/addUserToGroup" -> System.out.println("/group/addUserToGroup");
-            case "/group/getAllDatabaseGroups" -> System.out.println("/group/getAllDatabaseGroups");
+            case "/group/getAllDatabaseGroups" -> {
+                FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
+
+                if(ServerInterface.grpSelectAddUser != null) ServerInterface.grpSelectAddUser.setModel(new DefaultComboBoxModel<>(frontGroups));
+                if(ServerInterface.grpListAdd2Usr != null) ServerInterface.grpListAdd2Usr.setModel(new DefaultComboBoxModel<>(frontGroups));
+                if(ServerInterface.grpListToRemove != null) ServerInterface.grpListToRemove.setModel(new DefaultComboBoxModel<>(frontGroups));
+                if(ChatWindow.comboBoxGroup != null) ChatWindow.comboBoxGroup.setModel(new DefaultComboBoxModel<>(frontGroups));
+
+                ChatWindow.allFrontGroup = frontGroups;
+                for (FrontGroup frontGroup : ChatWindow.allFrontGroup){
+                    System.out.println("------->"+frontGroup.name);
+                }
+                System.out.println(ChatWindow.allFrontGroup);
+            }
             case "/group/getGroupsOfUserById" -> System.out.println("/group/getGroupsOfUserById");
             case "/group/getGroupsOfUser" -> System.out.println("/group/getGroupsOfUser");
         }
     }
+
+    public BufferedReader getIn() {
+        return this.in;
+    }
+
 }

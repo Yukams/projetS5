@@ -7,10 +7,19 @@ package front.affichage;
 
 
 
+import front.client.ClientConnexionRequest;
+import front.client.UserRequest;
+import front.frontobjects.FrontGroup;
+import front.frontobjects.FrontThread;
+import front.frontobjects.FrontUser;
+import front.utils.Utils;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,27 +29,36 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 
 /**
  *
  * @author Utilisateur
  */
-public class Mess extends JFrame {
-    private String groupSelectedNewFil;
+public class ChatWindow extends JFrame {
+    private FrontGroup groupSelectedNewFil;
     private String [] listGroupe;
     private String titleAdd;
     private Map<String,JPanel> componentForTicket = new HashMap<>();
+    private DefaultMutableTreeNode rootTree = new DefaultMutableTreeNode("Groups");
     private boolean firstClick = true;
 
+    private UserRequest userRequest;
+    private FrontUser connectedUser;
+    public static FrontGroup allFrontGroup[];
+    private FrontThread frontThreadArrayList[];
 
-    /**
-     * Creates new form Mess
-     */
 
-    public Mess() {
 
+    public ChatWindow(ClientConnexionRequest clientConnexion) {
+        super("Chat: "+ ClientConnexionRequest.connectedUser.toString());
         initComponents();
+        this.userRequest = new UserRequest(clientConnexion);
+        this.connectedUser = ClientConnexionRequest.connectedUser;
+
+        setLocationRelativeTo(null);
+        FrameAjout.setLocation(this.getX(),this.getY());
 
         dimensionMaxSizeRight.height=panelMessage.getHeight()/9;
         dimensionMaxSizeRight.width=(int) width;
@@ -50,7 +68,6 @@ public class Mess extends JFrame {
         dimensionMinSizeLeft.width=panelTicket.getWidth();
         dimensionMaxSizeLeft.height=panelTicket.getHeight()/10;
         dimensionMaxSizeLeft.width=(int) width;
-
     }
 
     /**
@@ -62,37 +79,37 @@ public class Mess extends JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
         //frame qui pop quand on veut ajouter un fil
-            FrameAjout = new JFrame();
-            labelAjoutTitre = new JLabel();
-            comboBoxGroup = new JComboBox<>();
-            labelChoixGroupeAjout = new JLabel();
-            zoneTextTitre = new JTextField();
-            labelTitreAjout = new JLabel();
-            labelMessagaAjout = new JLabel();
-            scrollPaneMessageAjout = new JScrollPane();
-            zoneTextNewMessage = new JTextArea();
-            buttonAddNewFil = new JButton();
+        FrameAjout = new JFrame();
+        labelAjoutTitre = new JLabel();
+        comboBoxGroup = new JComboBox<>();
+        labelChoixGroupeAjout = new JLabel();
+        zoneTextTitre = new JTextField();
+        labelTitreAjout = new JLabel();
+        labelMessagaAjout = new JLabel();
+        scrollPaneMessageAjout = new JScrollPane();
+        zoneTextNewMessage = new JTextArea();
+        buttonAddNewFil = new JButton();
 
 
         splitPaneMessagerie = new JSplitPane();
         //panneau de gauche sur interface messagerie
-            panelLeft = new JPanel();
-            panelFil = new JPanel();
-            labelFil = new JLabel();
-            buttonAjoutTicket = new JButton();
-            scrollPaneTicket = new JScrollPane();
-            panelTicket = new JPanel();
+        panelLeft = new JPanel();
+        panelFil = new JPanel();
+        labelFil = new JLabel();
+        buttonAjoutTicket = new JButton();
+        scrollPaneTicket = new JScrollPane();
+        panelTicket = new JPanel();
 
 
         //panneau de droite sur interface messagerie
-            panelRight = new JPanel();
-            panelListMessage = new JPanel();
-            labelTitreTicket = new JLabel();
-            scrollPaneListMessage = new JScrollPane();
-            panelMessage = new JPanel();
-            panelEcrireMessage = new JPanel();
-            panelBorderMessage = new JPanel();
-            zoneTexteMessage = new JTextField();
+        panelRight = new JPanel();
+        panelListMessage = new JPanel();
+        labelTitreTicket = new JLabel();
+        scrollPaneListMessage = new JScrollPane();
+        panelMessage = new JPanel();
+        panelEcrireMessage = new JPanel();
+        panelBorderMessage = new JPanel();
+        zoneTexteMessage = new JTextField();
 
         labelAjoutTitre.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         labelAjoutTitre.setHorizontalAlignment(SwingConstants.CENTER);
@@ -100,7 +117,7 @@ public class Mess extends JFrame {
         labelAjoutTitre.setHorizontalTextPosition(SwingConstants.CENTER);
 
         //TO DO remplacer valeur item par string de tous les groupes
-        comboBoxGroup.setModel(new DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboBoxGroup.setModel(new DefaultComboBoxModel<>());
 
 
         labelChoixGroupeAjout.setFont(new java.awt.Font("Tahoma", 2, 18)); // NOI18N
@@ -180,7 +197,6 @@ public class Mess extends JFrame {
         );
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Messagerie ");
 
         splitPaneMessagerie.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
@@ -221,9 +237,9 @@ public class Mess extends JFrame {
 
 
         //ici tree a faire
-        //remplacer listGroupe par les groupes de l'utilisateur
-        listGroupe=new String[] { "Item 1", "Item 2", "Item 3", "Item 4" };
-        initTree(listGroupe);
+        //remplacer listGroupe par les groupes de l'utilisateur // Group of User
+        //this.allFrontGroup
+        initTree();
         scrollPaneTicket.setViewportView(treeTicket);
         treeTicket.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
@@ -231,6 +247,7 @@ public class Mess extends JFrame {
                 ticketSelected(e);
             }
         });
+        treeTicket.setAutoscrolls(true);
 
         GroupLayout panelLeftLayout = new GroupLayout(panelLeft);
         panelLeft.setLayout(panelLeftLayout);
@@ -288,6 +305,8 @@ public class Mess extends JFrame {
             }
         });
 
+
+
         GroupLayout panelBorderMessageLayout = new GroupLayout(panelBorderMessage);
         panelBorderMessage.setLayout(panelBorderMessageLayout);
         panelBorderMessageLayout.setHorizontalGroup(
@@ -315,6 +334,9 @@ public class Mess extends JFrame {
                                 .addComponent(panelBorderMessage, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap())
         );
+
+
+        panelEcrireMessage.setVisible(false);
 
         GroupLayout panelListMessageLayout = new GroupLayout(panelListMessage);
         panelListMessage.setLayout(panelListMessageLayout);
@@ -367,10 +389,20 @@ public class Mess extends JFrame {
 
     private void ticketSelected(TreeSelectionEvent evt){
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeTicket.getLastSelectedPathComponent();
-        if (node==null){
+        if (node==null ){
             return;
         }
+        if (!node.isLeaf()){
+            for (int k=0;k< node.getChildCount();k++){
+                if (node.getChildAt(k).toString().length()>30){
+                    splitPaneMessagerie.setDividerLocation(this.getWidth()/2);
+                }
+            }
+
+        }
         if (node.isLeaf()){
+            firstClick=true;
+            panelEcrireMessage.setVisible(true);
             zoneTexteMessage.setText("Ecrire un message dans "+node);
             //System.out.println("test:"+node.getParent().toString());
             //scrollPaneListMessage.setViewportView(tabComponent[1]);
@@ -378,72 +410,99 @@ public class Mess extends JFrame {
             scrollPaneListMessage.setViewportView(componentForTicket.get(node.toString()));
 
             labelTitreTicket.setText(""+node);
+
         }
 
     }
 
-
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {
+        /*---Date format--*/
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
+        Date date = new Date();
+        String dayStr = dayFormat.format(date);
+        /*----------------*/
+
         titleAdd = zoneTextTitre.getText();
         String messageAdd = zoneTextNewMessage.getText();
-        Object group = comboBoxGroup.getSelectedItem();
 
         //avoir le groupe choisi pour ajouter un fil
-        groupSelectedNewFil= (String) comboBoxGroup.getSelectedItem();
+        groupSelectedNewFil= (FrontGroup)comboBoxGroup.getSelectedItem();
         //System.out.println("groupe choisi :"+groupSelectedNewFil);
 
 
         zoneTextTitre.setText("");
         zoneTextNewMessage.setText("");
 
+        if (titleAdd.length()==0){
+            Utils.warningWindow("Missing Fields in Title of new Ticket!","Error Syntax");
+        }else {
+            if (messageAdd.length()==0){
+                Utils.warningWindow("Missing Fields in Message of new Ticket!","Error Syntax");
+            } else {
+                FrameAjout.setVisible(false);
 
-        FrameAjout.setVisible(false);
+                JPanel panelAjout = new JPanel();
+                panelAjout.setAutoscrolls(true);
+                panelAjout.setLayout(new BoxLayout(panelAjout, BoxLayout.Y_AXIS));
 
-        JPanel panelAjout= new JPanel();
-        panelAjout.setAutoscrolls(true);
-        panelAjout.setLayout(new BoxLayout(panelAjout, BoxLayout.Y_AXIS));
+                JScrollPane scrollPaneNewMessage = new JScrollPane();
+                JTextPane textPaneNewMessage = new JTextPane();
+                textPaneNewMessage.setText(this.connectedUser.toString() + ", " + dayStr + "\n\n" + messageAdd);
+                textPaneNewMessage.setEditable(false);
+                scrollPaneNewMessage.setViewportView(textPaneNewMessage);
 
-        JScrollPane scrollPaneNewMessage = new JScrollPane();
-        JTextPane textPaneNewMessage = new JTextPane();
-        textPaneNewMessage.setText("User, date\n\n"+messageAdd);
-        textPaneNewMessage.setEditable(false);
-        scrollPaneNewMessage.setViewportView(textPaneNewMessage);
+                scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
+                scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
+                scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
-        scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
-        scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+                panelAjout.add(scrollPaneNewMessage);
+                //panelAjout.updateUI();
+                if (componentForTicket.containsKey(titleAdd)) {
+                    //JOptionPane.showMessageDialog(new JFrame(), "Ce ticket existe déjà dans "+groupSelectedNewFil, "Attention !", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(new JFrame(), "Ce ticket existe déjà!", "Attention !", JOptionPane.WARNING_MESSAGE);
 
-        panelAjout.add(scrollPaneNewMessage);
-        //panelAjout.updateUI();
-        if (componentForTicket.containsKey(titleAdd)){
-            JOptionPane.showMessageDialog(new JFrame(),"Ce ticket existe déjà","Attention !",JOptionPane.WARNING_MESSAGE);
+                } else {
 
-        } else {
-            componentForTicket.put( titleAdd , panelAjout);
+                    componentForTicket.put(titleAdd, panelAjout);
+
+                    boolean existInTree=false;
+                    for (int k=0; k<rootTree.getChildCount(); k++){
+                        if (groupSelectedNewFil.equals(rootTree.getChildAt(k))){
+                            existInTree=true;
+                            k=rootTree.getChildCount();
+                        }
+                    }
+                    if (!existInTree){
+                        addGroupToRoot(groupSelectedNewFil);
+                    }
+                    /*if (rootTree.getChildCount()==1){
+                        treeTicket.setRootVisible(false);
+                    }*/
+
+                    int i = 0;
+                    for (FrontGroup group : this.allFrontGroup) {
+
+                        if (group.equals(groupSelectedNewFil)) {
+                            DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
+                            DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
 
 
-            int i = 0;
-            for (String groupe : listGroupe) {
+                            DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(racine, i);
+                            DefaultMutableTreeNode ticket = new DefaultMutableTreeNode(titleAdd);
+                            ticket.setAllowsChildren(false);
+                            model.insertNodeInto(ticket, gp, gp.getChildCount());
+                            TreePath path = new TreePath(ticket);
+                            treeTicket.setSelectionPath(path);
+                        }
+                        i++;
+                    }
 
-                if (groupe.equals(groupSelectedNewFil)) {
-                    DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
-                    DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
-
-
-                    DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(racine, i);
-                    model.insertNodeInto(new DefaultMutableTreeNode(titleAdd), gp, gp.getChildCount());
                 }
-                i++;
+
+                //System.out.println("text="+zoneTexteMessage.getText());
+                zoneTexteMessage.setText("");
             }
         }
-
-
-
-
-        //System.out.println("text="+zoneTexteMessage.getText());
-        zoneTexteMessage.setText("");
-
-
     }
     private void zoneTexteMessageMouseClicked(MouseEvent evt){
         if (firstClick==true) {
@@ -453,81 +512,112 @@ public class Mess extends JFrame {
     }
 
     private void zoneTexteMessageActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
-
+        /*---Date format--*/
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
+        Date date = new Date();
+        String dayStr = dayFormat.format(date);
+        /*----------------*/
 
         DefaultMutableTreeNode selectedItemTree = (DefaultMutableTreeNode) treeTicket.getLastSelectedPathComponent();
-        if(selectedItemTree!= null) {
+        if (zoneTexteMessage.getText().length()==0){
+            Utils.warningWindow("Missing Fields in Message to send","Error Syntax");
+        } else {
+            if (selectedItemTree != null) {
 
-            JScrollPane scrollPaneNewMessage = new JScrollPane();
-            JTextPane textPaneNewMessage = new JTextPane();
-            textPaneNewMessage.setText("User, date\n\n"+zoneTexteMessage.getText());
-            textPaneNewMessage.setEditable(false);
-            scrollPaneNewMessage.setViewportView(textPaneNewMessage);
+                JScrollPane scrollPaneNewMessage = new JScrollPane();
+                JTextPane textPaneNewMessage = new JTextPane();
+                textPaneNewMessage.setText(this.connectedUser.toString() + ", " + dayStr + "\n\n" + zoneTexteMessage.getText());
+                textPaneNewMessage.setEditable(false);
+                scrollPaneNewMessage.setViewportView(textPaneNewMessage);
 
-            scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
-            scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
-            scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+                scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
+                scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
+                scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
-            componentForTicket.get(selectedItemTree.toString()).add(scrollPaneNewMessage);
-            componentForTicket.get(selectedItemTree.toString()).updateUI();
+                componentForTicket.get(selectedItemTree.toString()).add(scrollPaneNewMessage);
+                componentForTicket.get(selectedItemTree.toString()).updateUI();
 
 
-            firstClick=true;
-            zoneTexteMessage.setText("Ecrire un message dans "+selectedItemTree);
+                firstClick = true;
+                zoneTexteMessage.setText("");
+            }
         }
     }
 
-    private void initTree(String [] listMessage) {
-        DefaultMutableTreeNode rootTree = new DefaultMutableTreeNode("Groups");
-        for (String mess : listMessage) {
-            DefaultMutableTreeNode groupe = new DefaultMutableTreeNode(mess);
+    private void initTree() {
+//FrontGroup[] groupList
+        /*for (FrontGroup group : groupList) {
 
-            rootTree.add(groupe);
-        }
+            addNodeToTree(group);
+        }*/
         treeTicket = new JTree(rootTree);
         treeTicket.setBackground(new java.awt.Color(102, 102, 102));
         treeTicket.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         treeTicket.setRootVisible(false);
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Mess.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Mess.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Mess.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Mess.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    private void addGroupToRoot(FrontGroup node){
+        DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(node);
+        //DefaultMutableTreeNode forNode = new DefaultMutableTreeNode();
+        //forNode.setAllowsChildren(false);
+        //newGroup.add(forNode);
+        DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
+        DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
+        if (rootTree.getChildCount()==0){
+            model.insertNodeInto(newGroup, rootTree, 0);
         }
-        //</editor-fold>
+        else {
+            DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(rootTree, rootTree.getChildCount());
+            model.insertNodeInto(newGroup, gp, gp.getChildCount());
+        }
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            new Mess().setVisible(true);
-        });
+        model.reload();
+        //rootTree.add(newGroup);
+        //expandAll();
+
+    }
+
+    private void addLeafToNode(FrontGroup node){
+        DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(node);
+        //DefaultMutableTreeNode forNode = new DefaultMutableTreeNode();
+        //forNode.setAllowsChildren(false);
+        //newGroup.add(forNode);
+        DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
+        DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
+        if (rootTree.getChildCount()==0){
+            model.insertNodeInto(newGroup, rootTree, 0);
+        }
+        else {
+            DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(rootTree, rootTree.getChildCount());
+            model.insertNodeInto(newGroup, gp, gp.getChildCount());
+        }
+
+        model.reload();
+        //rootTree.add(newGroup);
+        //expandAll();
+
+    }
+
+    public void expandAll() {
+        int row = 0;
+        while (row < treeTicket.getRowCount()) {
+            treeTicket.expandRow(row);
+            row++;
+        }
+    }
+
+    private void addLeafToNode(FrontGroup leaf,DefaultMutableTreeNode node){
+        DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
+        DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
+
+        DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(racine, model.getIndexOfChild( racine,node));
+        model.insertNodeInto(new DefaultMutableTreeNode(leaf), gp, gp.getChildCount());
     }
 
     // Variables declaration - do not modify
     private JButton buttonAddNewFil;
     private JButton buttonAjoutTicket;
-    private JComboBox<String> comboBoxGroup;
+    public static JComboBox<FrontGroup> comboBoxGroup;
     private JFrame FrameAjout;
     private JLabel labelAjoutTitre;
     private JLabel labelChoixGroupeAjout;

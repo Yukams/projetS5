@@ -15,6 +15,7 @@ import static back.main.mainBack.*;
 
 public class Server {
 	public static void treatQueryWithoutResponse(String queryString) {
+		System.out.println("[SQL] Query executed -> " + queryString);
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
@@ -28,6 +29,7 @@ public class Server {
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
+			System.out.println("[SQL] Query executed -> " + queryString);
 			ResultSet resultSet = stmt.executeQuery(queryString);
 			ResultSetMetaData rsmd = resultSet.getMetaData();
 			int columnsNumber = rsmd.getColumnCount();
@@ -54,6 +56,8 @@ public class Server {
 	}
 
 	private static StringBuilder dbObjectToJsonList(DbObject[] objectList) {
+		if(objectList.length == 0) {return new StringBuilder("");}
+
 		StringBuilder groupList = new StringBuilder("(");
 		for(DbObject object: objectList) {
 			groupList.append("'").append(object.id).append("',");
@@ -164,17 +168,22 @@ public class Server {
 		String jsonString = Server.treatQuery("SELECT g.id, g.name FROM dbLinkUserGroup JOIN dbGroup g ON id WHERE userId=" + userId + " AND dbLinkUserGroup.groupId=g.id;");
 		DbGroup[] objectList = gson.fromJson(jsonString, DbGroup[].class);
 
-		// Transform groups into a JSON List
-		StringBuilder groupList = dbObjectToJsonList(objectList);
-
-		// Get all Threads for the said User
-		jsonString = Server.treatQuery("SELECT id FROM dbThread WHERE groupId IN " + groupList + " OR authorId=" + userId);
-		DbThread[] dbThreadList = gson.fromJson(jsonString, DbThread[].class);
-
 		List<FrontThread> threadsList = new ArrayList<>();
-		// Build each thread
-		for(DbThread thread: dbThreadList) {
-			threadsList.add(getThread(thread.id));
+
+		// Transform groups into a JSON List if user is in at least one group
+		if (objectList.length != 0) {
+			StringBuilder groupList = dbObjectToJsonList(objectList);
+
+			// Get all Threads for the said User
+			// NOTE : for some reason, an empty list will result in a single closing parenthesis
+			jsonString = Server.treatQuery("SELECT id FROM dbThread WHERE groupId IN " + groupList + " OR authorId=" + userId + ";");
+			DbThread[] dbThreadList = gson.fromJson(jsonString, DbThread[].class);
+
+
+			// Build each thread
+			for (DbThread thread : dbThreadList) {
+				threadsList.add(getThread(thread.id));
+			}
 		}
 
 		return threadsList;
@@ -323,7 +332,7 @@ public class Server {
 	}
 
 	public static List<FrontGroup> getGroupsOfUserById(int userId) {
-		String jsonString = treatQuery("SELECT id FROM dbGroup WHERE userId=" + userId + ";");
+		String jsonString = treatQuery("SELECT g.id FROM dbLinkUserGroup l JOIN dbGroup g ON l.groupId WHERE userId=" + userId + ";");
 		DbGroup[] dbGroups = gson.fromJson(jsonString, DbGroup[].class);
 
 		List<FrontGroup> groups = new ArrayList<>();

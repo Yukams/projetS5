@@ -193,9 +193,11 @@ public class ClientHandler implements Runnable {
                 updateAllClients(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())), false, true, false);
                 updateAllClients(treatRequest(new ClientRequest("/group/getAllDatabaseGroups", new HashMap<>())), true, false, false);
             }
-            // TODO do it only for the selected user
+            // TODO also send new threads for the selected user
             case "/group/addUserToGroup" -> {
-                updateAllClients(treatRequest(new ClientRequest("/group/getGroupsOfUser", new HashMap<>())), false, true, false);
+                Map<String, String> payload = new HashMap<>();
+                payload.put("userId", request.payload.get("userId"));
+                updateAllClients(treatRequest(new ClientRequest("/group/getGroupsOfUserById", payload)), true, false, false);
             }
         }
     }
