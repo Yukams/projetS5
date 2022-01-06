@@ -25,7 +25,6 @@ public class ClientHandler implements Runnable {
     private Gson gson = new Gson();
     private int clientId = -1;
     private boolean clientIsAdmin = false;
-    private boolean doUpdate = false;
 
     public ClientHandler(Socket clientSocket) throws IOException {
         client = clientSocket;
@@ -62,7 +61,6 @@ public class ClientHandler implements Runnable {
                 System.out.println("[SERVER] Disconnecting client " + clientId);
                 Server.disconnect(this);
                 updateAdminsExceptSelf(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())));
-                //updateAllClients(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())), true, false, true);
             }
             mainBack.clients.remove(this);
         }
@@ -93,16 +91,6 @@ public class ClientHandler implements Runnable {
             boolean isAdmin = client.getClientIsAdmin();
 
             if(!isAdmin) {
-                updateSingleClient(serverResponse, client);
-            }
-        }
-    }
-
-    private void updateAllClients(ServerResponse serverResponse, boolean adminOnly, boolean usersOnly, boolean withoutSelf) {
-        for(ClientHandler client : mainBack.clients) {
-            boolean isAdmin = client.getClientIsAdmin();
-
-            if((!adminOnly || isAdmin) && (!usersOnly || !isAdmin) && (!withoutSelf || client.getClientId() != this.clientId)) {
                 updateSingleClient(serverResponse, client);
             }
         }
@@ -247,9 +235,6 @@ public class ClientHandler implements Runnable {
                 updateClientsOnly(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())));
             }
             case "/group/addUserToGroup" -> {
-                // Sends the new Group List of the request user to admins
-                updateAdminsOnly(treatRequest(new ClientRequest("/group/getGroupsOfUserById", request.payload)));
-
                 // Sends new threads to the selected user IF CONNECTED
                 String clientIdString = request.payload.get("userId");
                 ClientHandler client = clientIsConnected(Integer.parseInt(clientIdString));

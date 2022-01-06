@@ -37,25 +37,6 @@ public class Utils {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // Avoids long nested try catch statements (Closes Client cx)
-    public static void closeAll(Socket socket, BufferedReader in, PrintWriter out){
-        try{
-            if(in != null){
-                in.close();
-            }
-            if(out != null){
-                out.close();
-            }
-            if(socket != null){
-                socket.close();
-            }
-            System.out.println("---[COMMUNICATION CLOSED]---");
-
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
     // Check credentials nature
     public static boolean validCredentials(String username, String password) {
         return !username.equals("") && !password.equals("") && Utils.isValidString(username);

@@ -10,7 +10,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/ProjetS5/dbjar/mysql-connector-java-8.0.27.jar!/" />
+          <root url="jar://$MODULE_DIR$/ProjetS5/lib/AbsoluteLayout.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -19,7 +19,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/ProjetS5/jarLib/AbsoluteLayout.jar!/" />
+          <root url="jar://$MODULE_DIR$/ProjetS5/lib/gson-2.8.9.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -28,7 +28,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/ProjetS5/jarLib/gson-2.8.9.jar!/" />
+          <root url="jar://$MODULE_DIR$/ProjetS5/lib/mysql-connector-java-8.0.27.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

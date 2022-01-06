@@ -1,6 +1,8 @@
-package front.client;
+package front.tests;
 
 import com.google.gson.Gson;
+import front.client.ServerListener;
+import front.client.ServerRequest;
 import front.frontobjects.FrontUser;
 
 import java.io.IOException;

@@ -224,7 +224,7 @@ public class ChatWindow extends JFrame {
         );
 
         buttonAjoutTicket.setBackground(new java.awt.Color(102, 102, 102));
-        buttonAjoutTicket.setIcon(new ImageIcon(getClass().getResource("/icons/plus.png"))); // NOI18N
+        buttonAjoutTicket.setIcon(new ImageIcon(getClass().getResource("src/front/icons/plus.png"))); // NOI18N
         buttonAjoutTicket.setContentAreaFilled(false);
         buttonAjoutTicket.setHorizontalAlignment(SwingConstants.RIGHT);
         buttonAjoutTicket.setOpaque(true);

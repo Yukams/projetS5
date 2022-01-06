@@ -9,4 +9,5 @@ module projetS5 {
     exports front.client;
     exports back.frontobjects;
     exports front.frontobjects;
+    exports front.tests;
 }
