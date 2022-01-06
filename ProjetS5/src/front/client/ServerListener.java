@@ -76,6 +76,8 @@ public class ServerListener implements Runnable {
                 RootRequest.allUsersAL.add(RootRequest.createdUser); // Adds the created user to the list of users
                 RootRequest.disconectedUsersAL.add(RootRequest.createdUser);
                 this.updateUsers();
+
+                // TODO appeler la route pour ajouter le user a son groupe de base ici, il faut passer par une variable globale je suppose (pour l'id du groupe)
             }
             case "/user/deleteUser" -> {
                 FrontUser removedUser = gson.fromJson(payload, FrontUser.class);
