@@ -167,14 +167,14 @@ public class Server {
 		String jsonString = Server.treatQuery("SELECT g.id, g.name FROM dbLinkUserGroup JOIN dbGroup g ON id WHERE userId=" + userId + " AND dbLinkUserGroup.groupId=g.id;");
 		DbGroup[] objectList = gson.fromJson(jsonString, DbGroup[].class);
 
-		// Transform groups into a JSON List
-		StringBuilder groupList = dbObjectToJsonList(objectList);
-		System.out.println(groupList);
-
 		List<FrontThread> threadsList = new ArrayList<>();
-		// Get all Threads for the said User
-		// NOTE : for some reason, an empty list will result in a single closing parenthesis
-		if(!groupList.toString().equals("")) {
+
+		// Transform groups into a JSON List if user is in at least one group
+		if (objectList.length != 0) {
+			StringBuilder groupList = dbObjectToJsonList(objectList);
+
+			// Get all Threads for the said User
+			// NOTE : for some reason, an empty list will result in a single closing parenthesis
 			jsonString = Server.treatQuery("SELECT id FROM dbThread WHERE groupId IN " + groupList + " OR authorId=" + userId + ";");
 			DbThread[] dbThreadList = gson.fromJson(jsonString, DbThread[].class);
 
