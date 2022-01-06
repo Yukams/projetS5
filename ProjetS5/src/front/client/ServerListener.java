@@ -117,7 +117,6 @@ public class ServerListener implements Runnable {
             case "/thread/getAllThreadsForUser" -> {
                 FrontThread[] frontUserThreads = gson.fromJson(payload, FrontThread[].class);
                 ChatWindow.userThreads = frontUserThreads;
-
             }
             case "/thread/createThread" -> System.out.println("/thread/createThread");
             case "/thread/deleteThread" -> System.out.println("/thread/deleteThread");
@@ -140,13 +139,14 @@ public class ServerListener implements Runnable {
                 if(ServerInterface.grpListAdd2Usr != null) ServerInterface.grpListAdd2Usr.setModel(new DefaultComboBoxModel<>(frontGroups));
                 if(ServerInterface.grpListToRemove != null) ServerInterface.grpListToRemove.setModel(new DefaultComboBoxModel<>(frontGroups));
                 if(ChatWindow.comboBoxGroup != null) ChatWindow.comboBoxGroup.setModel(new DefaultComboBoxModel<>(frontGroups));
-
-                ChatWindow.allFrontGroup = frontGroups;
+                if(ChatWindow.allFrontGroup != null) ChatWindow.allFrontGroup = frontGroups;
             }
             case "/group/getGroupsOfUserById" -> {
                 FrontGroup[] frontGroupsOfUser = gson.fromJson(payload, FrontGroup[].class);
-                ChatWindow.userFrontGroups = frontGroupsOfUser;
-                ChatWindow.fillTree();
+                if(ChatWindow.userFrontGroups != null) {
+                    ChatWindow.userFrontGroups = frontGroupsOfUser;
+                    ChatWindow.fillTree();
+                }
             }
             case "/group/getGroupsOfUser" -> System.out.println("/group/getGroupsOfUser");
         }
