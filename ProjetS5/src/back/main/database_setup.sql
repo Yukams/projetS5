@@ -1,9 +1,14 @@
-CREATE TABLE dbGroup (
+CREATE TABLE IF NOT EXISTS dbGroup (
     id INT PRIMARY KEY NOT NULL,
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE dbUser (
+INSERT IGNORE INTO dbGroup VALUES   (90, 'testGroup1'),
+                                    (91, 'testGroup2'),
+                                    (92, 'testGroup3'),
+                                    (93, 'testGroup4');
+
+CREATE TABLE IF NOT EXISTS dbUser (
     id INT PRIMARY KEY NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     name VARCHAR(50) NOT NULL,
@@ -12,7 +17,13 @@ CREATE TABLE dbUser (
     isAdmin BIT NOT NULL
 );
 
-CREATE TABLE dbLinkUserGroup (
+INSERT IGNORE INTO dbUser VALUES    (10, 'Jean31', 'Dupont', 'Jean', '123', false),
+                                    (11, 'Pierre31', 'Dubois', 'Pierre', '123', false),
+                                    (12, 'Dylan31', 'Dulin', 'Dylan', '123', false),
+                                    (13, 'Vincent31', 'Depierre', 'Vincent', '123', false),
+                                    (14, 'root', 'root', 'root', 'root', true);
+
+CREATE TABLE IF NOT EXISTS dbLinkUserGroup (
     userId INT NOT NULL,
     groupId INT NOT NULL,
     FOREIGN KEY (userId) REFERENCES dbUser(id) ON DELETE CASCADE,
@@ -20,7 +31,13 @@ CREATE TABLE dbLinkUserGroup (
     PRIMARY KEY (userId, groupId)
 );
 
-CREATE TABLE dbMessage (
+INSERT IGNORE INTO dbLinkUserGroup VALUES   (10, 91),
+                                            (11, 91),
+                                            (11, 93),
+                                            (12, 93),
+                                            (13, 92);
+
+CREATE TABLE IF NOT EXISTS dbMessage (
     id INT PRIMARY KEY NOT NULL,
     authorId INT NOT NULL,
     text VARCHAR(3000) NOT NULL,
@@ -28,7 +45,11 @@ CREATE TABLE dbMessage (
     FOREIGN KEY (authorId) REFERENCES dbUser(id) ON DELETE CASCADE
 );
 
-CREATE TABLE dbLinkUserMessage (
+INSERT IGNORE INTO dbMessage VALUES (20, 13, 'testMessage1', '1640500000000'),
+                                    (21, 11, 'testMessage2', '1640500000001'),
+                                    (22, 11, 'testMessage3', '1640500000000');
+
+CREATE TABLE IF NOT EXISTS dbLinkUserMessage (
     userId INT NOT NULL,
     messageId INT NOT NULL,
     status VARCHAR(10),
@@ -37,7 +58,16 @@ CREATE TABLE dbLinkUserMessage (
     PRIMARY KEY (userId, messageId)
 );
 
-CREATE TABLE dbThread (
+INSERT IGNORE INTO dbLinkUserMessage VALUES (10, 20, 'NOT_SEEN'),
+                                            (11, 20, 'SEEN'),
+                                            (13, 20, 'SEEN'),
+                                            (10, 21, 'NOT_SEEN'),
+                                            (11, 21, 'SEEN'),
+                                            (13, 21, 'NOT_SEEN'),
+                                            (11, 22, 'SEEN'),
+                                            (13, 22, 'NOT_SEEN');
+
+CREATE TABLE IF NOT EXISTS dbThread (
     id INT PRIMARY KEY NOT NULL,
     title VARCHAR(300) NOT NULL,
     groupId INT NOT NULL,
@@ -46,7 +76,10 @@ CREATE TABLE dbThread (
     FOREIGN KEY (groupId) REFERENCES dbGroup(id) ON DELETE CASCADE
 );
 
-CREATE TABLE dbLinkMessageThread (
+INSERT IGNORE INTO dbThread VALUES  (30, 'testThread1', 91, 13),
+                                    (31, 'testThread2', 92, 11);
+
+CREATE TABLE IF NOT EXISTS dbLinkMessageThread (
      messageId INT NOT NULL,
      threadId INT NOT NULL,
      FOREIGN KEY (messageId) REFERENCES dbMessage(id) ON DELETE CASCADE,
@@ -54,7 +87,11 @@ CREATE TABLE dbLinkMessageThread (
      PRIMARY KEY (messageId, threadId)
 );
 
-CREATE TABLE dbConnectionToken (
+INSERT IGNORE INTO dbLinkMessageThread VALUES   (20, 30),
+                                                (21, 30),
+                                                (22, 31);
+
+CREATE TABLE IF NOT EXISTS dbConnectionToken (
     id INT PRIMARY KEY NOT NULL,
     userId INT NOT NULL,
     FOREIGN KEY (userId) REFERENCES dbUser(id) ON DELETE CASCADE
