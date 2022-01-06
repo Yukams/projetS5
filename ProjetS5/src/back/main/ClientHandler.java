@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ClientHandler implements Runnable {
@@ -59,9 +61,40 @@ public class ClientHandler implements Runnable {
             if(clientId != -1){
                 System.out.println("[SERVER] Disconnecting client " + clientId);
                 Server.disconnect(this);
-                updateAllClients(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())), true, false, true);
+                updateAdminsExceptSelf(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())));
+                //updateAllClients(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())), true, false, true);
             }
             mainBack.clients.remove(this);
+        }
+    }
+
+    private void updateAdminsExceptSelf(ServerResponse serverResponse) {
+        for(ClientHandler client : mainBack.clients) {
+            boolean isAdmin = client.getClientIsAdmin();
+
+            if(isAdmin && client.getClientId() != this.clientId) {
+                updateSingleClient(serverResponse, client);
+            }
+        }
+    }
+
+    private void updateAdminsOnly(ServerResponse serverResponse) {
+        for(ClientHandler client : mainBack.clients) {
+            boolean isAdmin = client.getClientIsAdmin();
+
+            if(isAdmin) {
+                updateSingleClient(serverResponse, client);
+            }
+        }
+    }
+
+    private void updateClientsOnly(ServerResponse serverResponse) {
+        for(ClientHandler client : mainBack.clients) {
+            boolean isAdmin = client.getClientIsAdmin();
+
+            if(!isAdmin) {
+                updateSingleClient(serverResponse, client);
+            }
         }
     }
 
@@ -70,11 +103,19 @@ public class ClientHandler implements Runnable {
             boolean isAdmin = client.getClientIsAdmin();
 
             if((!adminOnly || isAdmin) && (!usersOnly || !isAdmin) && (!withoutSelf || client.getClientId() != this.clientId)) {
-                ServerResponse update = new ServerResponse(serverResponse.address, serverResponse.payload, "update");
-                System.out.println("[SERVER] Sending update to client (" + client.getClientId() + ") => " + update.payload);
-                client.getPrinterOut().println(gson.toJson(update));
+                updateSingleClient(serverResponse, client);
             }
         }
+    }
+
+    private void treatSingleRequest(ServerResponse serverResponse, ClientHandler client) {
+        ServerResponse update = new ServerResponse(serverResponse.address, serverResponse.payload, "update");
+        System.out.println("[SERVER] Sending update to client (" + client.getClientId() + ") => " + update.payload);
+        client.getPrinterOut().println(gson.toJson(update));
+    }
+
+    private void updateSingleClient(ServerResponse serverResponse, ClientHandler client) {
+        treatSingleRequest(serverResponse, client);
     }
 
     private ServerResponse treatRequest(ClientRequest request) {
@@ -113,6 +154,9 @@ public class ClientHandler implements Runnable {
             // THREAD
             // {}
             case "/thread/getAllThreadsForUser" -> IThread.getAllThreadForUser(this.clientId);
+
+            // { "id" : int }
+            case "/thread/getAllThreadsForUserById" -> IThread.getAllThreadForUserById(payload);
 
             // { "authorId": int, "groupId": int, "title": String, "content": String }
             // Updates
@@ -170,36 +214,60 @@ public class ClientHandler implements Runnable {
 
         switch (address) {
             // CONNECTIVITY
-            case "/connect" -> updateAllClients(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())), true, false, false);
+            // Sends the new Database Connected User List to admins
+            case "/connect" -> updateAdminsOnly(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())));
 
             // USER
-            case "/user/createUser" -> updateAllClients(treatRequest(new ClientRequest("/user/getAllDatabaseUsers", new HashMap<>())), true, false, false);
+            // Sends the new Database User List to admins
+            case "/user/createUser" -> updateAdminsOnly(treatRequest(new ClientRequest("/user/getAllDatabaseUsers", new HashMap<>())));
+            // TODO only for affected users
             case "/user/deleteUser" -> {
-                updateAllClients(treatRequest(new ClientRequest("/user/getAllDatabaseUsers", new HashMap<>())), true, false, false);
-                // TODO only for affected users
-                updateAllClients(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())), false, true, false);
+                // Sends the new Database User List to admins
+                updateAdminsOnly(treatRequest(new ClientRequest("/user/getAllDatabaseUsers", new HashMap<>())));
+                // Sends recalculated threads to clients
+                updateClientsOnly(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())));
             }
 
             // THREAD & MESSAGE & addUserToGroup
             // TODO only for affected users
+            // Sends recalculated threads to clients
             case "/thread/createThread", "/thread/deleteThread", "/thread/updateMessagesOfThread", "/message/createMessage", "/message/deleteMessage"
-                    -> updateAllClients(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())), false, true, false);
+                    -> updateClientsOnly(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())));
 
             // GROUP
+            // Sends the new Database Group List to admins
             case "/group/createGroup" ->
-                    updateAllClients(treatRequest(new ClientRequest("/group/getAllDatabaseGroups", new HashMap<>())), true, false, false);
+                    updateAdminsOnly(treatRequest(new ClientRequest("/group/getAllDatabaseGroups", new HashMap<>())));
+
+            // TODO only for affected users
             case "/group/deleteGroup" -> {
-                // TODO only for affected users
-                updateAllClients(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())), false, true, false);
-                updateAllClients(treatRequest(new ClientRequest("/group/getAllDatabaseGroups", new HashMap<>())), true, false, false);
+                // Sends the new Database Group List to admins
+                updateAdminsOnly(treatRequest(new ClientRequest("/group/getAllDatabaseGroups", new HashMap<>())));
+                // Sends recalculated threads to clients
+                updateClientsOnly(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())));
             }
-            // TODO also send new threads for the selected user
             case "/group/addUserToGroup" -> {
-                Map<String, String> payload = new HashMap<>();
-                payload.put("userId", request.payload.get("userId"));
-                updateAllClients(treatRequest(new ClientRequest("/group/getGroupsOfUserById", payload)), true, false, false);
+                // Sends the new Group List of the request user to admins
+                updateAdminsOnly(treatRequest(new ClientRequest("/group/getGroupsOfUserById", request.payload)));
+
+                // Sends new threads to the selected user IF CONNECTED
+                String clientIdString = request.payload.get("userId");
+                ClientHandler client = clientIsConnected(Integer.parseInt(clientIdString));
+                if(client != null) {
+                    Map<String, String> payload = new HashMap<>();
+                    payload.put("id", clientIdString);
+                    updateSingleClient(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", payload)), client);
+                }
             }
         }
+    }
+
+    private ClientHandler clientIsConnected(int clientId) {
+        if(mainBack.clients.stream().anyMatch((client) -> client.getClientId() == clientId)) {
+            return mainBack.clients.stream().filter(a -> a.getClientId() == clientId).toList().get(0);
+        }
+
+        return null;
     }
 
     public void setClientId(int id) {

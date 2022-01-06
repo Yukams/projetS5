@@ -36,6 +36,13 @@ public interface IThread {
 		return gson.toJson(threads);
 	}
 
+	static String getAllThreadForUserById(Map<String, String> payload) {
+		int id = Integer.parseInt(payload.get("id"));
+		List<FrontThread> threads = Server.getAllThreadForUser(id);
+
+		return gson.toJson(threads);
+	}
+
     static String deleteThread(Map<String, String> payload) {
 		int id = Integer.parseInt(payload.get("id"));
 		FrontThread thread = Server.deleteThread(id);
