@@ -25,7 +25,6 @@ public class ClientHandler implements Runnable {
     private Gson gson = new Gson();
     private int clientId = -1;
     private boolean clientIsAdmin = false;
-    private boolean doUpdate = false;
 
     public ClientHandler(Socket clientSocket) throws IOException {
         client = clientSocket;
@@ -62,7 +61,6 @@ public class ClientHandler implements Runnable {
                 System.out.println("[SERVER] Disconnecting client " + clientId);
                 Server.disconnect(this);
                 updateAdminsExceptSelf(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())));
-                //updateAllClients(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())), true, false, true);
             }
             mainBack.clients.remove(this);
         }
