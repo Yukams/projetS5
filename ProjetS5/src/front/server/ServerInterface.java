@@ -22,6 +22,7 @@ public class ServerInterface extends JFrame {
 
     private final RootRequest rootRequest;
     private final FrontUser connectedUser;
+    public static FrontGroup selectedDefaultGroup;
 
     /* CONSTRUCTOR :
     * - GET DATA BASE INFO
@@ -483,8 +484,8 @@ public class ServerInterface extends JFrame {
     }
     // REGISTER USER REQUEST + SET DEFAULT GROUP
     public void registerUser(ArrayList<String> fields){
-        FrontGroup selectedGroup = grpSelectAddUser.getItemAt(grpSelectAddUser.getSelectedIndex());
-        if(selectedGroup != null) {
+        selectedDefaultGroup = grpSelectAddUser.getItemAt(grpSelectAddUser.getSelectedIndex());
+        if(selectedDefaultGroup != null) {
             // Writing User Creation Payload
             Map<String, String> userPayload = new HashMap<>();
             userPayload.put("username", fields.get(2));
@@ -494,12 +495,6 @@ public class ServerInterface extends JFrame {
             userPayload.put("isAdmin", "" + isUserAdminCheckBox.isSelected());
             // Sending request: Create the User (Needed to generate ID)
             this.rootRequest.createUser(userPayload);
-            /* Associating the user to an initial default group if said user is not Admin */
-            if (!isUserAdminCheckBox.isSelected()) {
-                FrontUser user = RootRequest.createdUser; // User just created
-                this.addUserToGroupFromComboBox(user, selectedGroup);
-            }
-            Utils.informationWindow("User Successfully created !", "Information");
         } else { Utils.errorWindow("No group is selected","Error"); }
     }
     // SET USER INFO
@@ -547,12 +542,12 @@ public class ServerInterface extends JFrame {
     /*------------------ {END} ------------------*/
 
     /*------------------ {MANAGE GROUPS} ------------------*/
-    public void addUserToGroupFromComboBox(FrontUser user, FrontGroup selectedGroup){
+    public static void addUserToGroupFromComboBox(FrontUser user, FrontGroup selectedGroup){
         // Writing Group assignment payload
         Map<String,String> defaultGroupPayload = new HashMap<>();
         defaultGroupPayload.put("groupId",""+selectedGroup.id);
         defaultGroupPayload.put("userId",""+user.id);
-        this.rootRequest.addUserToGroup(defaultGroupPayload);
+        RootRequest.addUserToGroup(defaultGroupPayload);
     }
     // In 'manage users' section
     private void btnAddUserToGrpActionPerformed(ActionEvent evt) {
@@ -674,5 +669,5 @@ public class ServerInterface extends JFrame {
     public static JComboBox<FrontUser> usrListComboBox;
     private JTextField usrNameTxtField;
     private static JTable usrTable;
-    private JCheckBox isUserAdminCheckBox;
+    public static JCheckBox isUserAdminCheckBox;
 }

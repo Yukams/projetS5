@@ -3,6 +3,7 @@ package front.client;
 import front.frontobjects.FrontGroup;
 import front.frontobjects.FrontUser;
 import front.server.ServerInterface;
+import front.utils.Utils;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -75,6 +76,12 @@ public class ServerListener implements Runnable {
                 RootRequest.createdUser = gson.fromJson(payload, FrontUser.class);
                 RootRequest.allUsersAL.add(RootRequest.createdUser); // Adds the created user to the list of users
                 RootRequest.disconectedUsersAL.add(RootRequest.createdUser);
+                /* Associating the user to an initial default group if said user is not Admin */
+                if (!ServerInterface.isUserAdminCheckBox.isSelected()) {
+                    FrontUser user = RootRequest.createdUser; // User just created
+                    ServerInterface.addUserToGroupFromComboBox(user, ServerInterface.selectedDefaultGroup);
+                }
+                Utils.informationWindow("User Successfully created !", "Information");
                 this.updateUsers();
 
                 // TODO appeler la route pour ajouter le user a son groupe de base ici, il faut passer par une variable globale je suppose (pour l'id du groupe)
