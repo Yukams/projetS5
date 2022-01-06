@@ -1,4 +1,4 @@
-package tests.back;
+package back.test;
 
 import back.api.Server;
 import back.frontobjects.FrontGroup;

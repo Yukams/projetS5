@@ -45,8 +45,8 @@ public class ServerListener implements Runnable {
         } finally {
             try {
                 in.close();
-                Utils.errorWindow("Server closed","Error");
-                System.exit(-1);
+                //Utils.errorWindow("Server closed","Error");
+                //System.exit(-1);
             } catch (IOException e) {
                 e.printStackTrace();
             }

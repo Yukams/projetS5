@@ -98,16 +98,6 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void updateAllClients(ServerResponse serverResponse, boolean adminOnly, boolean usersOnly, boolean withoutSelf) {
-        for(ClientHandler client : mainBack.clients) {
-            boolean isAdmin = client.getClientIsAdmin();
-
-            if((!adminOnly || isAdmin) && (!usersOnly || !isAdmin) && (!withoutSelf || client.getClientId() != this.clientId)) {
-                updateSingleClient(serverResponse, client);
-            }
-        }
-    }
-
     private void treatSingleRequest(ServerResponse serverResponse, ClientHandler client) {
         ServerResponse update = new ServerResponse(serverResponse.address, serverResponse.payload, "update");
         System.out.println("[SERVER] Sending update to client (" + client.getClientId() + ") => " + update.payload);
@@ -247,9 +237,6 @@ public class ClientHandler implements Runnable {
                 updateClientsOnly(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())));
             }
             case "/group/addUserToGroup" -> {
-                // Sends the new Group List of the request user to admins
-                updateAdminsOnly(treatRequest(new ClientRequest("/group/getGroupsOfUserById", request.payload)));
-
                 // Sends new threads to the selected user IF CONNECTED
                 String clientIdString = request.payload.get("userId");
                 ClientHandler client = clientIsConnected(Integer.parseInt(clientIdString));

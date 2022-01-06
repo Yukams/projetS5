@@ -167,7 +167,7 @@ public class ServerInterface extends JFrame {
         sideBarPanel.setLayout(new AbsoluteLayout());
 
         iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        iconLabel.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-admin-64.png")));
+        iconLabel.setIcon(new ImageIcon(getClass().getResource("/front/icons/icons8-admin-64.png")));
         sideBarPanel.add(iconLabel, new AbsoluteConstraints(-2, 5, 130, 67));
 
         jLabel1.setBackground(new Color(255, 251, 250));
@@ -187,7 +187,7 @@ public class ServerInterface extends JFrame {
         btn1.setLayout(new AbsoluteLayout());
 
         iconBtn1.setHorizontalAlignment(SwingConstants.CENTER);
-        iconBtn1.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-add-user-male-50 (1).png")));
+        iconBtn1.setIcon(new ImageIcon(getClass().getResource("/front/icons/icons8-add-user-male-50 (1).png")));
         btn1.add(iconBtn1, new AbsoluteConstraints(0, 0, 130, 40));
 
         textBtn1.setFont(new Font("Calibri", 1, 18));
@@ -208,7 +208,7 @@ public class ServerInterface extends JFrame {
         btn2.setLayout(new AbsoluteLayout());
 
         iconBtn2.setHorizontalAlignment(SwingConstants.CENTER);
-        iconBtn2.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-registration-50 (1).png")));
+        iconBtn2.setIcon(new ImageIcon(getClass().getResource("/front/icons/icons8-registration-50 (1).png")));
         btn2.add(iconBtn2, new AbsoluteConstraints(0, 0, 130, 40));
 
         textBtn2.setFont(new Font("Calibri", 1, 18));
@@ -229,7 +229,7 @@ public class ServerInterface extends JFrame {
         btn3.setLayout(new AbsoluteLayout());
 
         iconBtn4.setHorizontalAlignment(SwingConstants.CENTER);
-        iconBtn4.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-add-user-group-man-man-50 (1).png")));
+        iconBtn4.setIcon(new ImageIcon(getClass().getResource("/front/icons/icons8-add-user-group-man-man-50 (1).png")));
         btn3.add(iconBtn4, new AbsoluteConstraints(0, 0, 130, 40));
 
         textBtn4.setFont(new Font("Calibri", 1, 18));
@@ -246,7 +246,7 @@ public class ServerInterface extends JFrame {
         headerPanel.setLayout(new AbsoluteLayout());
 
         quitIcon.setHorizontalAlignment(SwingConstants.CENTER);
-        quitIcon.setIcon(new ImageIcon(getClass().getResource("/icons/icons8-button-64 (1).png")));
+        quitIcon.setIcon(new ImageIcon(getClass().getResource("/front/icons/icons8-button-64 (1).png")));
         quitIcon.setCursor(new Cursor(Cursor.HAND_CURSOR));
         quitIcon.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
