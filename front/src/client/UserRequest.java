@@ -1,5 +1,6 @@
 package client;
 
+import affichage.ChatWindow;
 import com.google.gson.Gson;
 import frontobjects.FrontGroup;
 import frontobjects.FrontThread;
@@ -37,11 +38,7 @@ public class UserRequest {
     public void askGroupsFromServer(){
         sendRequest("/group/getAllDatabaseGroups",null);
     }
-    public void getUserGroups(FrontUser frontUser){
-        Map<String,String> payload = new HashMap<>();
-        payload.put("userId",""+frontUser.id);
-        sendRequest("/group/getGroupsOfUserById",payload);
-    }
+
     /*-------------- THREAD MANAGEMENT --------------*/
     public void askThreadsFromServer(FrontUser frontUser){
         Map<String,String> payload = new HashMap<>();
@@ -58,10 +55,11 @@ public class UserRequest {
     }
 
     public void updateMessagesOfThread(FrontThread frontThread) {
-        Map<String,String> paylaod = new HashMap<>();
+        Map<String,String> payload = new HashMap<>();
         if(frontThread.id != 0) {
-            paylaod.put("threadId", "" + frontThread.id);
-            sendRequest("/thread/updateMessagesOfThread", paylaod);
+            payload.put("clientId", "" + ChatWindow.connectedUser.id);
+            payload.put("threadId", "" + frontThread.id);
+            sendRequest("/thread/updateMessagesOfThread", payload);
         }
     }
 }

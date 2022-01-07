@@ -341,7 +341,7 @@ public class Server {
 	}
 
 	public static List<FrontGroup> getGroupsOfUserById(int userId) {
-		String jsonString = treatQuery("SELECT g.id FROM dbLinkUserGroup l JOIN dbGroup g ON l.groupId WHERE userId=" + userId + ";");
+		String jsonString = treatQuery("SELECT g.id FROM dbGroup g JOIN dbLinkUserGroup l ON l.groupId WHERE l.groupId=g.id AND userId=" + userId + ";");
 		DbGroup[] dbGroups = gson.fromJson(jsonString, DbGroup[].class);
 
 		List<FrontGroup> groups = new ArrayList<>();

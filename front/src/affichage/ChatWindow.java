@@ -47,7 +47,7 @@ public class ChatWindow extends JFrame {
     private boolean firstClick = true;
 
     private UserRequest userRequest;
-    private static FrontUser connectedUser;
+    public static FrontUser connectedUser;
     public static FrontGroup allFrontGroup[];
 
     public static ArrayList<FrontThread> userThreads = new ArrayList<>();
@@ -60,7 +60,6 @@ public class ChatWindow extends JFrame {
         this.userRequest = new UserRequest(clientConnexion);
         this.connectedUser = ClientConnexionRequest.connectedUser;
         this.userRequest.askThreadsFromServer(ClientConnexionRequest.connectedUser);
-        this.userRequest.getUserGroups(ClientConnexionRequest.connectedUser);
 
         setLocationRelativeTo(null);
         FrameAjout.setLocation(this.getX(), this.getY());
