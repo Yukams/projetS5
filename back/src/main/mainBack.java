@@ -3,16 +3,23 @@ package main;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -60,11 +67,18 @@ public class mainBack {
 			Statement stmt = conn.createStatement()
 		) {
 			System.out.println("[SERVER] Filling database if needed");
-			String sql = new String(Files.readAllBytes(Paths.get("/back/src/main/database_setup.sql")));
+			InputStream file = mainBack.class.getResourceAsStream("database_setup.sql");
+			assert file != null;
+			Scanner sc = new Scanner(file);
+			StringBuilder sb = new StringBuilder();
+			while(sc.hasNext()){
+				sb.append(sc.nextLine());
+			}
+			String sql = sb.toString();
 			stmt.execute(sql);
 
 			System.out.println("Tables created successfully.");
-		} catch (SQLException | IOException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
