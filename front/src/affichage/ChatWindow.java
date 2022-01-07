@@ -42,7 +42,7 @@ import javax.swing.tree.TreePath;
 public class ChatWindow extends JFrame {
     private FrontGroup groupSelectedNewFil;
     private String titleAdd;
-    private static Map<FrontThread, JPanel> componentForTicket = new HashMap<>();
+    public static Map<FrontThread, JPanel> componentForTicket = new HashMap<>();
     private static DefaultMutableTreeNode rootTree = new DefaultMutableTreeNode("Groups");
     private boolean firstClick = true;
 
@@ -461,7 +461,6 @@ public class ChatWindow extends JFrame {
         setMessageColor(messageToAdd, textPaneNewMessage);
 
         panelAjout.add(scrollPaneNewMessage);
-        componentForTicketscrollPane = scrollPaneNewMessage;
         return panelAjout;
     }
 
@@ -476,7 +475,6 @@ public class ChatWindow extends JFrame {
         //avoir le groupe choisi pour ajouter un fil
         groupSelectedNewFil = (FrontGroup) comboBoxGroup.getSelectedItem();
         //System.out.println("groupe choisi :"+groupSelectedNewFil);
-
 
         zoneTextTitre.setText("");
         zoneTextNewMessage.setText("");
@@ -634,6 +632,7 @@ public class ChatWindow extends JFrame {
     public static void updateTree() {
         Set<FrontGroup> frontGroupsSet = new HashSet<>();
         rootTree.removeAllChildren();
+        componentForTicket.clear();
         if(userThreads.size() > 0) {
             for(FrontThread frontThread : userThreads){
                 frontGroupsSet.add(frontThread.group);
@@ -643,20 +642,20 @@ public class ChatWindow extends JFrame {
             }
         }
         treeTicket.setModel(new DefaultTreeModel(rootTree));
+
     }
 
-    private static void addGroupToRoot(FrontGroup node){
-        DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(node);
+    private static void addGroupToRoot(FrontGroup frontGroup){
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode(frontGroup);
         DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
         DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
 
 
         for(FrontThread frontThread : userThreads) {
-            if (frontThread.group.id == node.id) {
+            if (frontThread.group.id == frontGroup.id) {
                 DefaultMutableTreeNode ticket = new DefaultMutableTreeNode(frontThread);
                 ticket.setAllowsChildren(false);
-                newGroup.add(ticket);
-                int j = 0;
+                node.add(ticket);
                 for (FrontMessage mess : frontThread.messages) {
                     JPanel panelAjout = new JPanel();
                     panelAjout.setAutoscrolls(true);
@@ -694,14 +693,15 @@ public class ChatWindow extends JFrame {
                     labelTitreTicket.setText(frontThread.toString());*/
                     componentForTicket.putIfAbsent(frontThread, panelAjout);
                     componentForTicket.get(frontThread).add(scrollPaneNewMessage);
+                    componentForTicket.get(frontThread).updateUI();
                     //scrollPaneListMessage.setViewportView(componentForTicket.get(frontThread));
 
                 }
 
             }
 
-            if (newGroup.getChildCount() > 0) {
-                racine.add(newGroup);
+            if (node.getChildCount() > 0) {
+                racine.add(node);
 
             }
 
@@ -713,7 +713,6 @@ public class ChatWindow extends JFrame {
 
 
     // Variables declaration - do not modify
-    private static JScrollPane componentForTicketscrollPane; //for addGroupToRoot(..)
     private JButton buttonAddNewFil;
     private JButton buttonAjoutTicket;
     public static JComboBox<FrontGroup> comboBoxGroup;
