@@ -94,6 +94,9 @@ public class ChatWindow extends JFrame {
         scrollPaneMessageAjout = new JScrollPane();
         zoneTextNewMessage = new JTextArea();
         buttonAddNewFil = new JButton();
+        userFrontGroups = new FrontGroup[1];
+        allFrontGroup = new FrontGroup[1];
+        userThreads = new FrontThread[1];
 
 
         splitPaneMessagerie = new JSplitPane();
