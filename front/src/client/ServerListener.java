@@ -117,9 +117,11 @@ public class ServerListener implements Runnable {
                 FrontThread[] frontThreads = gson.fromJson(payload, FrontThread[].class);
                 ArrayList<FrontThread> tempList = new ArrayList<>(Arrays.asList(frontThreads));
                 if(!tempList.equals(ChatWindow.userThreads)) {
+                    System.out.println("c'est pas egal");
                     ChatWindow.userThreads = new ArrayList<>();
                     ChatWindow.userThreads.addAll(Arrays.asList(frontThreads));
                     ChatWindow.updateTree();
+
                 }
             }
             case "/thread/createThread" -> {

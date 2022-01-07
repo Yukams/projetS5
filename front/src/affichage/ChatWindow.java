@@ -486,8 +486,9 @@ public class ChatWindow extends JFrame {
                 Utils.warningWindow("Missing Fields in Message of new Ticket!", "Error Syntax");
             } else {
                 FrameAjout.setVisible(false);
+                this.userRequest.createThread(groupSelectedNewFil.id,titleAdd,messageAdd);
                 /*-------------Local front thread Creation---------------*/
-                FrontThread threadToAdd = new FrontThread();
+                /*FrontThread threadToAdd = new FrontThread();
                 threadToAdd.title = titleAdd;
                 FrontMessage messageToAdd = new FrontMessage();
                 messageToAdd.user = connectedUser;
@@ -497,11 +498,12 @@ public class ChatWindow extends JFrame {
                 List<FrontMessage> listMessageToAdd = new ArrayList<>();
                 listMessageToAdd.add(messageToAdd);
                 threadToAdd.messages=listMessageToAdd;
-                threadToAdd.messages.add(messageToAdd);
+                threadToAdd.messages.add(messageToAdd);*/
+                //userThreads.add(threadToAdd);
                 /*--------------Local front thread Setup-------------*/
-                JPanel panelAjout = createMessageForm(messageToAdd); // Creating the msg
+                //JPanel panelAjout = createMessageForm(messageToAdd); // Creating the msg
                 //panelAjout.updateUI();
-                if (componentForTicket.containsKey(threadToAdd)) {
+                /*if (componentForTicket.containsKey(threadToAdd)) {
                     //JOptionPane.showMessageDialog(new JFrame(), "Ce ticket existe déjà dans "+groupSelectedNewFil, "Attention !", JOptionPane.WARNING_MESSAGE);
                     JOptionPane.showMessageDialog(new JFrame(), "Ce ticket existe déjà!", "Attention !", JOptionPane.WARNING_MESSAGE);
                 } else {
@@ -558,14 +560,16 @@ public class ChatWindow extends JFrame {
                         TreePath path = new TreePath(ticket);
                         treeTicket.setSelectionPath(path);
 
-                    }
-                    this.userRequest.createThread(groupSelectedNewFil.id,titleAdd,messageAdd);
+                    }*/
+
+
+
                 }
                 zoneTexteMessage.setText("");
             }
         }
 
-    }
+   // }
 
     private void zoneTexteMessageMouseClicked(MouseEvent evt){
         if (firstClick==true) {
@@ -694,7 +698,7 @@ public class ChatWindow extends JFrame {
                     componentForTicket.putIfAbsent(frontThread, panelAjout);
                     componentForTicket.get(frontThread).add(scrollPaneNewMessage);
                     componentForTicket.get(frontThread).updateUI();
-                    //scrollPaneListMessage.setViewportView(componentForTicket.get(frontThread));
+
 
                 }
 
