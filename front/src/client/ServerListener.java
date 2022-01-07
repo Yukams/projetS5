@@ -134,7 +134,10 @@ public class ServerListener implements Runnable {
 
 
             // MESSAGE
-            case "/message/createMessage" -> System.out.println("/message/createMessage");
+            case "/message/createMessage" -> {
+
+                System.out.println("/message/createMessage");
+            }
             case "/message/deleteMessage" -> System.out.println("/message/deleteMessage");
 
 

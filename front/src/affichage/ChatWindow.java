@@ -638,6 +638,18 @@ public class ChatWindow extends JFrame {
     // UTIL
     public static void updateTree() {
         Set<FrontGroup> frontGroupsSet = new HashSet<>();
+        DefaultMutableTreeNode lastSelectedItemTree = (DefaultMutableTreeNode) treeTicket.getLastSelectedPathComponent();
+        int idThread=-1;
+        if (lastSelectedItemTree != null){
+            FrontThread lastThreadSelected = (FrontThread) lastSelectedItemTree.getUserObject();
+            if (lastThreadSelected != null)
+            idThread = lastThreadSelected.id;
+        }
+
+
+
+
+
         rootTree.removeAllChildren();
         componentForTicket.clear();
         if(userThreads.size() > 0) {
@@ -648,8 +660,25 @@ public class ChatWindow extends JFrame {
                 addGroupToRoot(frontGroup);
             }
         }
+        panelListMessage.updateUI();
         treeTicket.setModel(new DefaultTreeModel(rootTree));
         expandTree();
+        if (idThread == -1){
+            return;
+        }
+        for (int i=0; i<rootTree.getChildCount();i++) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) rootTree.getChildAt(i);
+            for (int j=0; j< node.getChildCount(); j++){
+                DefaultMutableTreeNode leafNode = (DefaultMutableTreeNode) node.getChildAt(j);
+                FrontThread threadLeaf = (FrontThread) leafNode.getUserObject();
+                if (threadLeaf.id == idThread){
+                    TreePath path = new TreePath(leafNode);
+                    treeTicket.setSelectionPath(path);
+                }
+            }
+        }
+
+
     }
 
     private static void addGroupToRoot(FrontGroup frontGroup){
@@ -742,7 +771,7 @@ public class ChatWindow extends JFrame {
     private static JPanel panelEcrireMessage;
     private JPanel panelFil;
     private JPanel panelLeft;
-    private JPanel panelListMessage;
+    private static JPanel panelListMessage;
     private JPanel panelMessage;
     private JPanel panelRight;
     private JPanel panelTicket;

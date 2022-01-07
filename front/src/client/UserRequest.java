@@ -42,6 +42,7 @@ public class UserRequest {
         System.out.println("content:"+content);
         payload.put("threadId",""+threadId);
         sendRequest("/message/createMessage",payload);
+
     }
 
     /*-------------- GROUP MANAGEMENT --------------*/
