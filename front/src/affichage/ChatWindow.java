@@ -631,7 +631,7 @@ public class ChatWindow extends JFrame {
     }
 
     // UTIL
-    public static void fillTree() {
+    public static void updateTree() {
         Set<FrontGroup> frontGroupsSet = new HashSet<>();
         rootTree.removeAllChildren();
         if(userThreads.size() > 0) {
@@ -645,22 +645,18 @@ public class ChatWindow extends JFrame {
         treeTicket.setModel(new DefaultTreeModel(rootTree));
     }
 
-
     private static void addGroupToRoot(FrontGroup node){
-        /*---Date format--*/
-        SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
-        Date date = new Date();
-        String dayStr = dayFormat.format(date);
-        /*----------------*/
         DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(node);
         DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
         DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
+
 
         for(FrontThread frontThread : userThreads) {
             if (frontThread.group.id == node.id) {
                 DefaultMutableTreeNode ticket = new DefaultMutableTreeNode(frontThread);
                 ticket.setAllowsChildren(false);
                 newGroup.add(ticket);
+                int j = 0;
                 for (FrontMessage mess : frontThread.messages) {
                     JPanel panelAjout = new JPanel();
                     panelAjout.setAutoscrolls(true);
@@ -670,7 +666,7 @@ public class ChatWindow extends JFrame {
                     JTextPane textPaneNewMessage = new JTextPane();
 
                     textPaneNewMessage.setEditable(false);
-                    textPaneNewMessage.setText(mess.user + ", " + dayStr + "\n\n" + mess.content);
+                    textPaneNewMessage.setText(mess.user + ", " + dayFormat.format(new Date(mess.date)) + "\n\n" + mess.content);
 
                     if (mess.status.equals("NOT_SENT")) {
                         textPaneNewMessage.setBackground(new Color(125, 125, 125));
@@ -685,7 +681,6 @@ public class ChatWindow extends JFrame {
                     if (mess.status.equals("SEEN")) {
                         textPaneNewMessage.setBackground(new Color(0, 255, 0));
                     }
-
 
                     scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
                     scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);

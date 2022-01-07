@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 
 import static tests.ClientCommunication.gson;
 
@@ -120,7 +119,7 @@ public class ServerListener implements Runnable {
                 if(!tempList.equals(ChatWindow.userThreads)) {
                     ChatWindow.userThreads = new ArrayList<>();
                     ChatWindow.userThreads.addAll(Arrays.asList(frontThreads));
-                    ChatWindow.fillTree();
+                    ChatWindow.updateTree();
                 }
             }
             case "/thread/createThread" -> {
