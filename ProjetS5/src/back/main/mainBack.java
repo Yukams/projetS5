@@ -68,18 +68,6 @@ public class mainBack {
 		} catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
-	/*
-		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
-			Statement stmt = conn.createStatement()
-		) {
-			String sqlFillDb = new String(Files.readAllBytes(Paths.get("ProjetS5/src/back/main/database_fill.sql")));
-			stmt.execute(sqlFillDb);
-
-			System.out.println("Database filled successfully.");
-		} catch (SQLException | IOException e) {
-			e.printStackTrace();
-		}
-		*/
 	}
 
 	// Create and fill the database if it doesn't exist

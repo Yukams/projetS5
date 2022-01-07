@@ -11,8 +11,7 @@ import java.util.Map;
 import static back.main.mainBack.gson;
 
 public interface IThread {
-	static String createThread(Map<String, String> payload) {
-		int authorId = Integer.parseInt(payload.get("authorId"));
+	static String createThread(int authorId, Map<String, String> payload) {
 		int groupId = Integer.parseInt(payload.get("groupId"));
 		String content = payload.get("content");
 		String title = payload.get("title");
@@ -22,8 +21,7 @@ public interface IThread {
 		return gson.toJson(thread);
 	}
 
-	static String updateMessages(Map<String, String> payload) {
-		int userId = Integer.parseInt(payload.get("userId"));
+	static String updateMessages(int userId, Map<String, String> payload) {
 		int threadId = Integer.parseInt(payload.get("threadId"));
 		FrontThread thread = Server.updateMessages(userId, threadId);
 
