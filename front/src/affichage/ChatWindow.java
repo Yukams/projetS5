@@ -59,8 +59,6 @@ public class ChatWindow extends JFrame {
         initComponents();
         this.userRequest = new UserRequest(clientConnexion);
         this.connectedUser = ClientConnexionRequest.connectedUser;
-        ImageIcon messagerieIcon = new ImageIcon(getClass().getResource("/icons/icons8-bavarder-64.png"));
-        setIconImage(messagerieIcon.getImage());
         this.userRequest.askThreadsFromServer(ClientConnexionRequest.connectedUser);
         this.userRequest.getUserGroups(ClientConnexionRequest.connectedUser);
 
@@ -469,9 +467,7 @@ public class ChatWindow extends JFrame {
 
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {
         //*---Date format--*//*
-
         Date date = new Date();
-        String dayStr = dayFormat.format(date);
         //*----------------*//*
 
         titleAdd = zoneTextTitre.getText();
@@ -659,8 +655,6 @@ public class ChatWindow extends JFrame {
         DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(node);
         DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
         DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
-
-
 
         for(FrontThread frontThread : userThreads) {
             if (frontThread.group.id == node.id) {
