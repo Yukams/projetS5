@@ -485,7 +485,8 @@ public class ChatWindow extends JFrame {
                 Utils.warningWindow("Missing Fields in Message of new Ticket!", "Error Syntax");
             } else {
                 FrameAjout.setVisible(false);
-                this.userRequest.createThread(groupSelectedNewFil.id,titleAdd,messageAdd);
+
+                this.userRequest.createThread(connectedUser.id, groupSelectedNewFil.id,titleAdd,messageAdd);
                 /*-------------Local front thread Creation---------------*/
                 /*FrontThread threadToAdd = new FrontThread();
                 threadToAdd.title = titleAdd;
@@ -497,8 +498,8 @@ public class ChatWindow extends JFrame {
                 List<FrontMessage> listMessageToAdd = new ArrayList<>();
                 listMessageToAdd.add(messageToAdd);
                 threadToAdd.messages=listMessageToAdd;
-                threadToAdd.messages.add(messageToAdd);*/
-                //userThreads.add(threadToAdd);
+                threadToAdd.messages.add(messageToAdd);
+                userThreads.add(threadToAdd);*/
                 /*--------------Local front thread Setup-------------*/
                 //JPanel panelAjout = createMessageForm(messageToAdd); // Creating the msg
                 //panelAjout.updateUI();
@@ -581,10 +582,10 @@ public class ChatWindow extends JFrame {
 
         DefaultMutableTreeNode selectedItemTree = (DefaultMutableTreeNode) treeTicket.getLastSelectedPathComponent();
         FrontThread threadSelected = (FrontThread) selectedItemTree.getUserObject();
+        System.out.println("thread id : "+threadSelected.id);
 
-
-
-        if (zoneTexteMessage.getText().length()==0){
+        String content=zoneTexteMessage.getText();
+        if (content.length()==0){
             Utils.warningWindow("Missing Fields in Message to send","Error Syntax");
         } else {
             if (selectedItemTree != null) {
@@ -593,17 +594,19 @@ public class ChatWindow extends JFrame {
                 String dayStr = dayFormat.format(date);
                 //*----------------*//*
 
+                this.userRequest.createMessage(connectedUser.id,content ,threadSelected.id);
+
                 //creation affichage new message local
-                JScrollPane scrollPaneNewMessage = new JScrollPane();
+               /* JScrollPane scrollPaneNewMessage = new JScrollPane();
                 JTextPane textPaneNewMessage = new JTextPane();
                 textPaneNewMessage.setText(this.connectedUser.toString() + ", " + dayStr + "\n\n" + zoneTexteMessage.getText());
                 textPaneNewMessage.setEditable(false);
                 scrollPaneNewMessage.setViewportView(textPaneNewMessage);
 
-                FrontMessage mess = new FrontMessage(23,connectedUser,zoneTexteMessage.getText(), date.getTime(),"NOT_SENT");
-                threadSelected.messages.add(mess);
+                FrontMessage mess = new FrontMessage(23, connectedUser, zoneTexteMessage.getText(), date.getTime(), "NOT_SENT");
+                threadSelected.messages.add(mess);*/
 
-                if (mess.status.equals("NOT_SENT")) {
+                /*if (mess.status.equals("NOT_SENT")) {
                     textPaneNewMessage.setBackground(new java.awt.Color(125, 125, 125));
                 }
                 if (mess.status.equals("NOT_SEEN")) {
@@ -614,22 +617,23 @@ public class ChatWindow extends JFrame {
                 }
                 if (mess.status.equals("SEEN")) {
                     textPaneNewMessage.setBackground(new java.awt.Color(0, 255, 0));
-                }
+                }*/
 
-                scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
+                /*scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
                 scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
-                scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+                scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));*/
 
-                componentForTicket.get(threadSelected).add(scrollPaneNewMessage);
-                componentForTicket.get(threadSelected).updateUI();
-
-
+                System.out.println("thread : "+componentForTicket.values());
+                if (componentForTicket.get(threadSelected)== null){
+                    System.out.println("youhouu");
+                }
                 firstClick = true;
+
                 zoneTexteMessage.setText("");
             }
-
         }
     }
+
 
     // UTIL
     public static void updateTree() {
@@ -645,7 +649,7 @@ public class ChatWindow extends JFrame {
             }
         }
         treeTicket.setModel(new DefaultTreeModel(rootTree));
-
+        expandTree();
     }
 
     private static void addGroupToRoot(FrontGroup frontGroup){
@@ -712,6 +716,11 @@ public class ChatWindow extends JFrame {
         model.reload();
         //panelEcrireMessage.setVisible(true);
 
+    }
+    private static void expandTree(){
+        for (int i = 0; i < treeTicket.getRowCount(); i++) {
+            treeTicket.expandRow(i);
+        }
     }
 
 
