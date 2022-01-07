@@ -34,6 +34,17 @@ public class UserRequest {
         out.println(request);
     }
 
+    /*------------- MESSAGE MANAGEMENT -------------*/
+    public void createMessage(int authorId,String content,int threadId){
+        Map<String,String> payload = new HashMap<>();
+        payload.put("authorId",""+authorId);
+        payload.put("content",content);
+        System.out.println("content:"+content);
+        payload.put("threadId",""+threadId);
+        sendRequest("/message/createMessage",payload);
+
+    }
+
     /*-------------- GROUP MANAGEMENT --------------*/
     public void askGroupsFromServer(){
         sendRequest("/group/getAllDatabaseGroups",null);
@@ -46,8 +57,9 @@ public class UserRequest {
         sendRequest("/thread/getAllThreadsForUser",payload);
     }
 
-    public void createThread(int groupId, String title, String content) {
+    public void createThread(int authorId,int groupId, String title, String content) {
         Map<String,String> payload = new HashMap<>();
+        payload.put("authorId",""+authorId);
         payload.put("groupId",""+groupId);
         payload.put("title",title);
         payload.put("content",content);
