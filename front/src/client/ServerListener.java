@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import static tests.ClientCommunication.gson;
 
@@ -114,15 +115,16 @@ public class ServerListener implements Runnable {
 
             // THREAD
             case "/thread/getAllThreadsForUser" -> {
-                FrontThread[] frontUserThreads = gson.fromJson(payload, FrontThread[].class);
-                ChatWindow.userThreads = frontUserThreads;
+                ChatWindow.userThreads = gson.fromJson(payload, FrontThread[].class);
+                ChatWindow.fillTree();
             }
             case "/thread/createThread" -> {
-                FrontThread frontThread = gson.fromJson(payload,FrontThread.class);
-                ChatWindow.updateCreatedMessage(frontThread);
+                gson.fromJson(payload,FrontThread.class);
             }
             case "/thread/deleteThread" -> System.out.println("/thread/deleteThread");
-            case "/thread/updateMessagesOfThread" -> System.out.println("/thread/updateMessagesOfThread");
+            case "/thread/updateMessagesOfThread" -> {
+
+            }
 
 
             // MESSAGE
@@ -144,11 +146,7 @@ public class ServerListener implements Runnable {
                 if(ChatWindow.allFrontGroup != null) ChatWindow.allFrontGroup = frontGroups;
             }
             case "/group/getGroupsOfUserById" -> {
-                FrontGroup[] frontGroupsOfUser = gson.fromJson(payload, FrontGroup[].class);
-                if(ChatWindow.userFrontGroups != null) {
-                    ChatWindow.userFrontGroups = frontGroupsOfUser;
-                    ChatWindow.fillTree();
-                }
+                gson.fromJson(payload, FrontGroup[].class);
             }
             case "/group/getGroupsOfUser" -> System.out.println("/group/getGroupsOfUser");
         }

@@ -56,4 +56,12 @@ public class UserRequest {
         payload.put("content",content);
         sendRequest("/thread/createThread",payload);
     }
+
+    public void updateMessagesOfThread(FrontThread frontThread) {
+        Map<String,String> paylaod = new HashMap<>();
+        if(frontThread.id != 0) {
+            paylaod.put("threadId", "" + frontThread.id);
+            sendRequest("/thread/updateMessagesOfThread", paylaod);
+        }
+    }
 }

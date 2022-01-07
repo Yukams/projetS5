@@ -41,7 +41,6 @@ import javax.swing.tree.TreePath;
  */
 public class ChatWindow extends JFrame {
     private FrontGroup groupSelectedNewFil;
-    private String[] listGroupe;
     private String titleAdd;
     private static Map<FrontThread, JPanel> componentForTicket = new HashMap<>();
     private static DefaultMutableTreeNode rootTree = new DefaultMutableTreeNode("Groups");
@@ -50,8 +49,9 @@ public class ChatWindow extends JFrame {
     private UserRequest userRequest;
     private static FrontUser connectedUser;
     public static FrontGroup allFrontGroup[];
-    public static FrontGroup userFrontGroups[];
+
     public static FrontThread userThreads[];
+    private static final SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
 
 
     public ChatWindow(ClientConnexionRequest clientConnexion) {
@@ -94,7 +94,6 @@ public class ChatWindow extends JFrame {
         scrollPaneMessageAjout = new JScrollPane();
         zoneTextNewMessage = new JTextArea();
         buttonAddNewFil = new JButton();
-        userFrontGroups = new FrontGroup[1];
         allFrontGroup = new FrontGroup[1];
         userThreads = new FrontThread[1];
 
@@ -401,8 +400,6 @@ public class ChatWindow extends JFrame {
     private void ticketSelected(TreeSelectionEvent evt) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeTicket.getLastSelectedPathComponent();
 
-
-
         if (node == null) {
             return;
         }
@@ -412,17 +409,16 @@ public class ChatWindow extends JFrame {
                     splitPaneMessagerie.setDividerLocation(this.getWidth() / 2);
                 }
             }
-            System.out.println("je rentre la");
             labelTitreTicket.setText("Aucun ticket selectionne");
             panelEcrireMessage.setVisible(false);
             scrollPaneListMessage.getComponent(0).setVisible(false);
         }
         if (node.isLeaf()) {
+            this.userRequest.updateMessagesOfThread((FrontThread) node.getUserObject());
             firstClick = true;
             labelTitreTicket.setText(node.toString());
             panelEcrireMessage.setVisible(true);
             zoneTexteMessage.setText("Ecrire un message dans " + node);
-            System.out.println("hehe je rentre la");
 
             scrollPaneListMessage.getComponent(0).setVisible(true);
             scrollPaneListMessage.setViewportView(componentForTicket.get(node.getUserObject()));
@@ -432,8 +428,8 @@ public class ChatWindow extends JFrame {
         }
 
     }
-
-    private void setMessageColor(FrontMessage message, JTextPane jTextPane){
+    // UTIL
+    private static void setMessageColor(FrontMessage message, JTextPane jTextPane){
         if (message.status.equals("NOT_SENT")) {
             jTextPane.setBackground(new java.awt.Color(125, 125, 125));
         }
@@ -447,18 +443,32 @@ public class ChatWindow extends JFrame {
             jTextPane.setBackground(new java.awt.Color(0, 255, 0));
         }
     }
+    // UTIL
+    private static JPanel createMessageForm(FrontMessage messageToAdd){
+        JPanel panelAjout = new JPanel();
+        panelAjout.setAutoscrolls(true);
+        panelAjout.setLayout(new BoxLayout(panelAjout, BoxLayout.Y_AXIS));
 
-    public static void updateCreatedMessage(FrontThread frontThread){
-        FrontMessage frontMessage = frontThread.messages.get(0);
         JScrollPane scrollPaneNewMessage = new JScrollPane();
         JTextPane textPaneNewMessage = new JTextPane();
-        //textPaneNewMessage.setText(frontMessage.user.toString() + ", " + frontMessage.date.format(new Date(messageToAdd.date)) + "\n\n" + messageAdd);
+        textPaneNewMessage.setText(messageToAdd.user.toString() + ", " + dayFormat.format(new Date(messageToAdd.date)) + "\n\n" + messageToAdd.content);
+        textPaneNewMessage.setEditable(false);
+        scrollPaneNewMessage.setViewportView(textPaneNewMessage);
 
+        scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
+        scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
+        scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        setMessageColor(messageToAdd, textPaneNewMessage);
+
+        panelAjout.add(scrollPaneNewMessage);
+        componentForTicketscrollPane = scrollPaneNewMessage;
+        return panelAjout;
     }
 
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {
         //*---Date format--*//*
-        SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
+
         Date date = new Date();
         String dayStr = dayFormat.format(date);
         //*----------------*//*
@@ -485,6 +495,7 @@ public class ChatWindow extends JFrame {
                 FrontThread threadToAdd = new FrontThread();
                 threadToAdd.title = titleAdd;
                 FrontMessage messageToAdd = new FrontMessage();
+                messageToAdd.user = connectedUser;
                 messageToAdd.content = messageAdd;
                 messageToAdd.status = "NOT_SENT";
                 messageToAdd.date = date.getTime();
@@ -493,29 +504,11 @@ public class ChatWindow extends JFrame {
                 threadToAdd.messages=listMessageToAdd;
                 threadToAdd.messages.add(messageToAdd);
                 /*--------------Local front thread Setup-------------*/
-
-                JPanel panelAjout = new JPanel();
-                panelAjout.setAutoscrolls(true);
-                panelAjout.setLayout(new BoxLayout(panelAjout, BoxLayout.Y_AXIS));
-
-                JScrollPane scrollPaneNewMessage = new JScrollPane();
-                JTextPane textPaneNewMessage = new JTextPane();
-                textPaneNewMessage.setText(connectedUser.toString() + ", " + dayFormat.format(new Date(messageToAdd.date)) + "\n\n" + messageAdd);
-                textPaneNewMessage.setEditable(false);
-                scrollPaneNewMessage.setViewportView(textPaneNewMessage);
-
-                scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
-                scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
-                scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-                this.setMessageColor(messageToAdd, textPaneNewMessage);
-
-                panelAjout.add(scrollPaneNewMessage);
+                JPanel panelAjout = createMessageForm(messageToAdd); // Creating the msg
                 //panelAjout.updateUI();
                 if (componentForTicket.containsKey(threadToAdd)) {
                     //JOptionPane.showMessageDialog(new JFrame(), "Ce ticket existe déjà dans "+groupSelectedNewFil, "Attention !", JOptionPane.WARNING_MESSAGE);
                     JOptionPane.showMessageDialog(new JFrame(), "Ce ticket existe déjà!", "Attention !", JOptionPane.WARNING_MESSAGE);
-
                 } else {
                     componentForTicket.put(threadToAdd, panelAjout);
 
@@ -598,7 +591,6 @@ public class ChatWindow extends JFrame {
         } else {
             if (selectedItemTree != null) {
                 //*---Date format--*//*
-                SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
                 Date date = new Date();
                 String dayStr = dayFormat.format(date);
                 //*----------------*//*
@@ -641,12 +633,19 @@ public class ChatWindow extends JFrame {
         }
     }
 
+    // UTIL
     public static void fillTree() {
+        Set<FrontGroup> frontGroupsSet = new HashSet<>();
+        rootTree.removeAllChildren();
         if(userThreads.length > 0) {
-            for (FrontGroup group : userFrontGroups) {
-                addGroupToRoot(group);
+            for(FrontThread frontThread : userThreads){
+                frontGroupsSet.add(frontThread.group);
+            }
+            for(FrontGroup frontGroup : frontGroupsSet){
+                addGroupToRoot(frontGroup);
             }
         }
+        treeTicket.setModel(new DefaultTreeModel(rootTree));
     }
 
 
@@ -667,47 +666,14 @@ public class ChatWindow extends JFrame {
                 DefaultMutableTreeNode ticket = new DefaultMutableTreeNode(frontThread);
                 ticket.setAllowsChildren(false);
                 newGroup.add(ticket);
-                int j = 0;
-                for (FrontMessage mess : frontThread.messages) {
-                    JPanel panelAjout = new JPanel();
-                    panelAjout.setAutoscrolls(true);
-                    panelAjout.setLayout(new BoxLayout(panelAjout, BoxLayout.Y_AXIS));
-
-                    JScrollPane scrollPaneNewMessage = new JScrollPane();
-                    JTextPane textPaneNewMessage = new JTextPane();
-
-                    textPaneNewMessage.setEditable(false);
-                    textPaneNewMessage.setText(mess.user + ", " + dayStr + "\n\n" + mess.content);
-
-                    if (mess.status.equals("NOT_SENT")) {
-                        textPaneNewMessage.setBackground(new java.awt.Color(125, 125, 125));
-                    }
-
-                    if (mess.status.equals("NOT_SEEN")) {
-                        textPaneNewMessage.setBackground(new java.awt.Color(255, 50, 50));
-                    }
-                    if (mess.status.equals("HALF_SEEN")) {
-                        textPaneNewMessage.setBackground(new java.awt.Color(255, 100, 0));
-                    }
-                    if (mess.status.equals("SEEN")) {
-                        textPaneNewMessage.setBackground(new java.awt.Color(0, 255, 0));
-                    }
-
-
-                    scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
-                    scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
-                    scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-                    scrollPaneNewMessage.setViewportView(textPaneNewMessage);
-
-                    panelAjout.add(scrollPaneNewMessage);
-
+                for (FrontMessage message : frontThread.messages) {
+                    JPanel panelAjout = createMessageForm(message);
                     panelAjout.updateUI();
                     /*zoneTexteMessage.setText("Ecrire un message dans " + frontThread.toString());
                     labelTitreTicket.setText(frontThread.toString());*/
                     componentForTicket.putIfAbsent(frontThread, panelAjout);
-                    componentForTicket.get(frontThread).add(scrollPaneNewMessage);
+                    componentForTicket.get(frontThread).add(componentForTicketscrollPane);
                     //scrollPaneListMessage.setViewportView(componentForTicket.get(frontThread));
-
                 }
 
             }
@@ -725,6 +691,7 @@ public class ChatWindow extends JFrame {
 
 
     // Variables declaration - do not modify
+    private static JScrollPane componentForTicketscrollPane; //for addGroupToRoot(..)
     private JButton buttonAddNewFil;
     private JButton buttonAjoutTicket;
     public static JComboBox<FrontGroup> comboBoxGroup;
