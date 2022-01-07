@@ -146,23 +146,23 @@ public class ClientHandler implements Runnable {
             // { "id" : int }
             case "/thread/getAllThreadsForUserById" -> IThread.getAllThreadForUserById(payload);
 
-            // { "authorId": int, "groupId": int, "title": String, "content": String }
+            // { "groupId": int, "title": String, "content": String }
             // Updates
-            case "/thread/createThread" -> IThread.createThread(payload);
+            case "/thread/createThread" -> IThread.createThread(this.clientId, payload);
 
             // { "id": int }
             // Updates
             case "/thread/deleteThread" -> IThread.deleteThread(payload);
 
-            // { "userId": int, "threadId": int }
+            // { "threadId": int }
             // Updates
-            case "/thread/updateMessagesOfThread" -> IThread.updateMessages(payload);
+            case "/thread/updateMessagesOfThread" -> IThread.updateMessages(this.clientId, payload);
 
 
             // MESSAGE
-            // { "authorId": int, "content": String, "threadId": int }
+            // { "content": String, "threadId": int }
             // Updates
-            case "/message/createMessage" -> IMessage.createMessage(payload);
+            case "/message/createMessage" -> IMessage.createMessage(this.clientId, payload);
 
             // { "id": int }
             // Updates
