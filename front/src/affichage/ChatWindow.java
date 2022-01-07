@@ -433,6 +433,29 @@ public class ChatWindow extends JFrame {
 
     }
 
+    private void setMessageColor(FrontMessage message, JTextPane jTextPane){
+        if (message.status.equals("NOT_SENT")) {
+            jTextPane.setBackground(new java.awt.Color(125, 125, 125));
+        }
+        if (message.status.equals("NOT_SEEN")) {
+            jTextPane.setBackground(new java.awt.Color(255, 50, 50));
+        }
+        if (message.status.equals("HALF_SEEN")) {
+            jTextPane.setBackground(new java.awt.Color(255, 100, 0));
+        }
+        if (message.status.equals("SEEN")) {
+            jTextPane.setBackground(new java.awt.Color(0, 255, 0));
+        }
+    }
+
+    public static void updateCreatedMessage(FrontThread frontThread){
+        FrontMessage frontMessage = frontThread.messages.get(0);
+        JScrollPane scrollPaneNewMessage = new JScrollPane();
+        JTextPane textPaneNewMessage = new JTextPane();
+        //textPaneNewMessage.setText(frontMessage.user.toString() + ", " + frontMessage.date.format(new Date(messageToAdd.date)) + "\n\n" + messageAdd);
+
+    }
+
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {
         //*---Date format--*//*
         SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
@@ -458,6 +481,7 @@ public class ChatWindow extends JFrame {
                 Utils.warningWindow("Missing Fields in Message of new Ticket!", "Error Syntax");
             } else {
                 FrameAjout.setVisible(false);
+                /*-------------Local front thread Creation---------------*/
                 FrontThread threadToAdd = new FrontThread();
                 threadToAdd.title = titleAdd;
                 FrontMessage messageToAdd = new FrontMessage();
@@ -468,6 +492,7 @@ public class ChatWindow extends JFrame {
                 listMessageToAdd.add(messageToAdd);
                 threadToAdd.messages=listMessageToAdd;
                 threadToAdd.messages.add(messageToAdd);
+                /*--------------Local front thread Setup-------------*/
 
                 JPanel panelAjout = new JPanel();
                 panelAjout.setAutoscrolls(true);
@@ -475,7 +500,7 @@ public class ChatWindow extends JFrame {
 
                 JScrollPane scrollPaneNewMessage = new JScrollPane();
                 JTextPane textPaneNewMessage = new JTextPane();
-                textPaneNewMessage.setText(this.connectedUser.toString() + ", " + dayStr + "\n\n" + messageAdd);
+                textPaneNewMessage.setText(connectedUser.toString() + ", " + dayFormat.format(new Date(messageToAdd.date)) + "\n\n" + messageAdd);
                 textPaneNewMessage.setEditable(false);
                 scrollPaneNewMessage.setViewportView(textPaneNewMessage);
 
@@ -483,18 +508,7 @@ public class ChatWindow extends JFrame {
                 scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
                 scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-                if (messageToAdd.status.equals("NOT_SENT")) {
-                    textPaneNewMessage.setBackground(new java.awt.Color(125, 125, 125));
-                }
-                if (messageToAdd.status.equals("NOT_SEEN")) {
-                    textPaneNewMessage.setBackground(new java.awt.Color(255, 50, 50));
-                }
-                if (messageToAdd.status.equals("HALF_SEEN")) {
-                    textPaneNewMessage.setBackground(new java.awt.Color(255, 100, 0));
-                }
-                if (messageToAdd.status.equals("SEEN")) {
-                    textPaneNewMessage.setBackground(new java.awt.Color(0, 255, 0));
-                }
+                this.setMessageColor(messageToAdd, textPaneNewMessage);
 
                 panelAjout.add(scrollPaneNewMessage);
                 //panelAjout.updateUI();
@@ -503,7 +517,6 @@ public class ChatWindow extends JFrame {
                     JOptionPane.showMessageDialog(new JFrame(), "Ce ticket existe déjà!", "Attention !", JOptionPane.WARNING_MESSAGE);
 
                 } else {
-
                     componentForTicket.put(threadToAdd, panelAjout);
 
                     int indexGroup;
@@ -547,7 +560,6 @@ public class ChatWindow extends JFrame {
                             }
                         }
 
-
                         DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
                         DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
                         DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(racine, indexGroupInsert);
@@ -559,7 +571,7 @@ public class ChatWindow extends JFrame {
                         treeTicket.setSelectionPath(path);
 
                     }
-
+                    this.userRequest.createThread(groupSelectedNewFil.id,titleAdd,messageAdd);
                 }
                 zoneTexteMessage.setText("");
             }
@@ -575,7 +587,6 @@ public class ChatWindow extends JFrame {
     }
 
     private void zoneTexteMessageActionPerformed(ActionEvent evt) {
-
 
         DefaultMutableTreeNode selectedItemTree = (DefaultMutableTreeNode) treeTicket.getLastSelectedPathComponent();
         FrontThread threadSelected = (FrontThread) selectedItemTree.getUserObject();
@@ -637,6 +648,7 @@ public class ChatWindow extends JFrame {
             }
         }
     }
+
 
     private static void addGroupToRoot(FrontGroup node){
         /*---Date format--*/

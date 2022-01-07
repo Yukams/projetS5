@@ -49,4 +49,11 @@ public class UserRequest {
         sendRequest("/thread/getAllThreadsForUser",payload);
     }
 
+    public void createThread(int groupId, String title, String content) {
+        Map<String,String> payload = new HashMap<>();
+        payload.put("groupId",""+groupId);
+        payload.put("title",title);
+        payload.put("content",content);
+        sendRequest("/thread/createThread",payload);
+    }
 }
