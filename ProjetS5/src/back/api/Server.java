@@ -76,7 +76,14 @@ public class Server {
 			return "SEEN";
 		}
 
-		return "NOT_SEEN";
+		jsonString = Server.treatQuery("SELECT messageId FROM dbLinkUserMessage WHERE messageId=" + id + " AND status='SEEN';");
+		messages = gson.fromJson(jsonString, DbMessage[].class);
+
+		if(messages.length == 0) {
+			return "NOT_SEEN";
+		}
+
+		return "HALF_SEEN";
 	}
 
 	/* Connect User */
@@ -152,7 +159,7 @@ public class Server {
 			// Build author
 			FrontUser user = new FrontUser(dbUser[0].name, dbUser[0].surname, dbUser[0].id, dbUser[0].isAdmin.equals("1"));
 
-			// Build status (later)
+			// Build status
 			String status = getStatusFromMessageId(message.id);
 
 			FrontMessage m = new FrontMessage(message.id ,user, message.text, message.date, status);
@@ -302,6 +309,8 @@ public class Server {
 
 	public static FrontGroup addUserToGroup(int groupId, int userId) {
 		treatQueryWithoutResponse("INSERT INTO dbLinkUserGroup VALUES (" + userId + "," + groupId + ");");
+
+		// We consider that the new added user don't need read old messages
 
 		return getGroup(groupId);
 	}
