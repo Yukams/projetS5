@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d516f33f-0a32-46f7-af18-10e8564428f9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../.idea/artifacts/Code_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Server.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/Server.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/backobjects/groups/IGroup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/backobjects/thread/IMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/backobjects/thread/IThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/backobjects/users/IUser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/dbobjects/DbGroup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/dbobjects/DbMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/dbobjects/DbObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/dbobjects/DbThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/dbobjects/DbUser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/frontobjects/FrontGroup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/frontobjects/FrontMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/frontobjects/FrontObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/frontobjects/FrontThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/frontobjects/FrontUser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/gson-2.8.9.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/mysql-connector-java-8.0.27.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/ClientHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/ClientRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/ServerResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/database_fill.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/database_setup.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mainBack.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/QueryTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/Utils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/Client.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/affichage/ChatWindow.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/affichage/ConnexionWindow.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/client/ClientConnexionRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/client/ClientHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/client/RootRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/client/ServerListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/client/ServerRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/client/ServerResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/client/UserRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/fil/FilDeDiscussion.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/fil/Message.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/frontobjects/FrontGroup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/frontobjects/FrontMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/frontobjects/FrontObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/frontobjects/FrontThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/frontobjects/FrontUser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/groups/Groupe.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/groups/GroupeType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/icons/icons8-add-user-group-man-man-50 (1).png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/icons/icons8-add-user-male-50 (1).png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/icons/icons8-admin-64.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/icons/icons8-button-64 (1).png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/icons/icons8-group-64-add.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/icons/icons8-group-64.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/icons/icons8-registration-50 (1).png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/icons/icons8-user-account-50 (1).png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/icons/plus.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/lib/AbsoluteLayout.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/lib/gson-2.8.9.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/main/mainFront.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/server/ServerInterface.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/tests/ClientCommunication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/users/Utilisateur.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../front/src/utils/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Code.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/api/Serveur.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/fil/FilDeDiscussion.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/fil/IFilDeDiscussion.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/fil/IMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/fil/Message.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/groups/EmptyListException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/groups/Groupe.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/groups/GroupeType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/groups/IGroupe.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/main/mainBack.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/users/Administratif.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/users/Etudiant.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/users/IUtilisateur.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/users/Professeur.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/users/Techniciens.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/users/Utilisateur.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/users/UtilisateurCampus.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/users/UtilisateurService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/back/utils/Utils.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/front/fil/FilDeDiscussion.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/front/fil/Message.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/front/groups/Groupe.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/front/groups/GroupeType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/front/main/mainFront.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/front/users/Utilisateur.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/bin/module-info.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/lib/AbsoluteLayout.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/lib/gson-2.8.9.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/lib/mysql-connector-java-8.0.27.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/api/Server.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/backobjects/groups/IGroup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/backobjects/thread/IMessage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/backobjects/thread/IThread.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/backobjects/users/IUser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/dbobjects/DbGroup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/dbobjects/DbMessage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/dbobjects/DbObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/dbobjects/DbThread.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/dbobjects/DbUser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/frontobjects/FrontGroup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/frontobjects/FrontMessage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/frontobjects/FrontObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/frontobjects/FrontThread.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/frontobjects/FrontUser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/main/ClientHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/main/ClientRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/main/ServerResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/main/database_fill.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/main/database_setup.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/main/mainBack.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/test/QueryTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/back/utils/Utils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/affichage/ChatWindow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/affichage/ConnexionWindow.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/client/ClientConnexionRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/client/ClientHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/client/RootRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/client/ServerListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/client/ServerRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/client/ServerResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/client/UserRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/fil/FilDeDiscussion.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/fil/Message.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/frontobjects/FrontGroup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/frontobjects/FrontMessage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/frontobjects/FrontObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/frontobjects/FrontThread.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/frontobjects/FrontUser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/groups/Groupe.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/groups/GroupeType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/icons/icons8-add-user-group-man-man-50 (1).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/icons/icons8-add-user-male-50 (1).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/icons/icons8-admin-64.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/icons/icons8-button-64 (1).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/icons/icons8-group-64-add.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/icons/icons8-group-64.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/icons/icons8-registration-50 (1).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/icons/icons8-user-account-50 (1).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/icons/plus.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/main/mainFront.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/server/ServerInterface.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/tests/ClientCommunication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/users/Utilisateur.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/front/utils/Utils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ProjetS5/src/module-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../projetS5.iml" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="23MqNGtXiiOwr3yqXVo3e4opM6s" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../front" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d516f33f-0a32-46f7-af18-10e8564428f9" name="Changes" comment="" />
+      <created>1641554261945</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1641554261945</updated>
+      <workItem from="1641554263108" duration="5000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

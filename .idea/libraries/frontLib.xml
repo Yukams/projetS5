@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="frontLib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/front/src/lib/gson-2.8.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/front/src/lib/AbsoluteLayout.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
