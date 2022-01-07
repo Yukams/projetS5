@@ -663,7 +663,7 @@ public class ChatWindow extends JFrame {
 
 
         for(FrontThread frontThread : userThreads) {
-            if (frontThread.groupId == node.id) {
+            if (frontThread.group.id == node.id) {
                 DefaultMutableTreeNode ticket = new DefaultMutableTreeNode(frontThread);
                 ticket.setAllowsChildren(false);
                 newGroup.add(ticket);

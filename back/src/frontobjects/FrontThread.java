@@ -4,14 +4,14 @@ import java.util.List;
 
 public class FrontThread extends FrontObject {
     public String title;
-    public int groupId;
+    public FrontGroup group;
     public List<FrontMessage> messages;
 
 
-    public FrontThread(int id, String title, List<FrontMessage> messagesList, int groupId) {
+    public FrontThread(int id, String title, List<FrontMessage> messagesList, FrontGroup groupId) {
         this.id = id;
         this.title = title;
-        this.groupId = groupId;
+        this.group = group;
         this.messages = messagesList;
     }
 }

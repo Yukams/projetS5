@@ -138,7 +138,7 @@ public class Server {
 		FrontMessage firstMessage = createMessage(authorId, content, id);
 		messages.add(firstMessage);
 
-		return new FrontThread(authorId, title, messages, groupId);
+		return new FrontThread(authorId, title, messages, getGroup(groupId));
 	}
 
 	public static FrontThread getThread(int threadId) {
@@ -167,7 +167,7 @@ public class Server {
 		}
 
 		// Add the thread to the thread list
-		return new FrontThread(thread.id, thread.title, messagesList, thread.groupId);
+		return new FrontThread(thread.id, thread.title, messagesList, getGroup(thread.groupId));
 	}
 
 	public static List<FrontThread> getAllThreadForUser(int userId) {
