@@ -50,7 +50,7 @@ public class ChatWindow extends JFrame {
     private static FrontUser connectedUser;
     public static FrontGroup allFrontGroup[];
 
-    public static FrontThread userThreads[];
+    public static ArrayList<FrontThread> userThreads = new ArrayList<>();
     private static final SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
 
 
@@ -95,7 +95,6 @@ public class ChatWindow extends JFrame {
         zoneTextNewMessage = new JTextArea();
         buttonAddNewFil = new JButton();
         allFrontGroup = new FrontGroup[1];
-        userThreads = new FrontThread[1];
 
 
         splitPaneMessagerie = new JSplitPane();
@@ -637,7 +636,7 @@ public class ChatWindow extends JFrame {
     public static void fillTree() {
         Set<FrontGroup> frontGroupsSet = new HashSet<>();
         rootTree.removeAllChildren();
-        if(userThreads.length > 0) {
+        if(userThreads.size() > 0) {
             for(FrontThread frontThread : userThreads){
                 frontGroupsSet.add(frontThread.group);
             }

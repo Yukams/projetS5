@@ -115,7 +115,10 @@ public class ServerListener implements Runnable {
 
             // THREAD
             case "/thread/getAllThreadsForUser" -> {
-                ChatWindow.userThreads = gson.fromJson(payload, FrontThread[].class);
+                FrontThread[] frontThreads = gson.fromJson(payload, FrontThread[].class);
+                ChatWindow.userThreads = new ArrayList<>();
+                ChatWindow.userThreads.addAll(Arrays.asList(frontThreads));
+
                 ChatWindow.fillTree();
             }
             case "/thread/createThread" -> {
