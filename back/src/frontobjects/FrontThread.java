@@ -8,7 +8,7 @@ public class FrontThread extends FrontObject {
     public List<FrontMessage> messages;
 
 
-    public FrontThread(int id, String title, List<FrontMessage> messagesList, FrontGroup groupId) {
+    public FrontThread(int id, String title, List<FrontMessage> messagesList, FrontGroup group) {
         this.id = id;
         this.title = title;
         this.group = group;
