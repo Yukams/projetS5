@@ -77,22 +77,24 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void updateAdminsOnly(ServerResponse serverResponse) {
+    private void updateAdminsOnly(String request) {
         for(ClientHandler client : mainBack.clients) {
             boolean isAdmin = client.getClientIsAdmin();
 
             if(isAdmin) {
-                updateSingleClient(serverResponse, client);
+                updateSingleClient(treatRequest(new ClientRequest(request, new HashMap<>())), client);
             }
         }
     }
 
-    private void updateClientsOnly(ServerResponse serverResponse) {
+    private void updateClientsOnly(String request) {
         for(ClientHandler client : mainBack.clients) {
             boolean isAdmin = client.getClientIsAdmin();
 
             if(!isAdmin) {
-                updateSingleClient(serverResponse, client);
+                Map<String, String> payload = new HashMap<>();
+                payload.put("id", ""+client.getClientId());
+                updateSingleClient(treatRequest(new ClientRequest(request, payload)), client);
             }
         }
     }
@@ -141,29 +143,26 @@ public class ClientHandler implements Runnable {
             case "/user/getAllDatabaseUsers" -> IUser.getAllDatabaseUsers();
 
             // THREAD
-            // {}
-            case "/thread/getAllThreadsForUser" -> IThread.getAllThreadForUser(this.clientId);
-
             // { "id" : int }
-            case "/thread/getAllThreadsForUserById" -> IThread.getAllThreadForUserById(payload);
+            case "/thread/getAllThreadsForUser" -> IThread.getAllThreadForUser(payload);
 
-            // { "groupId": int, "title": String, "content": String }
+            // { "authorId": id, "groupId": int, "title": String, "content": String }
             // Updates
-            case "/thread/createThread" -> IThread.createThread(this.clientId, payload);
+            case "/thread/createThread" -> IThread.createThread(payload);
 
             // { "id": int }
             // Updates
             case "/thread/deleteThread" -> IThread.deleteThread(payload);
 
-            // { "threadId": int }
+            // { "clientId": int, "threadId": int }
             // Updates
-            case "/thread/updateMessagesOfThread" -> IThread.updateMessages(this.clientId, payload);
+            case "/thread/updateMessagesOfThread" -> IThread.updateMessages(payload);
 
 
             // MESSAGE
-            // { "content": String, "threadId": int }
+            // { "authorId": int, "content": String, "threadId": int }
             // Updates
-            case "/message/createMessage" -> IMessage.createMessage(this.clientId, payload);
+            case "/message/createMessage" -> IMessage.createMessage(payload);
 
             // { "id": int }
             // Updates
@@ -186,11 +185,8 @@ public class ClientHandler implements Runnable {
             // {}
             case "/group/getAllDatabaseGroups" -> IGroup.getAllDatabaseGroups();
 
-            // { "userId": int }
+            // { "id": int }
             case "/group/getGroupsOfUserById" -> IGroup.getGroupsOfUserById(payload);
-
-            // {}
-            case "/group/getGroupsOfUser" -> IGroup.getGroupsOfUser(this.clientId);
 
             default -> "\"null\"";
         };
@@ -204,36 +200,36 @@ public class ClientHandler implements Runnable {
         switch (address) {
             // CONNECTIVITY
             // Sends the new Database Connected User List to admins
-            case "/connect" -> updateAdminsOnly(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())));
+            case "/connect" -> updateAdminsOnly("/user/getAllConnectedUsers");
 
             // USER
             // Sends the new Database User List to admins
-            case "/user/createUser" -> updateAdminsOnly(treatRequest(new ClientRequest("/user/getAllDatabaseUsers", new HashMap<>())));
+            case "/user/createUser" -> updateAdminsOnly("/user/getAllDatabaseUsers");
             // TODO only for affected users
             case "/user/deleteUser" -> {
                 // Sends the new Database User List to admins
-                updateAdminsOnly(treatRequest(new ClientRequest("/user/getAllDatabaseUsers", new HashMap<>())));
+                updateAdminsOnly("/user/getAllDatabaseUsers");
                 // Sends recalculated threads to clients
-                updateClientsOnly(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())));
+                updateClientsOnly("/thread/getAllThreadsForUser");
             }
 
             // THREAD & MESSAGE & addUserToGroup
             // TODO only for affected users
             // Sends recalculated threads to clients
             case "/thread/createThread", "/thread/deleteThread", "/thread/updateMessagesOfThread", "/message/createMessage", "/message/deleteMessage"
-                    -> updateClientsOnly(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())));
+                    -> updateClientsOnly("/thread/getAllThreadsForUser");
 
             // GROUP
             // Sends the new Database Group List to admins
             case "/group/createGroup" ->
-                    updateAdminsOnly(treatRequest(new ClientRequest("/group/getAllDatabaseGroups", new HashMap<>())));
+                    updateAdminsOnly("/group/getAllDatabaseGroups");
 
             // TODO only for affected users
             case "/group/deleteGroup" -> {
                 // Sends the new Database Group List to admins
-                updateAdminsOnly(treatRequest(new ClientRequest("/group/getAllDatabaseGroups", new HashMap<>())));
+                updateAdminsOnly("/group/getAllDatabaseGroups");
                 // Sends recalculated threads to clients
-                updateClientsOnly(treatRequest(new ClientRequest("/thread/getAllThreadsForUser", new HashMap<>())));
+                updateClientsOnly("/thread/getAllThreadsForUser");
             }
             case "/group/addUserToGroup" -> {
                 // Sends new threads to the selected user IF CONNECTED

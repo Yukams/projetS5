@@ -10,6 +10,7 @@ package affichage;
 import client.ClientConnexionRequest;
 import client.UserRequest;
 import frontobjects.FrontGroup;
+import frontobjects.FrontMessage;
 import frontobjects.FrontThread;
 import frontobjects.FrontUser;
 import utils.Utils;
@@ -19,17 +20,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+
+
 
 
 /**
@@ -38,39 +41,37 @@ import javax.swing.tree.TreePath;
  */
 public class ChatWindow extends JFrame {
     private FrontGroup groupSelectedNewFil;
-    private String [] listGroupe;
     private String titleAdd;
-    private Map<String,JPanel> componentForTicket = new HashMap<>();
+    public static Map<FrontThread, JPanel> componentForTicket = new HashMap<>();
     private static DefaultMutableTreeNode rootTree = new DefaultMutableTreeNode("Groups");
     private boolean firstClick = true;
 
     private UserRequest userRequest;
-    private FrontUser connectedUser;
+    public static FrontUser connectedUser;
     public static FrontGroup allFrontGroup[];
-    public static FrontGroup userFrontGroups[];
-    public static FrontThread userThreads[];
 
+    public static ArrayList<FrontThread> userThreads = new ArrayList<>();
+    private static final SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
 
 
     public ChatWindow(ClientConnexionRequest clientConnexion) {
-        super("Chat: "+ ClientConnexionRequest.connectedUser.toString());
+        super("Chat: " + ClientConnexionRequest.connectedUser.toString());
         initComponents();
         this.userRequest = new UserRequest(clientConnexion);
         this.connectedUser = ClientConnexionRequest.connectedUser;
         this.userRequest.askThreadsFromServer(ClientConnexionRequest.connectedUser);
-        this.userRequest.getUserGroups(ClientConnexionRequest.connectedUser);
 
         setLocationRelativeTo(null);
-        FrameAjout.setLocation(this.getX(),this.getY());
+        FrameAjout.setLocation(this.getX(), this.getY());
 
-        dimensionMaxSizeRight.height=panelMessage.getHeight()/9;
-        dimensionMaxSizeRight.width=(int) width;
-        dimensionMinSizeRight.height=panelMessage.getHeight()/9;
-        dimensionMinSizeRight.width=panelMessage.getWidth();
-        dimensionMinSizeLeft.height=panelTicket.getHeight()/10;
-        dimensionMinSizeLeft.width=panelTicket.getWidth();
-        dimensionMaxSizeLeft.height=panelTicket.getHeight()/10;
-        dimensionMaxSizeLeft.width=(int) width;
+        dimensionMaxSizeRight.height = panelMessage.getHeight() / 9;
+        dimensionMaxSizeRight.width = (int) width;
+        dimensionMinSizeRight.height = panelMessage.getHeight() / 9;
+        dimensionMinSizeRight.width = panelMessage.getWidth();
+        dimensionMinSizeLeft.height = panelTicket.getHeight() / 10;
+        dimensionMinSizeLeft.width = panelTicket.getWidth();
+        dimensionMaxSizeLeft.height = panelTicket.getHeight() / 10;
+        dimensionMaxSizeLeft.width = (int) width;
     }
 
     /**
@@ -92,6 +93,7 @@ public class ChatWindow extends JFrame {
         scrollPaneMessageAjout = new JScrollPane();
         zoneTextNewMessage = new JTextArea();
         buttonAddNewFil = new JButton();
+        allFrontGroup = new FrontGroup[1];
 
 
         splitPaneMessagerie = new JSplitPane();
@@ -140,7 +142,6 @@ public class ChatWindow extends JFrame {
         zoneTextNewMessage.setColumns(20);
         zoneTextNewMessage.setRows(5);
         scrollPaneMessageAjout.setViewportView(zoneTextNewMessage);
-
 
 
         buttonAddNewFil.setText("Ajouter");
@@ -224,7 +225,7 @@ public class ChatWindow extends JFrame {
         );
 
         buttonAjoutTicket.setBackground(new java.awt.Color(102, 102, 102));
-        buttonAjoutTicket.setIcon(new ImageIcon(getClass().getResource("/icons/plus.png"))); // NOI18N
+        buttonAjoutTicket.setIcon(new ImageIcon(getClass().getResource("/icons/plus.png")));
         buttonAjoutTicket.setContentAreaFilled(false);
         buttonAjoutTicket.setHorizontalAlignment(SwingConstants.RIGHT);
         buttonAjoutTicket.setOpaque(true);
@@ -234,16 +235,18 @@ public class ChatWindow extends JFrame {
             }
         });
 
-        /*panelTicket.setBackground(new java.awt.Color(102, 102, 102));
-        panelTicket.setAutoscrolls(true);
-        panelTicket.setLayout(new BoxLayout(panelTicket, BoxLayout.PAGE_AXIS));*/
-
-
-        //ici tree a faire
-        //remplacer listGroupe par les groupes de l'utilisateur // Group of User
-        //this.allFrontGroup
-
         treeTicket = new JTree(rootTree);
+        ImageIcon leafIcon = new ImageIcon(getClass().getResource("/icons/iconFil.png"));
+        ImageIcon nodeIcon = new ImageIcon(getClass().getResource("/icons/icons8-user-account-50 (1).png"));
+        if (leafIcon != null) {
+            DefaultTreeCellRenderer renderer =
+                    new DefaultTreeCellRenderer();
+            renderer.setLeafIcon(leafIcon);
+            renderer.setIconTextGap(0);
+            renderer.setClosedIcon(nodeIcon);
+            renderer.setOpenIcon(nodeIcon);
+            treeTicket.setCellRenderer(renderer);
+        }
         treeTicket.setBackground(new java.awt.Color(102, 102, 102));
         treeTicket.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         treeTicket.setRootVisible(false);
@@ -311,7 +314,6 @@ public class ChatWindow extends JFrame {
                 zoneTexteMessageMouseClicked(evt);
             }
         });
-
 
 
         GroupLayout panelBorderMessageLayout = new GroupLayout(panelBorderMessage);
@@ -393,122 +395,181 @@ public class ChatWindow extends JFrame {
         FrameAjout.setVisible(true);
     }
 
-    private void ticketSelected(TreeSelectionEvent evt){
+    private void ticketSelected(TreeSelectionEvent evt) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeTicket.getLastSelectedPathComponent();
-        if (node==null ){
+
+        if (node == null) {
             return;
         }
-        if (!node.isLeaf()){
-            for (int k=0;k< node.getChildCount();k++){
-                if (node.getChildAt(k).toString().length()>30){
-                    splitPaneMessagerie.setDividerLocation(this.getWidth()/2);
+        if (!node.isLeaf()) {
+            for (int k = 0; k < node.getChildCount(); k++) {
+                if (node.getChildAt(k).toString().length() > 30) {
+                    splitPaneMessagerie.setDividerLocation(this.getWidth() / 2);
                 }
             }
-
+            labelTitreTicket.setText("Aucun ticket selectionne");
+            panelEcrireMessage.setVisible(false);
+            scrollPaneListMessage.getComponent(0).setVisible(false);
         }
-        if (node.isLeaf()){
-            firstClick=true;
+        if (node.isLeaf()) {
+            this.userRequest.updateMessagesOfThread((FrontThread) node.getUserObject());
+            firstClick = true;
+            labelTitreTicket.setText(node.toString());
             panelEcrireMessage.setVisible(true);
-            zoneTexteMessage.setText("Ecrire un message dans "+node);
-            //System.out.println("test:"+node.getParent().toString());
-            //scrollPaneListMessage.setViewportView(tabComponent[1]);
+            zoneTexteMessage.setText("Ecrire un message dans " + node);
 
-            scrollPaneListMessage.setViewportView(componentForTicket.get(node.toString()));
+            scrollPaneListMessage.getComponent(0).setVisible(true);
+            scrollPaneListMessage.setViewportView(componentForTicket.get(node.getUserObject()));
 
-            labelTitreTicket.setText(""+node);
+            labelTitreTicket.setText(node.toString());
 
         }
 
     }
+    // UTIL
+    private static void setMessageColor(FrontMessage message, JTextPane jTextPane){
+        if (message.status.equals("NOT_SENT")) {
+            jTextPane.setBackground(new java.awt.Color(125, 125, 125));
+        }
+        if (message.status.equals("NOT_SEEN")) {
+            jTextPane.setBackground(new java.awt.Color(255, 50, 50));
+        }
+        if (message.status.equals("HALF_SEEN")) {
+            jTextPane.setBackground(new java.awt.Color(255, 100, 0));
+        }
+        if (message.status.equals("SEEN")) {
+            jTextPane.setBackground(new java.awt.Color(0, 255, 0));
+        }
+    }
+    // UTIL
+    private static JPanel createMessageForm(FrontMessage messageToAdd){
+        JPanel panelAjout = new JPanel();
+        panelAjout.setAutoscrolls(true);
+        panelAjout.setLayout(new BoxLayout(panelAjout, BoxLayout.Y_AXIS));
+
+        JScrollPane scrollPaneNewMessage = new JScrollPane();
+        JTextPane textPaneNewMessage = new JTextPane();
+        textPaneNewMessage.setText(messageToAdd.user.toString() + ", " + dayFormat.format(new Date(messageToAdd.date)) + "\n\n" + messageToAdd.content);
+        textPaneNewMessage.setEditable(false);
+        scrollPaneNewMessage.setViewportView(textPaneNewMessage);
+
+        scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
+        scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
+        scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        setMessageColor(messageToAdd, textPaneNewMessage);
+
+        panelAjout.add(scrollPaneNewMessage);
+        return panelAjout;
+    }
 
     private void buttonAddActionPerformed(java.awt.event.ActionEvent evt) {
-        /*---Date format--*/
-        SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
+        //*---Date format--*//*
         Date date = new Date();
-        String dayStr = dayFormat.format(date);
-        /*----------------*/
+        //*----------------*//*
 
         titleAdd = zoneTextTitre.getText();
         String messageAdd = zoneTextNewMessage.getText();
 
         //avoir le groupe choisi pour ajouter un fil
-        groupSelectedNewFil= (FrontGroup)comboBoxGroup.getSelectedItem();
+        groupSelectedNewFil = (FrontGroup) comboBoxGroup.getSelectedItem();
         //System.out.println("groupe choisi :"+groupSelectedNewFil);
-
 
         zoneTextTitre.setText("");
         zoneTextNewMessage.setText("");
 
-        if (titleAdd.length()==0){
-            Utils.warningWindow("Missing Fields in Title of new Ticket!","Error Syntax");
-        }else {
-            if (messageAdd.length()==0){
-                Utils.warningWindow("Missing Fields in Message of new Ticket!","Error Syntax");
+        if (titleAdd.length() == 0) {
+            Utils.warningWindow("Missing Fields in Title of new Ticket!", "Error Syntax");
+        } else {
+            if (messageAdd.length() == 0) {
+                Utils.warningWindow("Missing Fields in Message of new Ticket!", "Error Syntax");
             } else {
                 FrameAjout.setVisible(false);
-
-                JPanel panelAjout = new JPanel();
-                panelAjout.setAutoscrolls(true);
-                panelAjout.setLayout(new BoxLayout(panelAjout, BoxLayout.Y_AXIS));
-
-                JScrollPane scrollPaneNewMessage = new JScrollPane();
-                JTextPane textPaneNewMessage = new JTextPane();
-                textPaneNewMessage.setText(this.connectedUser.toString() + ", " + dayStr + "\n\n" + messageAdd);
-                textPaneNewMessage.setEditable(false);
-                scrollPaneNewMessage.setViewportView(textPaneNewMessage);
-
-                scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
-                scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
-                scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-                panelAjout.add(scrollPaneNewMessage);
+                this.userRequest.createThread(groupSelectedNewFil.id,titleAdd,messageAdd);
+                /*-------------Local front thread Creation---------------*/
+                /*FrontThread threadToAdd = new FrontThread();
+                threadToAdd.title = titleAdd;
+                FrontMessage messageToAdd = new FrontMessage();
+                messageToAdd.user = connectedUser;
+                messageToAdd.content = messageAdd;
+                messageToAdd.status = "NOT_SENT";
+                messageToAdd.date = date.getTime();
+                List<FrontMessage> listMessageToAdd = new ArrayList<>();
+                listMessageToAdd.add(messageToAdd);
+                threadToAdd.messages=listMessageToAdd;
+                threadToAdd.messages.add(messageToAdd);*/
+                //userThreads.add(threadToAdd);
+                /*--------------Local front thread Setup-------------*/
+                //JPanel panelAjout = createMessageForm(messageToAdd); // Creating the msg
                 //panelAjout.updateUI();
-                if (componentForTicket.containsKey(titleAdd)) {
+                /*if (componentForTicket.containsKey(threadToAdd)) {
                     //JOptionPane.showMessageDialog(new JFrame(), "Ce ticket existe déjà dans "+groupSelectedNewFil, "Attention !", JOptionPane.WARNING_MESSAGE);
                     JOptionPane.showMessageDialog(new JFrame(), "Ce ticket existe déjà!", "Attention !", JOptionPane.WARNING_MESSAGE);
-
                 } else {
+                    componentForTicket.put(threadToAdd, panelAjout);
 
-                    componentForTicket.put(titleAdd, panelAjout);
-
-                    boolean existInTree=false;
-                    for (int k=0; k<rootTree.getChildCount(); k++){
-                        if (groupSelectedNewFil.equals(rootTree.getChildAt(k))){
-                            existInTree=true;
-                            k=rootTree.getChildCount();
+                    int indexGroup;
+                    boolean existInTree = false;
+                    for (int k = 0; k < rootTree.getChildCount(); k++) {
+                        if (groupSelectedNewFil.toString().equals(rootTree.getChildAt(k).toString())) {
+                            System.out.println("je sais qu'il existe");
+                            existInTree = true;
+                            indexGroup=k;
+                            k = rootTree.getChildCount();
                         }
                     }
-                    if (!existInTree){
-                        addGroupToRoot(groupSelectedNewFil);
+                    if (existInTree==false){
+
+                        DefaultMutableTreeNode newGroupToAdd = new DefaultMutableTreeNode(groupSelectedNewFil);
+                        rootTree.add(newGroupToAdd);
+                        indexGroup=rootTree.getIndex(newGroupToAdd);
+
+                        DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
+                        DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
+
+                        DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(racine, indexGroup);
+                        DefaultMutableTreeNode newTicket = new DefaultMutableTreeNode(threadToAdd);
+                        newTicket.setAllowsChildren(false);
+                        model.insertNodeInto(newTicket, gp, gp.getChildCount());
+                        model.reload();
+                        TreePath path = new TreePath(newTicket);
+                        treeTicket.setSelectionPath(path);
+
+
                     }
-                    /*if (rootTree.getChildCount()==1){
-                        treeTicket.setRootVisible(false);
+                    else {
+                        System.out.println("il existe");
+
+                        int indexGroupInsert=0;
+                        for (int k = 0; k < rootTree.getChildCount(); k++) {
+                            if (groupSelectedNewFil.toString().equals(rootTree.getChildAt(k).toString())) {
+
+                                indexGroupInsert=k;
+                                k = rootTree.getChildCount();
+                            }
+                        }
+
+                        DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
+                        DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
+                        DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(racine, indexGroupInsert);
+                        DefaultMutableTreeNode ticket = new DefaultMutableTreeNode(threadToAdd);
+                        ticket.setAllowsChildren(false);
+                        model.insertNodeInto(ticket, gp, gp.getChildCount());
+                        model.reload();
+                        TreePath path = new TreePath(ticket);
+                        treeTicket.setSelectionPath(path);
+
                     }*/
 
-                    int i = 0;
-                    for (FrontGroup group : this.allFrontGroup) {
 
-                        if (group.equals(groupSelectedNewFil)) {
-                            DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
-                            DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
-
-                            DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(racine, i);
-                            DefaultMutableTreeNode ticket = new DefaultMutableTreeNode(titleAdd);
-                            ticket.setAllowsChildren(false);
-                            model.insertNodeInto(ticket, gp, gp.getChildCount());
-                            TreePath path = new TreePath(ticket);
-                            treeTicket.setSelectionPath(path);
-                        }
-                        i++;
-                    }
 
                 }
-
-                //System.out.println("text="+zoneTexteMessage.getText());
                 zoneTexteMessage.setText("");
             }
         }
-    }
+
+   // }
+
     private void zoneTexteMessageMouseClicked(MouseEvent evt){
         if (firstClick==true) {
             zoneTexteMessage.setText("");
@@ -517,111 +578,142 @@ public class ChatWindow extends JFrame {
     }
 
     private void zoneTexteMessageActionPerformed(ActionEvent evt) {
-        /*---Date format--*/
-        SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
-        Date date = new Date();
-        String dayStr = dayFormat.format(date);
-        /*----------------*/
 
         DefaultMutableTreeNode selectedItemTree = (DefaultMutableTreeNode) treeTicket.getLastSelectedPathComponent();
+        FrontThread threadSelected = (FrontThread) selectedItemTree.getUserObject();
+
+
+
         if (zoneTexteMessage.getText().length()==0){
             Utils.warningWindow("Missing Fields in Message to send","Error Syntax");
         } else {
             if (selectedItemTree != null) {
+                //*---Date format--*//*
+                Date date = new Date();
+                String dayStr = dayFormat.format(date);
+                //*----------------*//*
 
+                //creation affichage new message local
                 JScrollPane scrollPaneNewMessage = new JScrollPane();
                 JTextPane textPaneNewMessage = new JTextPane();
                 textPaneNewMessage.setText(this.connectedUser.toString() + ", " + dayStr + "\n\n" + zoneTexteMessage.getText());
                 textPaneNewMessage.setEditable(false);
                 scrollPaneNewMessage.setViewportView(textPaneNewMessage);
 
+                FrontMessage mess = new FrontMessage(23,connectedUser,zoneTexteMessage.getText(), date.getTime(),"NOT_SENT");
+                threadSelected.messages.add(mess);
+
+                if (mess.status.equals("NOT_SENT")) {
+                    textPaneNewMessage.setBackground(new java.awt.Color(125, 125, 125));
+                }
+                if (mess.status.equals("NOT_SEEN")) {
+                    textPaneNewMessage.setBackground(new java.awt.Color(255, 50, 50));
+                }
+                if (mess.status.equals("HALF_SEEN")) {
+                    textPaneNewMessage.setBackground(new java.awt.Color(255, 100, 0));
+                }
+                if (mess.status.equals("SEEN")) {
+                    textPaneNewMessage.setBackground(new java.awt.Color(0, 255, 0));
+                }
+
                 scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
                 scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
                 scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
-                componentForTicket.get(selectedItemTree.toString()).add(scrollPaneNewMessage);
-                componentForTicket.get(selectedItemTree.toString()).updateUI();
+                componentForTicket.get(threadSelected).add(scrollPaneNewMessage);
+                componentForTicket.get(threadSelected).updateUI();
 
 
                 firstClick = true;
                 zoneTexteMessage.setText("");
             }
+
         }
     }
 
-    public static void fillTree() {
-        if(userThreads.length > 0) {
-            for (FrontGroup group : userFrontGroups) {
-                addGroupToRoot(group);
+    // UTIL
+    public static void updateTree() {
+        Set<FrontGroup> frontGroupsSet = new HashSet<>();
+        rootTree.removeAllChildren();
+        componentForTicket.clear();
+        if(userThreads.size() > 0) {
+            for(FrontThread frontThread : userThreads){
+                frontGroupsSet.add(frontThread.group);
+            }
+            for(FrontGroup frontGroup : frontGroupsSet){
+                addGroupToRoot(frontGroup);
             }
         }
+        treeTicket.setModel(new DefaultTreeModel(rootTree));
+
     }
 
-    private static void addGroupToRoot(FrontGroup node){
-        DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(node);
-        //DefaultMutableTreeNode forNode = new DefaultMutableTreeNode();
-        //forNode.setAllowsChildren(false);
-        //newGroup.add(forNode);
+    private static void addGroupToRoot(FrontGroup frontGroup){
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode(frontGroup);
         DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
         DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
-        /*if (rootTree.getChildCount()==0){
-            model.insertNodeInto(newGroup, rootTree, 0);
-        }
-        else {
-            DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(rootTree, rootTree.getChildCount());
-            model.insertNodeInto(newGroup, gp, gp.getChildCount());
-        }*/
-        for(FrontThread frontThread : userThreads){
-            if(frontThread.groupId == node.id){
-                newGroup.add(new DefaultMutableTreeNode(frontThread));
+
+
+        for(FrontThread frontThread : userThreads) {
+            if (frontThread.group.id == frontGroup.id) {
+                DefaultMutableTreeNode ticket = new DefaultMutableTreeNode(frontThread);
+                ticket.setAllowsChildren(false);
+                node.add(ticket);
+                for (FrontMessage mess : frontThread.messages) {
+                    JPanel panelAjout = new JPanel();
+                    panelAjout.setAutoscrolls(true);
+                    panelAjout.setLayout(new BoxLayout(panelAjout, BoxLayout.Y_AXIS));
+
+                    JScrollPane scrollPaneNewMessage = new JScrollPane();
+                    JTextPane textPaneNewMessage = new JTextPane();
+
+                    textPaneNewMessage.setEditable(false);
+                    textPaneNewMessage.setText(mess.user + ", " + dayFormat.format(new Date(mess.date)) + "\n\n" + mess.content);
+
+                    if (mess.status.equals("NOT_SENT")) {
+                        textPaneNewMessage.setBackground(new Color(125, 125, 125));
+                    }
+
+                    if (mess.status.equals("NOT_SEEN")) {
+                        textPaneNewMessage.setBackground(new Color(255, 50, 50));
+                    }
+                    if (mess.status.equals("HALF_SEEN")) {
+                        textPaneNewMessage.setBackground(new Color(255, 100, 0));
+                    }
+                    if (mess.status.equals("SEEN")) {
+                        textPaneNewMessage.setBackground(new Color(0, 255, 0));
+                    }
+
+                    scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
+                    scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
+                    scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+                    scrollPaneNewMessage.setViewportView(textPaneNewMessage);
+
+                    panelAjout.add(scrollPaneNewMessage);
+
+                    panelAjout.updateUI();
+                    /*zoneTexteMessage.setText("Ecrire un message dans " + frontThread.toString());
+                    labelTitreTicket.setText(frontThread.toString());*/
+                    componentForTicket.putIfAbsent(frontThread, panelAjout);
+                    componentForTicket.get(frontThread).add(scrollPaneNewMessage);
+                    componentForTicket.get(frontThread).updateUI();
+
+
+                }
+
             }
-        }
-        if(newGroup.getChildCount() > 0){
-            racine.add(newGroup);
-        }
 
+            if (node.getChildCount() > 0) {
+                racine.add(node);
+
+            }
+
+        }
         model.reload();
-        //rootTree.add(newGroup);
-        //expandAll();
+        //panelEcrireMessage.setVisible(true);
 
     }
 
-    private void addLeafToNode(FrontGroup node){
-        DefaultMutableTreeNode newGroup = new DefaultMutableTreeNode(node);
-        //DefaultMutableTreeNode forNode = new DefaultMutableTreeNode();
-        //forNode.setAllowsChildren(false);
-        //newGroup.add(forNode);
-        DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
-        DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
-        if (rootTree.getChildCount()==0){
-            model.insertNodeInto(newGroup, rootTree, 0);
-        }
-        else {
-            DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(rootTree, rootTree.getChildCount());
-            model.insertNodeInto(newGroup, gp, gp.getChildCount());
-        }
-
-        model.reload();
-        //rootTree.add(newGroup);
-        //expandAll();
-
-    }
-
-    public void expandAll() {
-        int row = 0;
-        while (row < treeTicket.getRowCount()) {
-            treeTicket.expandRow(row);
-            row++;
-        }
-    }
-
-    private void addLeafToNode(FrontGroup leaf,DefaultMutableTreeNode node){
-        DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
-        DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
-
-        DefaultMutableTreeNode gp = (DefaultMutableTreeNode) model.getChild(racine, model.getIndexOfChild( racine,node));
-        model.insertNodeInto(new DefaultMutableTreeNode(leaf), gp, gp.getChildCount());
-    }
 
     // Variables declaration - do not modify
     private JButton buttonAddNewFil;
@@ -632,13 +724,13 @@ public class ChatWindow extends JFrame {
     private JLabel labelChoixGroupeAjout;
     private JLabel labelTitreAjout;
     private JLabel labelMessagaAjout;
-    private JScrollPane scrollPaneListMessage;
+    private static JScrollPane scrollPaneListMessage;
     private JScrollPane scrollPaneMessageAjout;
     private JSplitPane splitPaneMessagerie;
     private JLabel labelFil;
-    private JLabel labelTitreTicket;
+    private static JLabel labelTitreTicket;
     private JPanel panelBorderMessage;
-    private JPanel panelEcrireMessage;
+    private static JPanel panelEcrireMessage;
     private JPanel panelFil;
     private JPanel panelLeft;
     private JPanel panelListMessage;
@@ -648,14 +740,15 @@ public class ChatWindow extends JFrame {
     private JScrollPane scrollPaneTicket;
     private JTextArea zoneTextNewMessage;
     private JTextField zoneTextTitre;
-    private JTextField zoneTexteMessage;
+    private static JTextField zoneTexteMessage;
     private Dimension dimensionMaxSizeLeft=new Dimension();
     private final Dimension dimensionMinSizeLeft=new Dimension();
-    private final Dimension dimensionMinSizeRight=new Dimension();
-    private final Dimension dimensionMaxSizeRight=new Dimension();
+    private static final Dimension dimensionMinSizeRight=new Dimension();
+    private static final Dimension dimensionMaxSizeRight=new Dimension();
     private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private final double width = screenSize.getWidth();
     private final double height = screenSize.getHeight();
     private static JTree treeTicket;
     // End of variables declaration
 }
+

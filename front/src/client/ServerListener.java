@@ -114,12 +114,23 @@ public class ServerListener implements Runnable {
 
             // THREAD
             case "/thread/getAllThreadsForUser" -> {
-                FrontThread[] frontUserThreads = gson.fromJson(payload, FrontThread[].class);
-                ChatWindow.userThreads = frontUserThreads;
+                FrontThread[] frontThreads = gson.fromJson(payload, FrontThread[].class);
+                ArrayList<FrontThread> tempList = new ArrayList<>(Arrays.asList(frontThreads));
+                if(!tempList.equals(ChatWindow.userThreads)) {
+                    System.out.println("c'est pas egal");
+                    ChatWindow.userThreads = new ArrayList<>();
+                    ChatWindow.userThreads.addAll(Arrays.asList(frontThreads));
+                    ChatWindow.updateTree();
+
+                }
             }
-            case "/thread/createThread" -> System.out.println("/thread/createThread");
+            case "/thread/createThread" -> {
+                gson.fromJson(payload,FrontThread.class);
+            }
             case "/thread/deleteThread" -> System.out.println("/thread/deleteThread");
-            case "/thread/updateMessagesOfThread" -> System.out.println("/thread/updateMessagesOfThread");
+            case "/thread/updateMessagesOfThread" -> {
+
+            }
 
 
             // MESSAGE
@@ -139,13 +150,10 @@ public class ServerListener implements Runnable {
                 if(ServerInterface.grpListToRemove != null) ServerInterface.grpListToRemove.setModel(new DefaultComboBoxModel<>(frontGroups));
                 if(ChatWindow.comboBoxGroup != null) ChatWindow.comboBoxGroup.setModel(new DefaultComboBoxModel<>(frontGroups));
                 if(ChatWindow.allFrontGroup != null) ChatWindow.allFrontGroup = frontGroups;
+
             }
             case "/group/getGroupsOfUserById" -> {
-                FrontGroup[] frontGroupsOfUser = gson.fromJson(payload, FrontGroup[].class);
-                if(ChatWindow.userFrontGroups != null) {
-                    ChatWindow.userFrontGroups = frontGroupsOfUser;
-                    ChatWindow.fillTree();
-                }
+                gson.fromJson(payload, FrontGroup[].class);
             }
             case "/group/getGroupsOfUser" -> System.out.println("/group/getGroupsOfUser");
         }

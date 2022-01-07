@@ -11,7 +11,8 @@ import java.util.Map;
 import static main.mainBack.gson;
 
 public interface IMessage {
-	static String createMessage(int authorId, Map<String, String> payload) {
+	static String createMessage(Map<String, String> payload) {
+		int authorId = Integer.parseInt(payload.get("authorId"));
 		String content = payload.get("content");
 		int threadId = Integer.parseInt(payload.get("threadId"));
 

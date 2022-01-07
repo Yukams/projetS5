@@ -138,7 +138,7 @@ public class Server {
 		FrontMessage firstMessage = createMessage(authorId, content, id);
 		messages.add(firstMessage);
 
-		return new FrontThread(authorId, title, messages, groupId);
+		return new FrontThread(authorId, title, messages, getGroup(groupId));
 	}
 
 	public static FrontThread getThread(int threadId) {
@@ -167,7 +167,7 @@ public class Server {
 		}
 
 		// Add the thread to the thread list
-		return new FrontThread(thread.id, thread.title, messagesList, thread.groupId);
+		return new FrontThread(thread.id, thread.title, messagesList, getGroup(thread.groupId));
 	}
 
 	public static List<FrontThread> getAllThreadForUser(int userId) {
@@ -341,7 +341,7 @@ public class Server {
 	}
 
 	public static List<FrontGroup> getGroupsOfUserById(int userId) {
-		String jsonString = treatQuery("SELECT g.id FROM dbLinkUserGroup l JOIN dbGroup g ON l.groupId WHERE userId=" + userId + ";");
+		String jsonString = treatQuery("SELECT g.id FROM dbGroup g JOIN dbLinkUserGroup l ON l.groupId WHERE l.groupId=g.id AND userId=" + userId + ";");
 		DbGroup[] dbGroups = gson.fromJson(jsonString, DbGroup[].class);
 
 		List<FrontGroup> groups = new ArrayList<>();
