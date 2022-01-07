@@ -59,6 +59,8 @@ public class ChatWindow extends JFrame {
         initComponents();
         this.userRequest = new UserRequest(clientConnexion);
         this.connectedUser = ClientConnexionRequest.connectedUser;
+        ImageIcon messagerieIcon = new ImageIcon(getClass().getResource("/icons/icons8-bavarder-64.png"));
+        setIconImage(messagerieIcon.getImage());
         this.userRequest.askThreadsFromServer(ClientConnexionRequest.connectedUser);
         this.userRequest.getUserGroups(ClientConnexionRequest.connectedUser);
 
@@ -665,14 +667,46 @@ public class ChatWindow extends JFrame {
                 DefaultMutableTreeNode ticket = new DefaultMutableTreeNode(frontThread);
                 ticket.setAllowsChildren(false);
                 newGroup.add(ticket);
-                for (FrontMessage message : frontThread.messages) {
-                    JPanel panelAjout = createMessageForm(message);
+                for (FrontMessage mess : frontThread.messages) {
+                    JPanel panelAjout = new JPanel();
+                    panelAjout.setAutoscrolls(true);
+                    panelAjout.setLayout(new BoxLayout(panelAjout, BoxLayout.Y_AXIS));
+
+                    JScrollPane scrollPaneNewMessage = new JScrollPane();
+                    JTextPane textPaneNewMessage = new JTextPane();
+
+                    textPaneNewMessage.setEditable(false);
+                    textPaneNewMessage.setText(mess.user + ", " + dayStr + "\n\n" + mess.content);
+
+                    if (mess.status.equals("NOT_SENT")) {
+                        textPaneNewMessage.setBackground(new Color(125, 125, 125));
+                    }
+
+                    if (mess.status.equals("NOT_SEEN")) {
+                        textPaneNewMessage.setBackground(new Color(255, 50, 50));
+                    }
+                    if (mess.status.equals("HALF_SEEN")) {
+                        textPaneNewMessage.setBackground(new Color(255, 100, 0));
+                    }
+                    if (mess.status.equals("SEEN")) {
+                        textPaneNewMessage.setBackground(new Color(0, 255, 0));
+                    }
+
+
+                    scrollPaneNewMessage.setMinimumSize(dimensionMinSizeRight);
+                    scrollPaneNewMessage.setMaximumSize(dimensionMaxSizeRight);
+                    scrollPaneNewMessage.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+                    scrollPaneNewMessage.setViewportView(textPaneNewMessage);
+
+                    panelAjout.add(scrollPaneNewMessage);
+
                     panelAjout.updateUI();
                     /*zoneTexteMessage.setText("Ecrire un message dans " + frontThread.toString());
                     labelTitreTicket.setText(frontThread.toString());*/
                     componentForTicket.putIfAbsent(frontThread, panelAjout);
-                    componentForTicket.get(frontThread).add(componentForTicketscrollPane);
+                    componentForTicket.get(frontThread).add(scrollPaneNewMessage);
                     //scrollPaneListMessage.setViewportView(componentForTicket.get(frontThread));
+
                 }
 
             }

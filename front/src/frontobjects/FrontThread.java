@@ -1,6 +1,7 @@
 package frontobjects;
 
 import java.util.List;
+import java.util.Objects;
 
 public class FrontThread extends FrontObject {
     public String title;
@@ -19,5 +20,18 @@ public class FrontThread extends FrontObject {
     @Override
     public String toString() {
         return this.title;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FrontThread that = (FrontThread) o;
+        return Objects.equals(title, that.title) && Objects.equals(group, that.group) && Objects.equals(messages, that.messages);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, group, messages);
     }
 }
