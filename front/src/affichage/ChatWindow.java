@@ -56,6 +56,10 @@ public class ChatWindow extends JFrame {
 
     public ChatWindow(ClientConnexionRequest clientConnexion) {
         super("Chat: " + ClientConnexionRequest.connectedUser.toString());
+
+        ImageIcon icon = new ImageIcon(getClass().getResource("/icons/Square44x44Logo.targetsize-40.png"));
+        this.setIconImage(icon.getImage());
+
         initComponents();
         this.userRequest = new UserRequest(clientConnexion);
         this.connectedUser = ClientConnexionRequest.connectedUser;
@@ -204,12 +208,13 @@ public class ChatWindow extends JFrame {
 
         splitPaneMessagerie.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
-        panelFil.setBackground(new Color(132, 169, 140));
+        panelFil.setBackground(new Color(50,50,50));
 
-        labelFil.setBackground(new Color(132, 169, 140));
+        //labelFil.setBackground(new Color(132, 169, 140));
         labelFil.setFont(new Font("Tahoma", 1, 18)); // NOI18N
         labelFil.setHorizontalAlignment(SwingConstants.CENTER);
         labelFil.setText("Fils de discussion");
+        labelFil.setForeground(new Color(255,255,255));
 
         GroupLayout panelFilLayout = new GroupLayout(panelFil);
         panelFil.setLayout(panelFilLayout);
@@ -224,7 +229,7 @@ public class ChatWindow extends JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        buttonAjoutTicket.setBackground(new java.awt.Color(102, 102, 102));
+        buttonAjoutTicket.setBackground(new java.awt.Color(255,160,122));
         buttonAjoutTicket.setIcon(new ImageIcon(getClass().getResource("/icons/plus.png")));
         buttonAjoutTicket.setContentAreaFilled(false);
         buttonAjoutTicket.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -237,17 +242,17 @@ public class ChatWindow extends JFrame {
 
         treeTicket = new JTree(rootTree);
         ImageIcon leafIcon = new ImageIcon(getClass().getResource("/icons/iconFil.png"));
-        ImageIcon nodeIcon = new ImageIcon(getClass().getResource("/icons/icons8-user-account-50 (1).png"));
+        ImageIcon nodeIcon = new ImageIcon(getClass().getResource("/icons/groupIcon.png"));
         if (leafIcon != null) {
             DefaultTreeCellRenderer renderer =
-                    new DefaultTreeCellRenderer();
+                    new MyCellRenderer();
             renderer.setLeafIcon(leafIcon);
             renderer.setIconTextGap(0);
             renderer.setClosedIcon(nodeIcon);
             renderer.setOpenIcon(nodeIcon);
             treeTicket.setCellRenderer(renderer);
         }
-        treeTicket.setBackground(new java.awt.Color(102, 102, 102));
+        treeTicket.setBackground(new java.awt.Color(255,160,122));
         treeTicket.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         treeTicket.setRootVisible(false);
         scrollPaneTicket.setViewportView(treeTicket);
@@ -284,10 +289,10 @@ public class ChatWindow extends JFrame {
 
         splitPaneMessagerie.setLeftComponent(panelLeft);
 
-        panelRight.setBackground(new java.awt.Color(102, 102, 102));
+        panelRight.setBackground(new java.awt.Color(255,160,122));
         panelRight.setToolTipText("");
 
-        panelListMessage.setBackground(new java.awt.Color(102, 102, 102));
+        panelListMessage.setBackground(new java.awt.Color(255,160,122));
 
         labelTitreTicket.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         labelTitreTicket.setHorizontalAlignment(SwingConstants.CENTER);
@@ -295,6 +300,7 @@ public class ChatWindow extends JFrame {
 
         panelMessage.setAutoscrolls(true);
         panelMessage.setLayout(new BoxLayout(panelMessage, BoxLayout.Y_AXIS));
+        panelEcrireMessage.setBackground(new java.awt.Color(255,160,122));
         scrollPaneListMessage.setViewportView(panelMessage);
         scrollPaneListMessage.setAutoscrolls(true);
         panelMessage.setVisible(false);
@@ -751,6 +757,7 @@ public class ChatWindow extends JFrame {
             treeTicket.expandRow(i);
         }
     }
+
 
 
     // Variables declaration - do not modify
