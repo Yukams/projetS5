@@ -23,6 +23,8 @@ public class ServerInterface extends JFrame {
     private final RootRequest rootRequest;
     private final FrontUser connectedUser;
     public static FrontGroup selectedDefaultGroup;
+    public static FrontGroup allFrontGroups[];
+    public static ArrayList<FrontGroup> selectedUserFrontGroups = new ArrayList<>();
 
     /* CONSTRUCTOR :
     * - GET DATA BASE INFO
@@ -32,6 +34,9 @@ public class ServerInterface extends JFrame {
         initComponents();
         this.rootRequest = new RootRequest(clientConnexionRequest);
         this.connectedUser = ClientConnexionRequest.connectedUser;
+        /*Getting groups of preselected default user on 'manage users'*/
+        FrontUser selectedUser = usrListComboBox.getItemAt(usrListComboBox.getSelectedIndex());
+        if(selectedUser != null) this.rootRequest.getGroupsOfUser(selectedUser);
 
         this.centrePanel.setVisible(false);
 
@@ -157,9 +162,10 @@ public class ServerInterface extends JFrame {
         usrTable = new JTable();
         usrListComboBox = new JComboBox<>();
         btnRmvUsr = new JButton();
-        grpListAdd2Usr = new JComboBox<>();
+        grpListComboBoxMU = new JComboBox<>();
         btnAddUserToGrp = new JButton();
         isUserAdminCheckBox = new JCheckBox();
+        btnRmvUsrFrmGrp = new JButton();
 
         mainPanel.setLayout(new AbsoluteLayout());
 
@@ -399,12 +405,15 @@ public class ServerInterface extends JFrame {
         pMngUsr.add(jScrollPane2, new AbsoluteConstraints(20, 20, 420, 530));
 
         usrListComboBox.setBackground(new Color(255, 255, 255));
-        usrListComboBox.setFont(new Font("Candara", 0, 20));
+        usrListComboBox.setFont(new Font("Candara", 0, 18));
         usrListComboBox.setModel(new DefaultComboBoxModel<>());
-        pMngUsr.add(usrListComboBox, new AbsoluteConstraints(450, 20, 310, 50));
+        usrListComboBox.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent evt) { getSelectedUser(evt); }
+        });
+        pMngUsr.add(usrListComboBox, new AbsoluteConstraints(450, 20, 180, 50));
 
         btnRmvUsr.setBackground(new Color(147, 3, 46));
-        btnRmvUsr.setFont(new Font("Candara", 3, 18)); 
+        btnRmvUsr.setFont(new Font("Candara", 3, 16));
         btnRmvUsr.setForeground(new Color(255, 255, 255));
         btnRmvUsr.setText("Remove User");
         btnRmvUsr.addActionListener(new ActionListener() {
@@ -412,24 +421,35 @@ public class ServerInterface extends JFrame {
                 btnRmvUsrActionPerformed(evt);
             }
         });
-        pMngUsr.add(btnRmvUsr, new AbsoluteConstraints(450, 140, 140, 50));
+        pMngUsr.add(btnRmvUsr, new AbsoluteConstraints(635, 20, 125, 50));
 
-        grpListAdd2Usr.setBackground(new Color(255, 255, 255));
-        grpListAdd2Usr.setFont(new Font("Segoe UI", 0, 18)); 
-        grpListAdd2Usr.setForeground(new Color(0, 0, 0));
-        grpListAdd2Usr.setModel(new DefaultComboBoxModel<>());
-        pMngUsr.add(grpListAdd2Usr, new AbsoluteConstraints(450, 80, 310, 50));
+        grpListComboBoxMU.setBackground(new Color(255, 255, 255));
+        grpListComboBoxMU.setFont(new Font("Segoe UI", 0, 18));
+        grpListComboBoxMU.setForeground(new Color(0, 0, 0));
+        grpListComboBoxMU.setModel(new DefaultComboBoxModel<>());
+        pMngUsr.add(grpListComboBoxMU, new AbsoluteConstraints(450, 80, 310, 50));
 
         btnAddUserToGrp.setBackground(new Color(84, 222, 253));
-        btnAddUserToGrp.setFont(new Font("Candara", 3, 20));
+        btnAddUserToGrp.setFont(new Font("Candara", 3, 18));
         btnAddUserToGrp.setForeground(new Color(255, 255, 255));
-        btnAddUserToGrp.setText("Add Group");
+        btnAddUserToGrp.setText("Add to Group");
         btnAddUserToGrp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 btnAddUserToGrpActionPerformed(evt);
             }
         });
         pMngUsr.add(btnAddUserToGrp, new AbsoluteConstraints(620, 140, 140, 50));
+
+        btnRmvUsrFrmGrp.setBackground(new Color(147, 3, 46));
+        btnRmvUsrFrmGrp.setFont(new Font("Candara", 3, 15));
+        btnRmvUsrFrmGrp.setForeground(new Color(255, 255, 255));
+        btnRmvUsrFrmGrp.setText("Remove from Group");
+        btnRmvUsrFrmGrp.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                btnRmvUserFrmGrpActionPerformed(evt);
+            }
+        });
+        pMngUsr.add(btnRmvUsrFrmGrp, new AbsoluteConstraints(450, 140, 165, 50));
 
         centrePanel.add(pMngUsr, "card2");
 
@@ -529,6 +549,12 @@ public class ServerInterface extends JFrame {
             Utils.errorWindow("You cannot remove a connected user !", "Error");
         }
     }
+    private void getSelectedUser(ItemEvent evt){
+        if(evt.getStateChange() == ItemEvent.SELECTED){
+            FrontUser frontUser = (FrontUser) evt.getItem();
+            this.rootRequest.getGroupsOfUser(frontUser);
+        }
+    }
     /*------------------ {END} ------------------*/
 
     /*------------------ {MANAGE GROUPS} ------------------*/
@@ -542,16 +568,34 @@ public class ServerInterface extends JFrame {
     // In 'manage users' section
     private void btnAddUserToGrpActionPerformed(ActionEvent evt) {
         FrontUser selectedUser = usrListComboBox.getItemAt(usrListComboBox.getSelectedIndex());
-        FrontGroup selectedGroup = grpListAdd2Usr.getItemAt(grpListAdd2Usr.getSelectedIndex());
+        FrontGroup selectedGroup = grpListComboBoxMU.getItemAt(grpListComboBoxMU.getSelectedIndex());
         if(!selectedUser.equals(this.connectedUser)) {
-            if(selectedGroup != null) {
-                addUserToGroupFromComboBox(selectedUser, selectedGroup);
-                String msg = selectedUser.toString() + " successfully added to " + selectedGroup + " !";
-                Utils.informationWindow(msg, "Information");
-            } else { Utils.errorWindow("No group is selected","Error"); }
-        } else {
-            Utils.warningWindow("You cannot add a group to an Admin.","Error");
-        }
+            if(!selectedUserFrontGroups.contains(selectedGroup)) {
+                if (selectedGroup != null) {
+                    addUserToGroupFromComboBox(selectedUser, selectedGroup);
+                    String msg = selectedUser.toString() + " successfully added to " + selectedGroup + " !";
+                    Utils.informationWindow(msg, "Information");
+                } else { Utils.errorWindow("No group is selected !", "Error"); }
+            } else { Utils.warningWindow("User already belongs to "+selectedGroup+'.', "Error"); }
+        } else { Utils.warningWindow("You cannot add a group to an Admin.","Error"); }
+    }
+    // In 'manage users' section
+    private void btnRmvUserFrmGrpActionPerformed(ActionEvent evt) {
+        FrontUser selectedUser = usrListComboBox.getItemAt(usrListComboBox.getSelectedIndex());
+        FrontGroup selectedGroup = grpListComboBoxMU.getItemAt(grpListComboBoxMU.getSelectedIndex());
+        if(!selectedUser.isAdmin){
+            if(selectedUserFrontGroups.contains(selectedGroup)) {
+                if (selectedGroup != null) {
+                    // Writing payload
+                    Map<String, String> payload = new HashMap<>();
+                    payload.put("groupId", "" + selectedGroup.id);
+                    payload.put("userId", "" + selectedUser.id);
+                    //RootRequest.removeUserFromGroup(payload);
+                    String msg = selectedUser.toString() + " successfully removed from " + selectedGroup + " !";
+                    Utils.informationWindow(msg, "Information");
+                } else { Utils.errorWindow("No group is selected", "Error"); }
+            } else { Utils.warningWindow("User does not belong to "+selectedGroup+'.', "Error"); }
+        } else { Utils.warningWindow("You cannot remove a group from an Admin.","Error"); }
     }
 
     private void createGroupBtnActionPerformed(ActionEvent evt) {
@@ -616,19 +660,19 @@ public class ServerInterface extends JFrame {
     /*------------------ {END} ------------------*/
 
 
-
     private JPanel btn1;
     private JPanel btn2;
     private JPanel btn3;
     private JButton btnAddUserToGrp;
     private JButton btnRmvGrp;
     private JButton btnRmvUsr;
+    private JButton btnRmvUsrFrmGrp;
     private JPanel centrePanel;
     private JButton createGroupBtn;
     private JTextField firstNameTxtField;
     private JLabel frameDrag;
     public static JComboBox<FrontGroup> grpSelectAddUser;
-    public static JComboBox<FrontGroup> grpListAdd2Usr;
+    public static JComboBox<FrontGroup> grpListComboBoxMU;
     public static JComboBox<FrontGroup> grpListToRemove;
     private JTextField grpNameTextFieldCreate;
     private JPanel headerPanel;
