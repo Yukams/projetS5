@@ -149,6 +149,9 @@ public class ServerListener implements Runnable {
                 FrontGroup frontGroup = gson.fromJson(payload, FrontGroup.class);
                 ServerInterface.selectedUserFrontGroups.add(frontGroup);
             }
+            case "/group/removeUserFromGroup" -> {
+                System.out.println("/group/removeUserFromGroup");
+            }
             case "/group/getAllDatabaseGroups" -> {
                 FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
 
