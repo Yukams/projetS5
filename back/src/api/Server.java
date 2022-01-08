@@ -138,7 +138,7 @@ public class Server {
 		FrontMessage firstMessage = createMessage(authorId, content, id);
 		messages.add(firstMessage);
 
-		return new FrontThread(id, title, messages, getGroup(groupId));
+		return new FrontThread(authorId, title, messages, getGroup(groupId), 0);
 	}
 
 	public static FrontThread getThread(int threadId, int userId) {
@@ -157,6 +157,7 @@ public class Server {
 			}
 		}
 
+		int nbNotReadMessage = 0;
 		// Build each message
 		for(DbMessage message: dbMessageList) {
 			// Get message user
@@ -169,12 +170,21 @@ public class Server {
 			// Build status
 			String status = getStatusFromMessageId(message.id);
 
+			// Check read status for ACTUAL USER if given
+			if(userId != -1) {
+				jsonString = Server.treatQuery("SELECT * FROM dbLinkUserMessage WHERE userId=" + message.authorId + " AND messageId=" + message.id + ";");
+				DbLinkUserMessage[] dbLinkUserMessages = gson.fromJson(jsonString, DbLinkUserMessage[].class);
+				if(dbLinkUserMessages != null && !dbLinkUserMessages[0].status.equals("SEEN")) {
+					nbNotReadMessage++;
+				}
+			}
+
 			FrontMessage m = new FrontMessage(message.id ,user, message.text, message.date, status);
 			messagesList.add(m);
 		}
 
 		// Add the thread to the thread list
-		return new FrontThread(thread.id, thread.title, messagesList, getGroup(thread.groupId));
+		return new FrontThread(thread.id, thread.title, messagesList, getGroup(thread.groupId), nbNotReadMessage);
 	}
 
 	public static List<FrontThread> getAllThreadForUser(int userId) {
