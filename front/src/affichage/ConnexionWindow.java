@@ -15,7 +15,7 @@ import java.awt.event.WindowEvent;
 
 public class ConnexionWindow extends JFrame implements ActionListener {
 
-
+    private static JFrame reconnectionFrame;
     private final JTextField idTexte = new JTextField(10);
     private final JPasswordField mdpTexte = new JPasswordField(10);
     private JButton connexionButton;
@@ -27,7 +27,7 @@ public class ConnexionWindow extends JFrame implements ActionListener {
 
 
     public ConnexionWindow(){
-        //titre
+        /*------------------------------Connexion Window------------------------------*/
         super("Se connecter");
         //taille fenetre
         setSize(900, 550);
@@ -70,36 +70,9 @@ public class ConnexionWindow extends JFrame implements ActionListener {
         connex.add(connexionButton);
 
         setContentPane(connex);
-    }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        username = idTexte.getText();
-        password = new String(mdpTexte.getPassword());
-
-        if (!Utils.validCredentials(username, password)) {
-            mdpTexte.setText("");
-            Utils.warningWindow("Invalid Username or Password","Error Syntax");
-        } else {
-            this.clientConnexionRequest = new ClientConnexionRequest(username, password);
-
-            if(clientConnexionRequest.connectedUser != null){
-                if(clientConnexionRequest.connectedUser.isAdmin){
-                    setVisible(false);
-                    this.serverInterface = new ServerInterface(this.clientConnexionRequest);
-                    serverInterface.setVisible(true);
-                } else {
-                    setVisible(false);
-                    this.chatWindow = new ChatWindow(this.clientConnexionRequest);
-                    chatWindow.setVisible(true);
-                }
-            }
-        }
-    }
-    public void reconnect(){
-        /*JOptionPane.showConfirmDialog(null,"Trying to reconnect...","Connexion Lost",JOptionPane.CANCEL_OPTION);*/
-
-        JFrame reconnectionFrame = new JFrame("Connexion Lost");
+        /*------------------------------Reconnection Window------------------------------*/
+        reconnectionFrame = new JFrame("Connexion Lost");
         JPanel mainPanel = new JPanel();
         /* WINDOW SETEUP */
         reconnectionFrame.setSize(300,175);
@@ -145,11 +118,56 @@ public class ConnexionWindow extends JFrame implements ActionListener {
                 System.exit(0);
             }
         });
+        reconnectionFrame.setLocationRelativeTo(null);
+        reconnectionFrame.setEnabled(false);
+        reconnectionFrame.setVisible(false);
+    }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        username = idTexte.getText();
+        password = new String(mdpTexte.getPassword());
+
+        if (!Utils.validCredentials(username, password)) {
+            mdpTexte.setText("");
+            Utils.warningWindow("Invalid Username or Password","Error Syntax");
+        } else {
+            this.clientConnexionRequest = new ClientConnexionRequest(username, password);
+            if(ClientConnexionRequest.connectedUser != null){
+                if(ClientConnexionRequest.connectedUser.isAdmin){
+                    setVisible(false);
+                    serverInterface = new ServerInterface(this.clientConnexionRequest);
+                    serverInterface.setVisible(true);
+                } else {
+                    setVisible(false);
+                    chatWindow = new ChatWindow(this.clientConnexionRequest);
+                    chatWindow.setVisible(true);
+                }
+            }
+        }
+    }
+    public void reconnect() throws InterruptedException {
+        ClientConnexionRequest.connected = false;
+        reconnectionFrame.setEnabled(true);
+        reconnectionFrame.setVisible(true);
         // Disable frame behind
         this.setEnabled(false);
-        reconnectionFrame.setLocationRelativeTo(null);
-
+        while(!ClientConnexionRequest.connected){
+            System.out.println("Reconnecting...");
+            this.clientConnexionRequest = new ClientConnexionRequest(ConnexionWindow.username,ConnexionWindow.password);
+            Thread.sleep(5000);
+        }
+        reconnectionFrame.setEnabled(false);
+        reconnectionFrame.setVisible(false);
+        this.setVisible(false);
+        if(serverInterface != null) {
+            serverInterface = new ServerInterface(this.clientConnexionRequest);
+            serverInterface.setVisible(true);
+        }
+        if(chatWindow != null) {
+            chatWindow = new ChatWindow(this.clientConnexionRequest);
+            chatWindow.setVisible(true);
+        }
     }
 
 }

@@ -45,18 +45,13 @@ public class ServerListener implements Runnable {
             e.printStackTrace();
         } finally {
             try {
-                Utils.errorWindow("Server closed","Error");
                 in.close();
+                ClientConnexionRequest.socket.close();
+                ClientConnexionRequest.out.close();
                 if(ConnexionWindow.serverInterface != null) ConnexionWindow.serverInterface.setVisible(false);
                 if(ConnexionWindow.chatWindow != null) ConnexionWindow.chatWindow.setVisible(false);
-                mainFront.reconnection();
-                while(!ClientConnexionRequest.connected){
-                    new ClientConnexionRequest(ConnexionWindow.username,ConnexionWindow.password);
-                    Thread.sleep(5000);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+                mainFront.reconnect();
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }

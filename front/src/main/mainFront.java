@@ -14,7 +14,7 @@ public class mainFront {
         return connexionWindow;
     }
     //Reconnection
-    public static void reconnection(){
+    public static void reconnect() throws InterruptedException {
         connexionWindow.setVisible(true);
         connexionWindow.reconnect();
     }

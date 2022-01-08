@@ -12,8 +12,8 @@ import java.util.Map;
 
 public class ClientConnexionRequest {
 
-    private Socket socket;
-    private PrintWriter out; //Write
+    public static Socket socket;
+    public static PrintWriter out; //Write
     public ServerListener serverListener;
     Map<String, String> authPayload = new HashMap<>();
     private static final Gson gson = new Gson();
@@ -26,10 +26,10 @@ public class ClientConnexionRequest {
     public ClientConnexionRequest(String username, String password){
         try {
             System.out.println("\n-*-*[CONNECTING...]*-*-\n");
-            this.socket = new Socket(HOST, PORT);
-            this.out = new PrintWriter(this.socket.getOutputStream(), true);
+            socket = new Socket(HOST, PORT);
+            out = new PrintWriter(socket.getOutputStream(), true);
             /* IMPLEMENTING SERVER UPDATES LISTENER */
-            this.serverListener = new ServerListener(this.socket);
+            this.serverListener = new ServerListener(socket);
             authPayload.put("username", username);
             authPayload.put("password", password);
             // Sending Payload
@@ -46,6 +46,7 @@ public class ClientConnexionRequest {
             // Deserialize Data
             if(serverPayload.payload != null) {
                 connectedUser = gson.fromJson(serverPayload.payload, FrontUser.class);
+                connected = true;
             } else {
                 Utils.errorWindow("An error has occurred","Connexion Error");
             }
@@ -55,7 +56,7 @@ public class ClientConnexionRequest {
         }
     }
     public PrintWriter getOut(){
-        return this.out;
+        return out;
     }
     public ServerListener getServerListener() {
         return this.serverListener;
