@@ -22,6 +22,8 @@ public class ClientConnexionRequest {
     public static final int PORT = 9090;
     public static FrontUser connectedUser = null;
     public static boolean connected = false;
+    public static boolean clientExists = true;
+    public static boolean isReconnecting = false;
 
     public ClientConnexionRequest(String username, String password){
         try {
@@ -47,8 +49,10 @@ public class ClientConnexionRequest {
             if(serverPayload.payload != null) {
                 connectedUser = gson.fromJson(serverPayload.payload, FrontUser.class);
                 connected = true;
+                clientExists = true;
             } else {
-                Utils.errorWindow("An error has occurred","Connexion Error");
+                clientExists = false;
+                if(!isReconnecting) Utils.errorWindow("An error has occurred","Connexion Error");
             }
 
         } catch (IOException e) {

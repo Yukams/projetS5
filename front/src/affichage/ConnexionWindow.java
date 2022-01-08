@@ -76,7 +76,6 @@ public class ConnexionWindow extends JFrame implements ActionListener {
         JPanel mainPanel = new JPanel();
         /* WINDOW SETEUP */
         reconnectionFrame.setSize(300,175);
-        reconnectionFrame.setVisible(true);
         reconnectionFrame.setAlwaysOnTop(true);
         reconnectionFrame.setResizable(false);
 
@@ -120,7 +119,7 @@ public class ConnexionWindow extends JFrame implements ActionListener {
         });
         reconnectionFrame.setLocationRelativeTo(null);
         reconnectionFrame.setEnabled(false);
-        reconnectionFrame.setVisible(false);
+
     }
 
     @Override
@@ -146,13 +145,16 @@ public class ConnexionWindow extends JFrame implements ActionListener {
             }
         }
     }
+
     public void reconnect() throws InterruptedException {
         ClientConnexionRequest.connected = false;
+        ClientConnexionRequest.isReconnecting = true;
         reconnectionFrame.setEnabled(true);
         reconnectionFrame.setVisible(true);
         // Disable frame behind
         this.setEnabled(false);
         while(!ClientConnexionRequest.connected){
+            if(!ClientConnexionRequest.clientExists) System.exit(-1);
             System.out.println("Reconnecting...");
             this.clientConnexionRequest = new ClientConnexionRequest(ConnexionWindow.username,ConnexionWindow.password);
             Thread.sleep(5000);
