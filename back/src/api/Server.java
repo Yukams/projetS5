@@ -309,7 +309,7 @@ public class Server {
 		// Author has SEEN status as he is the writer of the message
 		treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + authorId + "," + id + ",'SEEN'" + ");");
 
-		return new FrontMessage(id, getUser(authorId), content, date, "HALF_READ");
+		return new FrontMessage(id, getUser(authorId), content, date, "HALF_SEEN");
 	}
 
 	private static FrontMessage getMessage(int id) {
