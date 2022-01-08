@@ -31,6 +31,8 @@ public class ServerInterface extends JFrame {
     * - SET UP THE SERVER INTERFACE FRAME
     * */
     public ServerInterface(ClientConnexionRequest clientConnexionRequest) {
+        ImageIcon icon = new ImageIcon(getClass().getResource("/icons/serveur-cloud.png"));
+        this.setIconImage(icon.getImage());
         initComponents();
         this.rootRequest = new RootRequest(clientConnexionRequest);
         this.connectedUser = ClientConnexionRequest.connectedUser;
@@ -539,15 +541,15 @@ public class ServerInterface extends JFrame {
     //REMOVE USER
     private void btnRmvUsrActionPerformed(ActionEvent evt) {
         FrontUser selectedUser = usrListComboBox.getItemAt(usrListComboBox.getSelectedIndex());
+        Map<String, String> payload = new HashMap<>();
+        payload.put("id", "" + selectedUser.id);
         if(!RootRequest.connectedUsersAL.contains(selectedUser)) {
-            Map<String, String> payload = new HashMap<>();
-            payload.put("id", "" + selectedUser.id);
             this.rootRequest.removeUser(payload);
-            Utils.informationWindow("User removed successfully", "Information");
         }
         else {
-            Utils.errorWindow("You cannot remove a connected user !", "Error");
+            this.rootRequest.removeConnectedUser(payload);
         }
+        Utils.informationWindow("User removed successfully", "Information");
     }
     private void getSelectedUser(ItemEvent evt){
         if(evt.getStateChange() == ItemEvent.SELECTED){
@@ -689,7 +691,7 @@ public class ServerInterface extends JFrame {
     private JLabel jLabel7;
     private JScrollPane jScrollPane2;
     private JTextField lastNameTxtField;
-    private JPanel mainPanel;
+    public static JPanel mainPanel;
     private JPanel pAddUsr;
     private JPanel pMngGrps;
     private JPanel pMngUsr;

@@ -55,6 +55,11 @@ public class RootRequest{
     public void removeUser(Map<String,String> payload) {
         sendRequest("/user/deleteUser",payload);
     }
+
+
+    public void removeConnectedUser(Map<String, String> payload) {
+        sendRequest("/user/deleteConnectedUser",payload);
+    }
     /*-------------- GROUP MANAGEMENT --------------*/
     public void askGroupsFromServer(){ sendRequest("/group/getAllDatabaseGroups",null); }
     public void removeGroup(Map<String,String> payload){
@@ -68,5 +73,4 @@ public class RootRequest{
         payload.put("id",""+selectedUser.id);
         sendRequest("/group/getGroupsOfUserById",payload);
     }
-
 }

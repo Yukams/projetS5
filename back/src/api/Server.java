@@ -96,7 +96,7 @@ public class Server {
 
 		List<FrontUser> connectedUsers = getAllConnectedUsers();
 		for(FrontUser user: connectedUsers) {
-			if(user.id == objectList[0].id) {
+			if(objectList.length != 0 && user.id == objectList[0].id) {
 				return null;
 			}
 		}

@@ -7,6 +7,7 @@ import frontobjects.FrontThread;
 import frontobjects.FrontUser;
 import server.ServerInterface;
 import utils.Utils;
+import main.mainFront;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -45,9 +46,11 @@ public class ServerListener implements Runnable {
         } finally {
             try {
                 in.close();
-                Utils.errorWindow("Server closed","Error");
-                System.exit(-1);
-            } catch (IOException e) {
+                ClientConnexionRequest.out.close();
+                if(ConnexionWindow.serverInterface != null) ConnexionWindow.serverInterface.setVisible(false);
+                if(ConnexionWindow.chatWindow != null) ConnexionWindow.chatWindow.setVisible(false);
+                mainFront.reconnect();
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -151,6 +154,7 @@ public class ServerListener implements Runnable {
             case "/group/removeUserFromGroup" -> {
                 FrontGroup frontGroup = gson.fromJson(payload, FrontGroup.class);
                 ServerInterface.selectedUserFrontGroups.remove(frontGroup);
+                if(ChatWindow.panelListMessage != null) ChatWindow.panelListMessage.setVisible(false);
             }
             case "/group/getAllDatabaseGroups" -> {
                 FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
