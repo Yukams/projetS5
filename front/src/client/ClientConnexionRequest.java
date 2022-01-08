@@ -46,7 +46,7 @@ public class ClientConnexionRequest {
             if(serverPayload.payload != null) {
                 connectedUser = gson.fromJson(serverPayload.payload, FrontUser.class);
             } else {
-                Utils.errorWindow("Wrong Username or Password","Error Credentials");
+                Utils.errorWindow("An error has occurred","Connexion Error");
             }
 
         } catch (IOException e) {
