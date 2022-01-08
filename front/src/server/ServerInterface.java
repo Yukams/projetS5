@@ -31,6 +31,8 @@ public class ServerInterface extends JFrame {
     * - SET UP THE SERVER INTERFACE FRAME
     * */
     public ServerInterface(ClientConnexionRequest clientConnexionRequest) {
+        ImageIcon icon = new ImageIcon(getClass().getResource("/icons/serveur-cloud.png"));
+        this.setIconImage(icon.getImage());
         initComponents();
         this.rootRequest = new RootRequest(clientConnexionRequest);
         this.connectedUser = ClientConnexionRequest.connectedUser;

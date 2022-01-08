@@ -777,7 +777,7 @@ public class ChatWindow extends JFrame {
     private static JPanel panelEcrireMessage;
     private JPanel panelFil;
     private JPanel panelLeft;
-    private static JPanel panelListMessage;
+    public static JPanel panelListMessage;
     private JPanel panelMessage;
     private JPanel panelRight;
     private JPanel panelTicket;

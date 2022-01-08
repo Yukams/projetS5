@@ -151,6 +151,7 @@ public class ServerListener implements Runnable {
             case "/group/removeUserFromGroup" -> {
                 FrontGroup frontGroup = gson.fromJson(payload, FrontGroup.class);
                 ServerInterface.selectedUserFrontGroups.remove(frontGroup);
+                if(ChatWindow.panelListMessage != null) ChatWindow.panelListMessage.setVisible(false);
             }
             case "/group/getAllDatabaseGroups" -> {
                 FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
