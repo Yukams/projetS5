@@ -27,7 +27,7 @@ public class mainBack {
 	/* Client connection */
 	private static final int PORT = 9090;
 	static ArrayList<ClientHandler> clients = new ArrayList<>();
-	private static ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+	private static ExecutorService pool = Executors.newFixedThreadPool(100);
 	public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public static void main(String[] args) throws IOException {
