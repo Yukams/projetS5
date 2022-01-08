@@ -57,7 +57,7 @@ public class ChatWindow extends JFrame {
     public ChatWindow(ClientConnexionRequest clientConnexion) {
         super("Chat: " + ClientConnexionRequest.connectedUser.toString());
 
-        ImageIcon icon = new ImageIcon(getClass().getResource("/icons/connexionIcon.png"));
+        ImageIcon icon = new ImageIcon(getClass().getResource("/icons/Square44x44Logo.targetsize-40.png"));
         this.setIconImage(icon.getImage());
 
         initComponents();
