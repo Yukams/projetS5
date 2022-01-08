@@ -56,6 +56,10 @@ public class ChatWindow extends JFrame {
 
     public ChatWindow(ClientConnexionRequest clientConnexion) {
         super("Chat: " + ClientConnexionRequest.connectedUser.toString());
+
+        ImageIcon icon = new ImageIcon(getClass().getResource("/icons/connexionIcon.png"));
+        this.setIconImage(icon.getImage());
+
         initComponents();
         this.userRequest = new UserRequest(clientConnexion);
         this.connectedUser = ClientConnexionRequest.connectedUser;
@@ -241,7 +245,7 @@ public class ChatWindow extends JFrame {
         ImageIcon nodeIcon = new ImageIcon(getClass().getResource("/icons/groupIcon.png"));
         if (leafIcon != null) {
             DefaultTreeCellRenderer renderer =
-                    new DefaultTreeCellRenderer();
+                    new MyCellRenderer();
             renderer.setLeafIcon(leafIcon);
             renderer.setIconTextGap(0);
             renderer.setClosedIcon(nodeIcon);

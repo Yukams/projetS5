@@ -28,7 +28,8 @@ public class ConnexionWindow extends JFrame implements ActionListener {
         //Centrer la fenetre par rapport à l'ecran
         setLocationRelativeTo(null);
 
-
+        ImageIcon icon = new ImageIcon(getClass().getResource("/icons/connexionIcon.png"));
+        this.setIconImage(icon.getImage());
         JPanel connex = (JPanel) this.getContentPane();
         connex.setLayout(null);
 
