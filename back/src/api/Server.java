@@ -172,7 +172,7 @@ public class Server {
 
 			// Check read status for ACTUAL USER if given
 			if(userId != -1) {
-				jsonString = Server.treatQuery("SELECT * FROM dbLinkUserMessage WHERE userId=" + message.authorId + " AND messageId=" + message.id + ";");
+				jsonString = Server.treatQuery("SELECT * FROM dbLinkUserMessage WHERE userId=" + userId + " AND messageId=" + message.id + ";");
 				DbLinkUserMessage[] dbLinkUserMessages = gson.fromJson(jsonString, DbLinkUserMessage[].class);
 				if(dbLinkUserMessages != null && !dbLinkUserMessages[0].status.equals("SEEN")) {
 					nbNotReadMessage++;
