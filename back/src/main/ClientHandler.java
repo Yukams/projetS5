@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,7 +69,8 @@ public class ClientHandler implements Runnable {
     }
 
     private void updateAdminsExceptSelf(ServerResponse serverResponse) {
-        for(ClientHandler client : mainBack.clients) {
+        ArrayList<ClientHandler> clients = new ArrayList<>(mainBack.clients);
+        for(ClientHandler client : clients) {
             boolean isAdmin = client.getClientIsAdmin();
 
             if(isAdmin && client.getClientId() != this.clientId) {
@@ -78,7 +80,8 @@ public class ClientHandler implements Runnable {
     }
 
     private void updateAdminsOnly(String request) {
-        for(ClientHandler client : mainBack.clients) {
+        ArrayList<ClientHandler> clients = new ArrayList<>(mainBack.clients);
+        for(ClientHandler client : clients) {
             boolean isAdmin = client.getClientIsAdmin();
 
             if(isAdmin) {
@@ -87,8 +90,16 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    private void updateAllClients(String request) {
+        ArrayList<ClientHandler> clients = new ArrayList<>(mainBack.clients);
+        for(ClientHandler client : clients) {
+            updateSingleClient(treatRequest(new ClientRequest(request, new HashMap<>())), client);
+        }
+    }
+
     private void updateClientsOnly(String request) {
-        for(ClientHandler client : mainBack.clients) {
+        ArrayList<ClientHandler> clients = new ArrayList<>(mainBack.clients);
+        for(ClientHandler client : clients) {
             boolean isAdmin = client.getClientIsAdmin();
 
             if(!isAdmin) {
@@ -243,12 +254,12 @@ public class ClientHandler implements Runnable {
             // GROUP
             // Sends the new Database Group List to admins
             case "/group/createGroup" ->
-                    updateAdminsOnly("/group/getAllDatabaseGroups");
+                    updateAllClients("/group/getAllDatabaseGroups");
 
             // TODO only for affected users
             case "/group/deleteGroup" -> {
                 // Sends the new Database Group List to admins
-                updateAdminsOnly("/group/getAllDatabaseGroups");
+                updateAllClients("/group/getAllDatabaseGroups");
                 // Sends recalculated threads to clients
                 updateClientsOnly("/thread/getAllThreadsForUser");
             }

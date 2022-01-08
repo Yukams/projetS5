@@ -22,7 +22,7 @@ public class mainBack {
 	public static final String DB_URL_MULTI_QUERY = "jdbc:mysql://localhost:3306/projetS5?allowMultiQueries=true";
 	private static final String DB_BEFORE_CREATE = "jdbc:mysql://localhost:3306";
 	public static final String USER = "root";
-	public static final String PASS = "root";
+	public static final String PASS = "";
 
 	/* Client connection */
 	private static final int PORT = 9090;
