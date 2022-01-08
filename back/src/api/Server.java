@@ -171,7 +171,7 @@ public class Server {
 			if(userId != -1) {
 				jsonString = Server.treatQuery("SELECT * FROM dbLinkUserMessage WHERE userId=" + userId + " AND messageId=" + message.id + ";");
 				DbLinkUserMessage[] dbLinkUserMessages = gson.fromJson(jsonString, DbLinkUserMessage[].class);
-				if(dbLinkUserMessages != null && !dbLinkUserMessages[0].status.equals("SEEN")) {
+				if(dbLinkUserMessages != null && dbLinkUserMessages.length != 0 && !dbLinkUserMessages[0].status.equals("SEEN")) {
 					nbNotReadMessage++;
 				}
 			}
