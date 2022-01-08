@@ -573,7 +573,7 @@ public class ServerInterface extends JFrame {
             if(!selectedUserFrontGroups.contains(selectedGroup)) {
                 if (selectedGroup != null) {
                     addUserToGroupFromComboBox(selectedUser, selectedGroup);
-                    String msg = selectedUser.toString() + " successfully added to " + selectedGroup + " !";
+                    String msg = selectedUser + " successfully added to " + selectedGroup + " !";
                     Utils.informationWindow(msg, "Information");
                 } else { Utils.errorWindow("No group is selected !", "Error"); }
             } else { Utils.warningWindow("User already belongs to "+selectedGroup+'.', "Error"); }
@@ -590,8 +590,8 @@ public class ServerInterface extends JFrame {
                     Map<String, String> payload = new HashMap<>();
                     payload.put("groupId", "" + selectedGroup.id);
                     payload.put("userId", "" + selectedUser.id);
-                    //RootRequest.removeUserFromGroup(payload);
-                    String msg = selectedUser.toString() + " successfully removed from " + selectedGroup + " !";
+                    RootRequest.removeUserFromGroup(payload);
+                    String msg = selectedUser + " successfully removed from " + selectedGroup + " !";
                     Utils.informationWindow(msg, "Information");
                 } else { Utils.errorWindow("No group is selected", "Error"); }
             } else { Utils.warningWindow("User does not belong to "+selectedGroup+'.', "Error"); }

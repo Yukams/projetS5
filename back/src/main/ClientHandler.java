@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class ClientHandler implements Runnable {
@@ -65,7 +66,9 @@ public class ClientHandler implements Runnable {
     }
 
     private void updateAdminsExceptSelf(ServerResponse serverResponse) {
-        for(ClientHandler client : mainBack.clients) {
+        Iterator<ClientHandler> iter = mainBack.clients.iterator();
+        while (iter.hasNext()) {
+            ClientHandler client = iter.next();
             boolean isAdmin = client.getClientIsAdmin();
 
             if(isAdmin && client.getClientId() != this.clientId) {
@@ -75,7 +78,9 @@ public class ClientHandler implements Runnable {
     }
 
     private void updateAdminsOnly(String request) {
-        for(ClientHandler client : mainBack.clients) {
+        Iterator<ClientHandler> iter = mainBack.clients.iterator();
+        while (iter.hasNext()) {
+            ClientHandler client = iter.next();
             boolean isAdmin = client.getClientIsAdmin();
 
             if(isAdmin) {
@@ -85,7 +90,9 @@ public class ClientHandler implements Runnable {
     }
 
     private void updateClientsOnly(String request) {
-        for(ClientHandler client : mainBack.clients) {
+        Iterator<ClientHandler> iter = mainBack.clients.iterator();
+        while (iter.hasNext()) {
+            ClientHandler client = iter.next();
             boolean isAdmin = client.getClientIsAdmin();
 
             if(!isAdmin) {

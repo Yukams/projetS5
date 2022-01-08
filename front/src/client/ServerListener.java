@@ -141,7 +141,6 @@ public class ServerListener implements Runnable {
             }
             case "/message/deleteMessage" -> System.out.println("/message/deleteMessage");
 
-
             // GROUP
             case "/group/createGroup" -> System.out.println("/group/createGroup");
             case "/group/deleteGroup" -> System.out.println("/group/deleteGroup");
@@ -150,7 +149,8 @@ public class ServerListener implements Runnable {
                 ServerInterface.selectedUserFrontGroups.add(frontGroup);
             }
             case "/group/removeUserFromGroup" -> {
-                System.out.println("/group/removeUserFromGroup");
+                FrontGroup frontGroup = gson.fromJson(payload, FrontGroup.class);
+                ServerInterface.selectedUserFrontGroups.remove(frontGroup);
             }
             case "/group/getAllDatabaseGroups" -> {
                 FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
