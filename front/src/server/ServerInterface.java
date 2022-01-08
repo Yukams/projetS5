@@ -541,15 +541,15 @@ public class ServerInterface extends JFrame {
     //REMOVE USER
     private void btnRmvUsrActionPerformed(ActionEvent evt) {
         FrontUser selectedUser = usrListComboBox.getItemAt(usrListComboBox.getSelectedIndex());
+        Map<String, String> payload = new HashMap<>();
+        payload.put("id", "" + selectedUser.id);
         if(!RootRequest.connectedUsersAL.contains(selectedUser)) {
-            Map<String, String> payload = new HashMap<>();
-            payload.put("id", "" + selectedUser.id);
             this.rootRequest.removeUser(payload);
-            Utils.informationWindow("User removed successfully", "Information");
         }
         else {
-            Utils.errorWindow("You cannot remove a connected user !", "Error");
+            this.rootRequest.removeConnectedUser(payload);
         }
+        Utils.informationWindow("User removed successfully", "Information");
     }
     private void getSelectedUser(ItemEvent evt){
         if(evt.getStateChange() == ItemEvent.SELECTED){

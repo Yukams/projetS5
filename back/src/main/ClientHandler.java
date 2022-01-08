@@ -13,10 +13,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.net.SocketException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+
+import static java.lang.Thread.sleep;
 
 public class ClientHandler implements Runnable {
     private Socket client;
@@ -52,7 +53,7 @@ public class ClientHandler implements Runnable {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
             Utils.closeAll(this.client, this.in, this.out, this.clientId);
@@ -67,8 +68,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void updateAdminsExceptSelf(ServerResponse serverResponse) {
-        ArrayList<ClientHandler> clients = new ArrayList<>(mainBack.clients);
-        for (ClientHandler client: clients) {
+        for(ClientHandler client : mainBack.clients) {
             boolean isAdmin = client.getClientIsAdmin();
 
             if(isAdmin && client.getClientId() != this.clientId) {
@@ -78,8 +78,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void updateAdminsOnly(String request) {
-        ArrayList<ClientHandler> clients = new ArrayList<>(mainBack.clients);
-        for (ClientHandler client: clients) {
+        for(ClientHandler client : mainBack.clients) {
             boolean isAdmin = client.getClientIsAdmin();
 
             if(isAdmin) {
@@ -89,8 +88,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void updateClientsOnly(String request) {
-        ArrayList<ClientHandler> clients = new ArrayList<>(mainBack.clients);
-        for (ClientHandler client: clients) {
+        for(ClientHandler client : mainBack.clients) {
             boolean isAdmin = client.getClientIsAdmin();
 
             if(!isAdmin) {
@@ -136,7 +134,7 @@ public class ClientHandler implements Runnable {
 
             // { "id": int }
             // Updates
-            case "/user/deleteUser" -> IUser.deleteUser(payload);
+            case "/user/deleteUser", "/user/deleteConnectedUser" -> IUser.deleteUser(payload);
 
             // {}
             case "/user/getAllConnectedUsers" -> IUser.getAllConnectedUsers();
@@ -204,7 +202,7 @@ public class ClientHandler implements Runnable {
         return new ServerResponse(address, toClient, "response");
     }
 
-    private void doUpdateIfNeeded(ClientRequest request) {
+    private void doUpdateIfNeeded(ClientRequest request) throws InterruptedException {
         String address = request.address;
 
         switch (address) {
@@ -216,14 +214,27 @@ public class ClientHandler implements Runnable {
             // Sends the new Database User List to admins
             case "/user/createUser" -> updateAdminsOnly("/user/getAllDatabaseUsers");
             // TODO only for affected users
-            case "/user/deleteUser" -> {
+            case "/user/deleteUser"-> {
                 // Sends the new Database User List to admins
                 updateAdminsOnly("/user/getAllDatabaseUsers");
                 // Sends recalculated threads to clients
                 updateClientsOnly("/thread/getAllThreadsForUser");
             }
 
-            // THREAD & MESSAGE & addUserToGroup
+            case "/user/deleteConnectedUser" -> {
+                // Disconnect the user first
+                int i = 0;
+                while(mainBack.clients.get(i).getClientId() != Integer.parseInt(request.payload.get("id"))) { i++; }
+                System.out.println(mainBack.clients.get(i).clientId);
+                mainBack.clients.get(i).closePrinterOut();
+                sleep(1000);
+                // Sends the new Database User List to admins
+                updateAdminsOnly("/user/getAllDatabaseUsers");
+                // Sends recalculated threads to clients
+                updateClientsOnly("/thread/getAllThreadsForUser");
+            }
+
+                // THREAD & MESSAGE & addUserToGroup
             // TODO only for affected users
             // Sends recalculated threads to clients
             case "/thread/createThread", "/thread/deleteThread", "/thread/updateMessagesOfThread", "/message/createMessage", "/message/deleteMessage", "/thread/clientGetThreadsAtConnection", "/group/removeUserFromGroup"
@@ -272,6 +283,10 @@ public class ClientHandler implements Runnable {
 
     public PrintWriter getPrinterOut() {
         return this.out;
+    }
+
+    public void closePrinterOut() {
+        this.out.close();
     }
 
     public void setClientIsAdmin(boolean bool) {

@@ -46,7 +46,6 @@ public class ServerListener implements Runnable {
         } finally {
             try {
                 in.close();
-                ClientConnexionRequest.socket.close();
                 ClientConnexionRequest.out.close();
                 if(ConnexionWindow.serverInterface != null) ConnexionWindow.serverInterface.setVisible(false);
                 if(ConnexionWindow.chatWindow != null) ConnexionWindow.chatWindow.setVisible(false);

@@ -2,6 +2,8 @@ package main;
 
 import affichage.ConnexionWindow;
 
+import static java.lang.Thread.sleep;
+
 public class mainFront {
     public static ConnexionWindow connexionWindow;
     public static void main(String[] args){
@@ -15,6 +17,7 @@ public class mainFront {
     }
     //Reconnection
     public static void reconnect() throws InterruptedException {
+        sleep(1500);
         connexionWindow.setVisible(true);
         connexionWindow.reconnect();
     }

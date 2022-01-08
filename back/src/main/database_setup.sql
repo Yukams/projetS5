@@ -65,7 +65,9 @@ CREATE TABLE IF NOT EXISTS dbLinkMessageThread (
      PRIMARY KEY (messageId, threadId)
 );
 
-CREATE TABLE IF NOT EXISTS dbConnectionToken (
+DROP TABLE IF EXISTS dbConnectionToken;
+
+CREATE TABLE dbConnectionToken (
     id INT PRIMARY KEY NOT NULL,
     userId INT NOT NULL,
     FOREIGN KEY (userId) REFERENCES dbUser(id) ON DELETE CASCADE
