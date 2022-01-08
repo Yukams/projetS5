@@ -7,6 +7,7 @@ import frontobjects.FrontThread;
 import frontobjects.FrontUser;
 import server.ServerInterface;
 import utils.Utils;
+import main.mainFront;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -44,10 +45,18 @@ public class ServerListener implements Runnable {
             e.printStackTrace();
         } finally {
             try {
-                in.close();
                 Utils.errorWindow("Server closed","Error");
-                System.exit(-1);
+                in.close();
+                if(ConnexionWindow.serverInterface != null) ConnexionWindow.serverInterface.setVisible(false);
+                if(ConnexionWindow.chatWindow != null) ConnexionWindow.chatWindow.setVisible(false);
+                mainFront.reconnection();
+                while(!ClientConnexionRequest.connected){
+                    new ClientConnexionRequest(ConnexionWindow.username,ConnexionWindow.password);
+                    Thread.sleep(5000);
+                }
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }

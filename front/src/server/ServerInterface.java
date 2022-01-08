@@ -691,7 +691,7 @@ public class ServerInterface extends JFrame {
     private JLabel jLabel7;
     private JScrollPane jScrollPane2;
     private JTextField lastNameTxtField;
-    private JPanel mainPanel;
+    public static JPanel mainPanel;
     private JPanel pAddUsr;
     private JPanel pMngGrps;
     private JPanel pMngUsr;

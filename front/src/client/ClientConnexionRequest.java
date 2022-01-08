@@ -21,6 +21,7 @@ public class ClientConnexionRequest {
     public final static String HOST = "127.0.0.1";
     public static final int PORT = 9090;
     public static FrontUser connectedUser = null;
+    public static boolean connected = false;
 
     public ClientConnexionRequest(String username, String password){
         try {
@@ -52,10 +53,6 @@ public class ClientConnexionRequest {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public Socket getSocket() {
-        return this.socket;
     }
     public PrintWriter getOut(){
         return this.out;
