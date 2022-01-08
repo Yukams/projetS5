@@ -144,21 +144,25 @@ public class ServerListener implements Runnable {
             // GROUP
             case "/group/createGroup" -> System.out.println("/group/createGroup");
             case "/group/deleteGroup" -> System.out.println("/group/deleteGroup");
-            case "/group/addUserToGroup" -> System.out.println("/group/addUserToGroup");
+            case "/group/addUserToGroup" -> {
+                FrontGroup frontGroup = gson.fromJson(payload, FrontGroup.class);
+                ServerInterface.selectedUserFrontGroups.add(frontGroup);
+            }
             case "/group/getAllDatabaseGroups" -> {
                 FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
 
                 if(ServerInterface.grpSelectAddUser != null) ServerInterface.grpSelectAddUser.setModel(new DefaultComboBoxModel<>(frontGroups));
-                if(ServerInterface.grpListAdd2Usr != null) ServerInterface.grpListAdd2Usr.setModel(new DefaultComboBoxModel<>(frontGroups));
+                if(ServerInterface.grpListComboBoxMU != null) ServerInterface.grpListComboBoxMU.setModel(new DefaultComboBoxModel<>(frontGroups));
                 if(ServerInterface.grpListToRemove != null) ServerInterface.grpListToRemove.setModel(new DefaultComboBoxModel<>(frontGroups));
+                if(ServerInterface.allFrontGroups != null) ServerInterface.allFrontGroups = frontGroups;
                 if(ChatWindow.comboBoxGroup != null) ChatWindow.comboBoxGroup.setModel(new DefaultComboBoxModel<>(frontGroups));
                 if(ChatWindow.allFrontGroup != null) ChatWindow.allFrontGroup = frontGroups;
-
             }
             case "/group/getGroupsOfUserById" -> {
-                gson.fromJson(payload, FrontGroup[].class);
+                FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
+                ServerInterface.selectedUserFrontGroups = new ArrayList<>();
+                ServerInterface.selectedUserFrontGroups.addAll(Arrays.asList(frontGroups));
             }
-            case "/group/getGroupsOfUser" -> System.out.println("/group/getGroupsOfUser");
         }
     }
 

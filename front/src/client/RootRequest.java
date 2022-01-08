@@ -42,7 +42,8 @@ public class RootRequest{
         sendRequest("/user/createUser",payload);
     }
 
-    public static void addUserToGroup(Map<String, String> payload){
+    public static void addUserToGroup(Map<String, String> payload){ sendRequest("/group/addUserToGroup",payload); }
+    public static void removeUserFromGroup(Map<String, String> payload){
         sendRequest("/group/addUserToGroup",payload);
     }
 
@@ -54,17 +55,20 @@ public class RootRequest{
     }
 
     public void removeUser(Map<String,String> payload) {
-        // TODO CHECK IF USER IS NOT CONNECTED BEFORE DELETING
         sendRequest("/user/deleteUser",payload);
     }
     /*-------------- GROUP MANAGEMENT --------------*/
-    public void askGroupsFromServer(){
-        sendRequest("/group/getAllDatabaseGroups",null);
-    }
+    public void askGroupsFromServer(){ sendRequest("/group/getAllDatabaseGroups",null); }
     public void removeGroup(Map<String,String> payload){
         sendRequest("/group/deleteGroup",payload);
     }
     public void createGroup(Map<String,String> payload){
         sendRequest("/group/createGroup",payload);
     }
+    public void getGroupsOfUser(FrontUser selectedUser) {
+        Map<String,String> payload = new HashMap<>();
+        payload.put("id",""+selectedUser.id);
+        sendRequest("/group/getGroupsOfUserById",payload);
+    }
+
 }
