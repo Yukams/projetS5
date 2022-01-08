@@ -50,4 +50,11 @@ public interface IThread {
 
 		return gson.toJson(thread);
     }
+
+	static String clientGetThreadsAtConnection(Map<String, String> payload) {
+		int clientId = Integer.parseInt(payload.get("clientId"));
+		List<FrontThread> thread = Server.clientGetThreadsAtConnection(clientId);
+
+		return gson.toJson(thread);
+	}
 }

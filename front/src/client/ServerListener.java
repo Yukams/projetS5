@@ -1,6 +1,7 @@
 package client;
 
 import affichage.ChatWindow;
+import affichage.ConnexionWindow;
 import frontobjects.FrontGroup;
 import frontobjects.FrontThread;
 import frontobjects.FrontUser;
@@ -44,8 +45,8 @@ public class ServerListener implements Runnable {
         } finally {
             try {
                 in.close();
-                //Utils.errorWindow("Server closed","Error");
-                //System.exit(-1);
+                Utils.errorWindow("Server closed","Error");
+                System.exit(-1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -120,8 +121,8 @@ public class ServerListener implements Runnable {
                     System.out.println("c'est pas egal");
                     ChatWindow.userThreads = new ArrayList<>();
                     ChatWindow.userThreads.addAll(Arrays.asList(frontThreads));
-                    ChatWindow.updateTree();
 
+                    ChatWindow.updateTree();
                 }
             }
             case "/thread/createThread" -> {

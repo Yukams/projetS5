@@ -45,7 +45,7 @@ public class ChatWindow extends JFrame {
     private static DefaultMutableTreeNode rootTree = new DefaultMutableTreeNode("Groups");
     private boolean firstClick = true;
 
-    private UserRequest userRequest;
+    public static UserRequest userRequest;
     public static FrontUser connectedUser;
     public static FrontGroup allFrontGroup[];
 
