@@ -22,10 +22,10 @@ public interface IThread {
 		return gson.toJson(thread);
 	}
 
-	static String updateMessages(Map<String, String> payload) {
+	static String updateMessagesStatus(Map<String, String> payload) {
 		int userId = Integer.parseInt(payload.get("clientId"));
 		int threadId = Integer.parseInt(payload.get("threadId"));
-		FrontThread thread = Server.updateMessages(userId, threadId);
+		FrontThread thread = Server.updateMessagesStatus(userId, threadId);
 
 		return gson.toJson(thread);
 	}
@@ -50,4 +50,11 @@ public interface IThread {
 
 		return gson.toJson(thread);
     }
+
+	static String clientGetThreadsAtConnection(Map<String, String> payload) {
+		int clientId = Integer.parseInt(payload.get("clientId"));
+		List<FrontThread> thread = Server.clientGetThreadsAtConnection(clientId);
+
+		return gson.toJson(thread);
+	}
 }

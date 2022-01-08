@@ -69,18 +69,18 @@ public class Server {
 	}
 
 	public static String getStatusFromMessageId(int id) {
-		String jsonString = Server.treatQuery("SELECT messageId FROM dbLinkUserMessage WHERE messageId=" + id + " AND status='NOT_SEEN';");
+		String jsonString = Server.treatQuery("SELECT messageId FROM dbLinkUserMessage WHERE messageId=" + id + " AND (status='NOT_SEEN' OR status='NOT_SENT');");
 		DbMessage[] messages = gson.fromJson(jsonString, DbMessage[].class);
 
 		if(messages.length == 0) {
 			return "SEEN";
 		}
 
-		jsonString = Server.treatQuery("SELECT messageId FROM dbLinkUserMessage WHERE messageId=" + id + " AND status='SEEN';");
+		jsonString = Server.treatQuery("SELECT messageId FROM dbLinkUserMessage WHERE messageId=" + id + " AND status='NOT_SENT';");
 		messages = gson.fromJson(jsonString, DbMessage[].class);
 
-		if(messages.length == 0) {
-			return "NOT_SEEN";
+		if(messages.length != 0) {
+			return "NOT_SENT";
 		}
 
 		return "HALF_SEEN";
@@ -138,10 +138,10 @@ public class Server {
 		FrontMessage firstMessage = createMessage(authorId, content, id);
 		messages.add(firstMessage);
 
-		return new FrontThread(authorId, title, messages, getGroup(groupId));
+		return new FrontThread(id, title, messages, getGroup(groupId));
 	}
 
-	public static FrontThread getThread(int threadId) {
+	public static FrontThread getThread(int threadId, int userId) {
 		String jsonString = Server.treatQuery("SELECT * FROM dbThread WHERE id=" + threadId + ";");
 		DbThread thread = gson.fromJson(jsonString, DbThread[].class)[0];
 
@@ -149,6 +149,13 @@ public class Server {
 		// Get all messages related to the thread in date order (older first)
 		jsonString = Server.treatQuery("SELECT m.id, m.authorId, m.text, m.date FROM dbLinkMessageThread l JOIN dbMessage m ON l.messageId=m.id WHERE l.threadId=" + threadId + " ORDER BY m.date;");
 		DbMessage[] dbMessageList = gson.fromJson(jsonString, DbMessage[].class);
+
+		// if userId is given, update messages status from NOT_SENT to NOT_SEEN
+		if(userId != -1) {
+			for(DbMessage message: dbMessageList) {
+				Server.treatQueryWithoutResponse("UPDATE dbLinkUserMessage SET status='NOT_SEEN' WHERE userId=" + userId + " AND status='NOT_SENT';");
+			}
+		}
 
 		// Build each message
 		for(DbMessage message: dbMessageList) {
@@ -182,14 +189,22 @@ public class Server {
 			StringBuilder groupList = dbObjectToJsonList(objectList);
 
 			// Get all Threads for the said User
-			// NOTE : for some reason, an empty list will result in a single closing parenthesis
 			jsonString = Server.treatQuery("SELECT id FROM dbThread WHERE groupId IN " + groupList + " OR authorId=" + userId + ";");
 			DbThread[] dbThreadList = gson.fromJson(jsonString, DbThread[].class);
 
 
 			// Build each thread
 			for (DbThread thread : dbThreadList) {
-				threadsList.add(getThread(thread.id));
+				threadsList.add(getThread(thread.id, userId));
+			}
+		}
+
+		// add threads in which the author is the user
+		List<FrontThread> threads = getAllOwnWrittenThreadsForUser(userId);
+		for(FrontThread thread : threads) {
+			// do not add duplicated threads
+			if(threadsList.stream().noneMatch(groupThread -> groupThread.id == thread.id)) {
+				threadsList.add(thread);
 			}
 		}
 
@@ -203,20 +218,20 @@ public class Server {
 		return getGroup(dbObject[0].groupId);
 	}
 
-	public static FrontThread updateMessages(int userId, int threadId) {
-		FrontThread thread = getThread(threadId);
+	public static FrontThread updateMessagesStatus(int userId, int threadId) {
+		FrontThread thread = getThread(threadId, userId);
 
 		for(FrontMessage message: thread.messages) {
 			if(!message.status.equals("SEEN")) {
-				treatQueryWithoutResponse("UPDATE dbLinkUserMessage SET status = 'SEEN' WHERE messageId=" + message.id + " AND userId=" + userId + ";");
+				treatQueryWithoutResponse("UPDATE dbLinkUserMessage SET status='SEEN' WHERE messageId=" + message.id + " AND userId=" + userId + ";");
 			}
 		}
 
-		return getThread(threadId);
+		return getThread(threadId, userId);
 	}
 
 	public static FrontThread deleteThread(int id) {
-		FrontThread thread = getThread(id);
+		FrontThread thread = getThread(id, -1);
 
 		for(FrontMessage message: thread.messages) {
 			deleteMessage(message.id);
@@ -233,7 +248,7 @@ public class Server {
 		List<FrontThread> threadsList = new ArrayList<>();
 		// Build each thread
 		for(DbThread thread: dbThreadList) {
-			threadsList.add(getThread(thread.id));
+			threadsList.add(getThread(thread.id, authorId));
 		}
 
 		return threadsList;
@@ -246,10 +261,14 @@ public class Server {
 		List<FrontThread> threadsList = new ArrayList<>();
 		// Build each thread
 		for(DbThread thread: dbThreadList) {
-			threadsList.add(getThread(thread.id));
+			threadsList.add(getThread(thread.id, -1));
 		}
 
 		return threadsList;
+	}
+
+	public static List<FrontThread> clientGetThreadsAtConnection(int clientId) {
+		return getAllThreadForUser(clientId);
 	}
 
 	/* Message */
@@ -257,7 +276,7 @@ public class Server {
 		int id = utils.Utils.createRandomId();
 		// Add Message in database
 		long date = new Date().getTime();
-		treatQueryWithoutResponse("INSERT INTO dbMessage VALUES (" + id + "," + authorId + ",'" + content + "','" + date + "');");
+		treatQueryWithoutResponse("INSERT INTO dbMessage VALUES (" + id + "," + authorId + ",\"" + content + "\",'" + date + "');");
 
 		// Connect Message to its Thread
 		treatQueryWithoutResponse("INSERT INTO dbLinkMessageThread VALUES (" + id + "," + threadId + ");");
@@ -265,10 +284,19 @@ public class Server {
 		// Connect Message To Users
 		FrontGroup group = getGroupFromThreadId(threadId);
 
+		// Get all users from the group
 		List<FrontUser> users = getUsersFromGroupId(group.id);
+		// Check if author is from the group, otherwise add him
+		FrontUser threadAuthor = getAuthorFromThread(threadId);
+		FrontGroup threadAuthorGroup = getGroup(threadAuthor.id);
+		if(threadAuthorGroup != null && threadAuthorGroup != getGroupFromThreadId(threadId)) {
+			users.add(threadAuthor);
+		}
+
 		for(FrontUser user: users) {
+			System.out.println("LINK MESSAGE USER ID -> " + user.surname);
 			if(user.id != authorId) {
-				treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + user.id + "," + id + ",'NOT_SEEN'" + ");");
+				treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + user.id + "," + id + ",'NOT_SENT'" + ");");
 			}
 		}
 		// Author has SEEN status as he is the writer of the message
@@ -295,6 +323,10 @@ public class Server {
 	public static FrontGroup getGroup(int groupId) {
 		String jsonString = treatQuery("SELECT * FROM dbGroup WHERE id=" + groupId + ";");
 		DbGroup[] dbObject = gson.fromJson(jsonString, DbGroup[].class);
+
+		if(dbObject.length == 0) {
+			return null;
+		}
 
 		return new FrontGroup(dbObject[0].id, dbObject[0].name);
 	}
@@ -358,6 +390,14 @@ public class Server {
 		DbUser[] dbObject = gson.fromJson(jsonString, DbUser[].class);
 
 		return new FrontUser(dbObject[0].name, dbObject[0].surname, dbObject[0].id, dbObject[0].isAdmin.equals("1"));
+	}
+
+	private static FrontUser getAuthorFromThread(int threadId) {
+		String jsonString = treatQuery("SELECT u.id, u.name, u.surname, u.isAdmin FROM dbUser u JOIN dbThread t ON t.authorId WHERE t.authorId=u.id AND t.id=" + threadId + ";");
+		DbUser[] dbObject = gson.fromJson(jsonString, DbUser[].class);
+
+		return new FrontUser(dbObject[0].name, dbObject[0].surname, dbObject[0].id, dbObject[0].isAdmin.equals("1"));
+
 	}
 
 	public static List<FrontUser> getUsersFromGroupId(int id) {

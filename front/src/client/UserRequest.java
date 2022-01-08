@@ -1,6 +1,7 @@
 package client;
 
 import affichage.ChatWindow;
+import affichage.ConnexionWindow;
 import com.google.gson.Gson;
 import frontobjects.FrontGroup;
 import frontobjects.FrontThread;
@@ -52,9 +53,12 @@ public class UserRequest {
 
     /*-------------- THREAD MANAGEMENT --------------*/
     public void askThreadsFromServer(FrontUser frontUser){
+        /*
         Map<String,String> payload = new HashMap<>();
         payload.put("id",""+frontUser.id);
         sendRequest("/thread/getAllThreadsForUser",payload);
+        */
+        ChatWindow.userRequest.clientGetThreadsAtConnection();
     }
 
     public void createThread(int authorId,int groupId, String title, String content) {
@@ -73,5 +77,11 @@ public class UserRequest {
             payload.put("threadId", "" + frontThread.id);
             sendRequest("/thread/updateMessagesOfThread", payload);
         }
+    }
+
+    public void clientGetThreadsAtConnection() {
+        Map<String,String> payload = new HashMap<>();
+        payload.put("clientId", "" + ChatWindow.connectedUser.id);
+        sendRequest("/thread/clientGetThreadsAtConnection", payload);
     }
 }

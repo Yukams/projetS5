@@ -45,7 +45,7 @@ public class ChatWindow extends JFrame {
     private static DefaultMutableTreeNode rootTree = new DefaultMutableTreeNode("Groups");
     private boolean firstClick = true;
 
-    private UserRequest userRequest;
+    public static UserRequest userRequest;
     public static FrontUser connectedUser;
     public static FrontGroup allFrontGroup[];
 
@@ -708,11 +708,11 @@ public class ChatWindow extends JFrame {
                     textPaneNewMessage.setEditable(false);
                     textPaneNewMessage.setText(mess.user + ", " + dayFormat.format(new Date(mess.date)) + "\n\n" + mess.content);
 
-                    if (mess.status.equals("NOT_SENT")) {
+                    if (mess.status.equals("SENDING")) {
                         textPaneNewMessage.setBackground(new Color(125, 125, 125));
                     }
 
-                    if (mess.status.equals("NOT_SEEN")) {
+                    if (mess.status.equals("NOT_SENT")) {
                         textPaneNewMessage.setBackground(new Color(255, 50, 50));
                     }
                     if (mess.status.equals("HALF_SEEN")) {

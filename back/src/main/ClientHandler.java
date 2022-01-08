@@ -2,7 +2,6 @@ package main;
 
 import api.Server;
 import backobjects.groups.IGroup;
-import backobjects.groups.IGroup;
 import backobjects.thread.IMessage;
 import backobjects.thread.IThread;
 import backobjects.users.IUser;
@@ -14,9 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ClientHandler implements Runnable {
@@ -156,7 +153,11 @@ public class ClientHandler implements Runnable {
 
             // { "clientId": int, "threadId": int }
             // Updates
-            case "/thread/updateMessagesOfThread" -> IThread.updateMessages(payload);
+            case "/thread/updateMessagesOfThread" -> IThread.updateMessagesStatus(payload);
+
+            // { "clientId": int }
+            // Updates the messages when the client just connected
+            case "/thread/clientGetThreadsAtConnection" -> IThread.clientGetThreadsAtConnection(payload);
 
 
             // MESSAGE
@@ -216,7 +217,7 @@ public class ClientHandler implements Runnable {
             // THREAD & MESSAGE & addUserToGroup
             // TODO only for affected users
             // Sends recalculated threads to clients
-            case "/thread/createThread", "/thread/deleteThread", "/thread/updateMessagesOfThread", "/message/createMessage", "/message/deleteMessage"
+            case "/thread/createThread", "/thread/deleteThread", "/thread/updateMessagesOfThread", "/message/createMessage", "/message/deleteMessage", "/thread/clientGetThreadsAtConnection"
                     -> updateClientsOnly("/thread/getAllThreadsForUser");
 
             // GROUP
