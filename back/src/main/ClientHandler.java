@@ -2,7 +2,6 @@ package main;
 
 import api.Server;
 import backobjects.groups.IGroup;
-import backobjects.groups.IGroup;
 import backobjects.thread.IMessage;
 import backobjects.thread.IThread;
 import backobjects.users.IUser;
@@ -14,9 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ClientHandler implements Runnable {
@@ -156,7 +153,7 @@ public class ClientHandler implements Runnable {
 
             // { "clientId": int, "threadId": int }
             // Updates
-            case "/thread/updateMessagesOfThread" -> IThread.updateMessages(payload);
+            case "/thread/updateMessagesOfThread" -> IThread.updateMessagesStatus(payload);
 
 
             // MESSAGE

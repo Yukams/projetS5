@@ -69,18 +69,18 @@ public class Server {
 	}
 
 	public static String getStatusFromMessageId(int id) {
-		String jsonString = Server.treatQuery("SELECT messageId FROM dbLinkUserMessage WHERE messageId=" + id + " AND status='NOT_SEEN';");
+		String jsonString = Server.treatQuery("SELECT messageId FROM dbLinkUserMessage WHERE messageId=" + id + " AND status='NOT_SEEN' OR status='NOT_SENT';");
 		DbMessage[] messages = gson.fromJson(jsonString, DbMessage[].class);
 
 		if(messages.length == 0) {
 			return "SEEN";
 		}
 
-		jsonString = Server.treatQuery("SELECT messageId FROM dbLinkUserMessage WHERE messageId=" + id + " AND status='SEEN';");
+		jsonString = Server.treatQuery("SELECT messageId FROM dbLinkUserMessage WHERE messageId=" + id + " AND status='NOT_SENT';");
 		messages = gson.fromJson(jsonString, DbMessage[].class);
 
-		if(messages.length == 0) {
-			return "NOT_SEEN";
+		if(messages.length != 0) {
+			return "NOT_SENT";
 		}
 
 		return "HALF_SEEN";
@@ -141,7 +141,7 @@ public class Server {
 		return new FrontThread(authorId, title, messages, getGroup(groupId));
 	}
 
-	public static FrontThread getThread(int threadId) {
+	public static FrontThread getThread(int threadId, int userId) {
 		String jsonString = Server.treatQuery("SELECT * FROM dbThread WHERE id=" + threadId + ";");
 		DbThread thread = gson.fromJson(jsonString, DbThread[].class)[0];
 
@@ -149,6 +149,13 @@ public class Server {
 		// Get all messages related to the thread in date order (older first)
 		jsonString = Server.treatQuery("SELECT m.id, m.authorId, m.text, m.date FROM dbLinkMessageThread l JOIN dbMessage m ON l.messageId=m.id WHERE l.threadId=" + threadId + " ORDER BY m.date;");
 		DbMessage[] dbMessageList = gson.fromJson(jsonString, DbMessage[].class);
+
+		// if userId is given, update messages status from NOT_SENT to NOT_SEEN
+		if(userId != -1) {
+			for(DbMessage message: dbMessageList) {
+				Server.treatQueryWithoutResponse("UPDATE dbLinkUserMessage SET status='NOT_SEEN' WHERE userId=" + userId + " AND status='NOT_SENT';");
+			}
+		}
 
 		// Build each message
 		for(DbMessage message: dbMessageList) {
@@ -189,7 +196,7 @@ public class Server {
 
 			// Build each thread
 			for (DbThread thread : dbThreadList) {
-				threadsList.add(getThread(thread.id));
+				threadsList.add(getThread(thread.id, userId));
 			}
 		}
 
@@ -203,20 +210,20 @@ public class Server {
 		return getGroup(dbObject[0].groupId);
 	}
 
-	public static FrontThread updateMessages(int userId, int threadId) {
-		FrontThread thread = getThread(threadId);
+	public static FrontThread updateMessagesStatus(int userId, int threadId) {
+		FrontThread thread = getThread(threadId, userId);
 
 		for(FrontMessage message: thread.messages) {
 			if(!message.status.equals("SEEN")) {
-				treatQueryWithoutResponse("UPDATE dbLinkUserMessage SET status = 'SEEN' WHERE messageId=" + message.id + " AND userId=" + userId + ";");
+				treatQueryWithoutResponse("UPDATE dbLinkUserMessage SET status='SEEN' WHERE messageId=" + message.id + " AND userId=" + userId + ";");
 			}
 		}
 
-		return getThread(threadId);
+		return getThread(threadId, userId);
 	}
 
 	public static FrontThread deleteThread(int id) {
-		FrontThread thread = getThread(id);
+		FrontThread thread = getThread(id, -1);
 
 		for(FrontMessage message: thread.messages) {
 			deleteMessage(message.id);
@@ -233,7 +240,7 @@ public class Server {
 		List<FrontThread> threadsList = new ArrayList<>();
 		// Build each thread
 		for(DbThread thread: dbThreadList) {
-			threadsList.add(getThread(thread.id));
+			threadsList.add(getThread(thread.id, authorId));
 		}
 
 		return threadsList;
@@ -246,7 +253,7 @@ public class Server {
 		List<FrontThread> threadsList = new ArrayList<>();
 		// Build each thread
 		for(DbThread thread: dbThreadList) {
-			threadsList.add(getThread(thread.id));
+			threadsList.add(getThread(thread.id, -1));
 		}
 
 		return threadsList;
@@ -268,7 +275,7 @@ public class Server {
 		List<FrontUser> users = getUsersFromGroupId(group.id);
 		for(FrontUser user: users) {
 			if(user.id != authorId) {
-				treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + user.id + "," + id + ",'NOT_SEEN'" + ");");
+				treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + user.id + "," + id + ",'NOT_SENT'" + ");");
 			}
 		}
 		// Author has SEEN status as he is the writer of the message

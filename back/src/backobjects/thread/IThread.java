@@ -22,10 +22,10 @@ public interface IThread {
 		return gson.toJson(thread);
 	}
 
-	static String updateMessages(Map<String, String> payload) {
+	static String updateMessagesStatus(Map<String, String> payload) {
 		int userId = Integer.parseInt(payload.get("clientId"));
 		int threadId = Integer.parseInt(payload.get("threadId"));
-		FrontThread thread = Server.updateMessages(userId, threadId);
+		FrontThread thread = Server.updateMessagesStatus(userId, threadId);
 
 		return gson.toJson(thread);
 	}

@@ -91,7 +91,7 @@ public class QueryTest {
         int threadId = 30;
         int userId = 11;
 
-        System.out.println("changeStatusOfMessagesInThread :\n" + gson.toJson(Server.updateMessages(userId, threadId)));
+        System.out.println("changeStatusOfMessagesInThread :\n" + gson.toJson(Server.updateMessagesStatus(userId, threadId)));
     }
 
     private static void createGroupAndAddUserToIt() {
