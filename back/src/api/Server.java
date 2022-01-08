@@ -108,9 +108,6 @@ public class Server {
 			// Save adminRole for updates
 			clientHandler.setClientIsAdmin(objectList[0].isAdmin.equals("1"));
 
-
-
-
 			createConnectionToken(objectList[0].id);
 			return gson.toJson(new FrontUser(objectList[0].name, objectList[0].surname, objectList[0].id, objectList[0].isAdmin.equals("1")));
 		}
@@ -353,6 +350,22 @@ public class Server {
 		treatQueryWithoutResponse("INSERT INTO dbLinkUserGroup VALUES (" + userId + "," + groupId + ");");
 
 		// We consider that the new added user don't need read old messages
+
+		return getGroup(groupId);
+	}
+
+	public static FrontGroup removeUserFromGroup(int groupId, int userId) {
+		treatQueryWithoutResponse("DELETE FROM dbLinkUserGroup WHERE userId=" + userId + ";");
+
+		// Get all threads related to the group
+		List<FrontThread> threads = getAllThreadsForGroup(groupId);
+		for(FrontThread thread: threads) {
+			// Get all messages related to each group's thread
+			for(FrontMessage message: thread.messages) {
+				// Delete any reference of a link between each message and removed user
+				treatQueryWithoutResponse("DELETE FROM dbLinkUserMessage WHERE messageId=" + message.id + " AND userId=" + userId + ";");
+			}
+		}
 
 		return getGroup(groupId);
 	}

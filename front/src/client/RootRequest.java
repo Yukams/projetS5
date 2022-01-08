@@ -44,7 +44,7 @@ public class RootRequest{
 
     public static void addUserToGroup(Map<String, String> payload){ sendRequest("/group/addUserToGroup",payload); }
     public static void removeUserFromGroup(Map<String, String> payload){
-        sendRequest("/group/addUserToGroup",payload);
+        sendRequest("/group/removeUserFromGroup",payload);
     }
 
     public void setUsersLists(){

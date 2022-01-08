@@ -183,6 +183,10 @@ public class ClientHandler implements Runnable {
             // Updates
             case "/group/addUserToGroup" -> IGroup.addUserToGroup(payload);
 
+            // { "groupId": int, "userId": int }
+            // Updates
+            case "/group/removeUserFromGroup" -> IGroup.removeUserFromGroup(payload);
+
             // {}
             case "/group/getAllDatabaseGroups" -> IGroup.getAllDatabaseGroups();
 
@@ -217,7 +221,7 @@ public class ClientHandler implements Runnable {
             // THREAD & MESSAGE & addUserToGroup
             // TODO only for affected users
             // Sends recalculated threads to clients
-            case "/thread/createThread", "/thread/deleteThread", "/thread/updateMessagesOfThread", "/message/createMessage", "/message/deleteMessage", "/thread/clientGetThreadsAtConnection"
+            case "/thread/createThread", "/thread/deleteThread", "/thread/updateMessagesOfThread", "/message/createMessage", "/message/deleteMessage", "/thread/clientGetThreadsAtConnection", "/group/removeUserFromGroup"
                     -> updateClientsOnly("/thread/getAllThreadsForUser");
 
             // GROUP

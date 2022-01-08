@@ -43,4 +43,12 @@ public interface IGroup {
 
         return gson.toJson(groups);
     }
+
+    static String removeUserFromGroup(Map<String, String> payload) {
+        int groupId = Integer.parseInt(payload.get("groupId"));
+        int userId = Integer.parseInt(payload.get("userId"));
+
+        FrontGroup group = Server.removeUserFromGroup(groupId, userId);
+        return gson.toJson(group);
+    }
 }
