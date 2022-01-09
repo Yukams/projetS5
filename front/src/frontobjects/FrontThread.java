@@ -29,11 +29,11 @@ public class FrontThread extends FrontObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FrontThread that = (FrontThread) o;
-        return Objects.equals(title, that.title) && Objects.equals(group, that.group) && Objects.equals(messages, that.messages);
+        return nbNotReadMessage == that.nbNotReadMessage && Objects.equals(group, that.group) && Objects.equals(messages, that.messages);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, group, messages);
+        return Objects.hash(group, messages, nbNotReadMessage);
     }
 }

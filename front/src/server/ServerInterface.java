@@ -111,7 +111,7 @@ public class ServerInterface extends JFrame {
     public static void setUsrsList(){
         /* Set up of usrTblModel */
         resetUsrTbl();
-        String[] header = {"Username","Status"};
+        String[] header = {"Name & Surname","Status"};
         dtmUsers.setColumnIdentifiers(header);
         usrTable.setModel(dtmUsers);
         usrTable.setAutoCreateRowSorter(true);
@@ -535,6 +535,10 @@ public class ServerInterface extends JFrame {
         }
         if(dataIsCorrect){
             registerUser(fieldsList); // REGISTER USER (+ affect default group to a User)
+            firstNameTxtField.setText("");
+            lastNameTxtField.setText("");
+            usrNameTxtField.setText("");
+            passwordTxtField.setText("");
         }
     }
 
@@ -543,13 +547,14 @@ public class ServerInterface extends JFrame {
         FrontUser selectedUser = usrListComboBox.getItemAt(usrListComboBox.getSelectedIndex());
         Map<String, String> payload = new HashMap<>();
         payload.put("id", "" + selectedUser.id);
-        if(!RootRequest.connectedUsersAL.contains(selectedUser)) {
-            this.rootRequest.removeUser(payload);
-        }
-        else {
-            this.rootRequest.removeConnectedUser(payload);
-        }
-        Utils.informationWindow("User removed successfully", "Information");
+        if(selectedUser.id != connectedUser.id) {
+            if (!RootRequest.connectedUsersAL.contains(selectedUser)) {
+                this.rootRequest.removeUser(payload);
+            } else {
+                this.rootRequest.removeConnectedUser(payload);
+            }
+            Utils.informationWindow("User removed successfully", "Information");
+        } else { Utils.informationWindow("You cannot remove yourself dummy !", "Information"); }
     }
     private void getSelectedUser(ItemEvent evt){
         if(evt.getStateChange() == ItemEvent.SELECTED){

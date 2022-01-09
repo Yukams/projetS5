@@ -82,15 +82,17 @@ public class ServerListener implements Runnable {
             case "/user/getUserById" -> System.out.println("/user/getUserById");
             case "/user/createUser" -> {
                 RootRequest.createdUser = gson.fromJson(payload, FrontUser.class);
-                RootRequest.allUsersAL.add(RootRequest.createdUser); // Adds the created user to the list of users
-                RootRequest.disconectedUsersAL.add(RootRequest.createdUser);
-                /* Associating the user to an initial default group if said user is not Admin */
-                if (!ServerInterface.isUserAdminCheckBox.isSelected()) {
-                    FrontUser user = RootRequest.createdUser; // User just created
-                    ServerInterface.addUserToGroupFromComboBox(user, ServerInterface.selectedDefaultGroup);
+                if(!RootRequest.allUsersAL.contains(RootRequest.createdUser)) {
+                    RootRequest.allUsersAL.add(RootRequest.createdUser); // Adds the created user to the list of users
+                    RootRequest.disconectedUsersAL.add(RootRequest.createdUser);
+                    /* Associating the user to an initial default group if said user is not Admin */
+                    if (!ServerInterface.isUserAdminCheckBox.isSelected()) {
+                        FrontUser user = RootRequest.createdUser; // User just created
+                        ServerInterface.addUserToGroupFromComboBox(user, ServerInterface.selectedDefaultGroup);
+                    }
+                    Utils.informationWindow("User Successfully created !", "Information");
+                    this.updateUsers();
                 }
-                Utils.informationWindow("User Successfully created !", "Information");
-                this.updateUsers();
             }
             case "/user/deleteUser" -> {
                 FrontUser removedUser = gson.fromJson(payload, FrontUser.class);
@@ -137,7 +139,6 @@ public class ServerListener implements Runnable {
 
             }
 
-
             // MESSAGE
             case "/message/createMessage" -> {
 
@@ -151,17 +152,25 @@ public class ServerListener implements Runnable {
             case "/group/addUserToGroup" -> {
                 FrontGroup frontGroup = gson.fromJson(payload, FrontGroup.class);
                 ServerInterface.selectedUserFrontGroups.add(frontGroup);
+                RootRequest.askGroupsFromServer();
             }
             case "/group/removeUserFromGroup" -> {
                 FrontGroup frontGroup = gson.fromJson(payload, FrontGroup.class);
                 ServerInterface.selectedUserFrontGroups.remove(frontGroup);
-                if(ChatWindow.panelListMessage != null) ChatWindow.panelListMessage.setVisible(false);
+                RootRequest.askGroupsFromServer();
+                //if(ChatWindow.panelListMessage != null) ChatWindow.panelListMessage.setVisible(false);
             }
             case "/group/getAllDatabaseGroups" -> {
                 FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
+                ArrayList<FrontGroup> frontGroupsMU = new ArrayList<>();
+                for(FrontGroup frontGroup : frontGroups){
+                    boolean isIn = ServerInterface.selectedUserFrontGroups != null && ServerInterface.selectedUserFrontGroups.stream().anyMatch(group->group.id== frontGroup.id);
+                    frontGroupsMU.add(new FrontGroup(frontGroup.id, frontGroup.name,isIn));
+                }
+                FrontGroup[] frontGroupsArray = frontGroupsMU.toArray(new FrontGroup[0]);
 
                 if(ServerInterface.grpSelectAddUser != null) ServerInterface.grpSelectAddUser.setModel(new DefaultComboBoxModel<>(frontGroups));
-                if(ServerInterface.grpListComboBoxMU != null) ServerInterface.grpListComboBoxMU.setModel(new DefaultComboBoxModel<>(frontGroups));
+                if(ServerInterface.grpListComboBoxMU != null) ServerInterface.grpListComboBoxMU.setModel(new DefaultComboBoxModel<>(frontGroupsArray));
                 if(ServerInterface.grpListToRemove != null) ServerInterface.grpListToRemove.setModel(new DefaultComboBoxModel<>(frontGroups));
                 if(ServerInterface.allFrontGroups != null) ServerInterface.allFrontGroups = frontGroups;
                 if(ChatWindow.comboBoxGroup != null) ChatWindow.comboBoxGroup.setModel(new DefaultComboBoxModel<>(frontGroups));
@@ -171,6 +180,7 @@ public class ServerListener implements Runnable {
                 FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
                 ServerInterface.selectedUserFrontGroups = new ArrayList<>();
                 ServerInterface.selectedUserFrontGroups.addAll(Arrays.asList(frontGroups));
+                RootRequest.askGroupsFromServer();
             }
         }
     }

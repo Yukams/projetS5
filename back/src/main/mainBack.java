@@ -22,7 +22,7 @@ public class mainBack {
 	public static final String DB_URL_MULTI_QUERY = "jdbc:mysql://localhost:3306/projetS5?allowMultiQueries=true";
 	private static final String DB_BEFORE_CREATE = "jdbc:mysql://localhost:3306";
 	public static final String USER = "root";
-	public static final String PASS = "root";
+	public static final String PASS = "";
 
 	/* Client connection */
 	private static final int PORT = 9090;
@@ -84,7 +84,7 @@ public class mainBack {
 		) {
 			System.out.println("[SERVER] Creating database if needed");
 			// TODO => DROP FOR TESTING PURPOSE, COMMENT IT OTHERWISE
-			stmt.execute("DROP DATABASE IF EXISTS projetS5;");
+			//stmt.execute("DROP DATABASE IF EXISTS projetS5;");
 			stmt.execute("CREATE DATABASE IF NOT EXISTS projetS5;");
 		} catch (SQLException e) {
 			e.printStackTrace();
