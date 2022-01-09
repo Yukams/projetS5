@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 
 public class mainBack {
 	/* Database connection */
-	public static final String DB_URL_MULTI_QUERY = "jdbc:mysql://localhost:3306/projetS5?allowMultiQueries=true";
+	public static final String DB_URL_MULTI_QUERY = "jdbc:mysql://localhost:3306/projetS5VGM?allowMultiQueries=true";
 	private static final String DB_BEFORE_CREATE = "jdbc:mysql://localhost:3306";
 	public static final String USER = "root";
 	public static final String PASS = "";
@@ -84,8 +84,8 @@ public class mainBack {
 		) {
 			System.out.println("[SERVER] Creating database if needed");
 			// TODO => DROP FOR TESTING PURPOSE, COMMENT IT OTHERWISE
-			//stmt.execute("DROP DATABASE IF EXISTS projetS5;");
-			stmt.execute("CREATE DATABASE IF NOT EXISTS projetS5;");
+			//stmt.execute("DROP DATABASE IF EXISTS projetS5VGM;");
+			stmt.execute("CREATE DATABASE IF NOT EXISTS projetS5VGM;");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
