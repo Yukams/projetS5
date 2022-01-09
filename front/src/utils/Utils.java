@@ -1,10 +1,8 @@
 package utils;
 
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
+
+import static client.UserRequest.checkValidString;
 
 public class Utils {
     public static final int MIN_CHARS = 3;
@@ -13,14 +11,7 @@ public class Utils {
     * String must be between [MIN_CHARS-MAX_CHARS] chars */
     public static boolean isValidString(String str){
         String specialCharactersString = "\\!@#$%&*()'+,./:;<=>?[]^`{|} ";
-        if(str.length()>=MIN_CHARS && str.length() <= MAX_CHARS) {
-            for (int i = 0; i < str.length(); i++) {
-                char c = str.charAt(i);
-                if(specialCharactersString.contains(Character.toString(c))){ return false; }
-            }
-            return true;
-        }
-        return false;
+        return checkValidString(str, MIN_CHARS, MAX_CHARS, specialCharactersString);
     }
 
     // Warning Window

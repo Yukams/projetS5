@@ -546,11 +546,13 @@ public class ChatWindow extends JFrame {
                     //*----------------*//*
 
                     FrontMessage mess = new FrontMessage(23, connectedUser, zoneTexteMessage.getText(), date.getTime(), "SENDING");
-                    threadSelected.messages.add(mess);
+                    if(userRequest.createMessage(connectedUser.id, content, threadSelected.id)) {
+                        threadSelected.messages.add(mess);
+                    }
 
                     updateTree();
 
-                    userRequest.createMessage(connectedUser.id, content, threadSelected.id);
+
 
                     TreePath path = new TreePath(selectedItemTree);
                     treeTicket.setSelectionPath(path);
