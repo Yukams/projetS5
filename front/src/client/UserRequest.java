@@ -94,7 +94,7 @@ public class UserRequest {
     }
 
     public void createThread(int authorId,int groupId, String title, String content) {
-        if(isValidStringForThread(title)) {
+        if(isValidStringForThread(title) && isValidStringForMessage(content)) {
             Map<String, String> payload = new HashMap<>();
             payload.put("authorId", "" + authorId);
             payload.put("groupId", "" + groupId);
@@ -103,7 +103,7 @@ public class UserRequest {
             sendRequest("/thread/createThread", payload);
             ChatWindow.isCreatorThread = true;
         } else {
-            String msg = "Thread title must contain between " + MIN_THREAD_CHARS +" and " + MAX_THREAD_CHARS +" characters !\nUnauthorized chars: \"";
+            String msg = "Thread title must contain between " + MIN_THREAD_CHARS +" and " + MAX_THREAD_CHARS +" characters !\nMessage must contain between \" + MIN_MESSAGE_CHARS +\" and \" + MAX_MESSAGE_CHARS +\" characters !\nUnauthorized chars: \"";
             Utils.warningWindow(msg, "Information");
         }
     }
