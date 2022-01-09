@@ -126,6 +126,7 @@ public class ServerListener implements Runnable {
                     ChatWindow.userThreads.addAll(Arrays.asList(frontThreads));
 
                     ChatWindow.updateTree();
+
                 }
             }
             case "/thread/createThread" -> {
