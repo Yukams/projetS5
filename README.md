@@ -1,13 +1,11 @@
-PROJET S5 L3 Informatique Paul Sabatier 2021-2022
+PROJET S5
 GROUPE : Gabriel Soulie, Mohammed Benallal, Valentin Tahon
-Git du projet : https://github.com/Yukams/projetS5
 
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 PRE-REQUIS POUR FAIRE FONCTIONNER LE PROJET :
 
 1) MySQL (root admin SANS MOT DE PASSE ou mdp vide) pour lancer Server.jar
 2) Java 16 (minimum)
-
 
 La base de donnees est AUTOMATIQUEMENT CREE lors du lancement de Server.jar avec un petit jeu de donnees prefait
 
@@ -26,7 +24,7 @@ Vincent31	|	123
 Dylan31	|	123
 
 
-NOTE : la version des fichiers executables fournis dans l'archive rendu au prof (non disponible sur github) est le build de la branche "light_build" qui est identique a la branche principale sauf que les impressions ecran ont ete supprimees pour augmenter la vitesse d'execution du programme
+Nom de la DB : projetS5VGM
 
 -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 Fonctionnalitees implementees :
