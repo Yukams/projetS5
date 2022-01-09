@@ -542,13 +542,10 @@ public class ChatWindow extends JFrame {
                     Date date = new Date();
                     //*----------------*//*
 
-
                     FrontMessage mess = new FrontMessage(23, connectedUser, zoneTexteMessage.getText(), date.getTime(), "SENDING");
                     threadSelected.messages.add(mess);
-                    //componentForTicket.get(threadSelected).updateUI();
 
                     updateTree();
-
 
                     userRequest.createMessage(connectedUser.id, content, threadSelected.id);
 
@@ -567,50 +564,38 @@ public class ChatWindow extends JFrame {
 
     // UTIL
     public static void updateTree() {
-
         if (treeTicket != null) {
-
             Set<FrontGroup> frontGroupsSet = new HashSet<>();
             DefaultMutableTreeNode lastSelectedItemTree = (DefaultMutableTreeNode) treeTicket.getLastSelectedPathComponent();
             int idThread = -1;
 
             if (lastSelectedItemTree != null) {
-
                 if (lastSelectedItemTree.isLeaf()) {
                     FrontThread lastThreadSelected = (FrontThread) lastSelectedItemTree.getUserObject();
                     if (lastThreadSelected != null) {
                         idThread = lastThreadSelected.id;
                     }
                 }
-
             }
-
-
             int finalIdThread = idThread;
 
-
             if (idThread != -1 && userThreads.stream().noneMatch(thread -> thread.id == finalIdThread)) {
-
                 componentForTicket.get(lastSelectedItemTree.getUserObject()).setVisible(false);
                 labelTitreTicket.setText("Aucun ticket selectionne");
                 panelEcrireMessage.setVisible(false);
             }
-
 
             rootTree.removeAllChildren();
             componentForTicket.clear();
             messageNotReadPerGroup.clear();
 
             if (userThreads.size() > 0) {
-
                 for (FrontThread frontThread : userThreads) {
                     frontGroupsSet.add(frontThread.group);
                 }
-
                 for (FrontGroup frontGroup : frontGroupsSet) {
                     addGroupToRoot(frontGroup);
                 }
-
             }
 
             treeTicket.setModel(new DefaultTreeModel(rootTree));
@@ -626,15 +611,12 @@ public class ChatWindow extends JFrame {
                     if (threadLeaf.id == idThread) {
                         TreePath path = new TreePath(leafNode);
                         treeTicket.setSelectionPath(path);
-
                     }
                 }
             }
-
             JScrollBar vertical = scrollPaneListMessage.getVerticalScrollBar();
             vertical.setValue(vertical.getMaximum());
         }
-
     }
 
     private static void addGroupToRoot(FrontGroup frontGroup){
@@ -642,12 +624,10 @@ public class ChatWindow extends JFrame {
         DefaultTreeModel model = (DefaultTreeModel) treeTicket.getModel();
         DefaultMutableTreeNode racine = (DefaultMutableTreeNode) model.getRoot();
 
-
         for(FrontThread frontThread : userThreads) {
             messagesNonLu = frontThread.nbNotReadMessage;
             String title = frontThread.title;
             if (messagesNonLu != 0){
-
                 frontThread.title= "<html><b>"+title+" ("+messagesNonLu+")</b></html>";
             }
             if (frontThread.group.id == frontGroup.id) {
@@ -696,37 +676,27 @@ public class ChatWindow extends JFrame {
 
                     componentForTicket.putIfAbsent(frontThread, panelAjout);
                     componentForTicket.get(frontThread).add(scrollPaneNewMessage);
-
-
-
                 }
-
             }
-
-            if (node.getChildCount() > 0) {
-                racine.add(node);
-
-            }
-
         }
 
-
-        if (messageNotReadPerGroup.get(frontGroup) != null) {
-            if (messageNotReadPerGroup.get(frontGroup) != 0 ) {
-                frontGroup.name = "<html><b>" + frontGroup.name + " (" + messageNotReadPerGroup.get(frontGroup) + ")</b></html>";
+        if(messageNotReadPerGroup != null) {
+            int nbMess = messageNotReadPerGroup.get(frontGroup);
+            if (nbMess != 0) {
+                frontGroup.name = "<html><b>" + frontGroup + " (" + nbMess + ")</b></html>";
                 node.setUserObject(frontGroup);
             }
         }
-        model.reload();
 
+        if (node.getChildCount() > 0) {
+            racine.add(node);
+        }
     }
     private static void expandTree(){
         for (int i = 0; i < treeTicket.getRowCount(); i++) {
             treeTicket.expandRow(i);
         }
     }
-
-
 
     // Variables declaration - do not modify
     private JButton buttonAddNewFil;

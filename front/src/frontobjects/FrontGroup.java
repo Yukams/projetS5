@@ -27,7 +27,7 @@ public class FrontGroup extends FrontObject {
 
     @Override
     public int hashCode() {
-        return 31*this.id+this.name.hashCode();
+        return 31*this.id;
     }
 
 
