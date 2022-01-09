@@ -154,6 +154,8 @@ public class ChatWindow extends JFrame {
 
 
         buttonAddNewFil.setText("Ajouter");
+        buttonAddNewFil.setOpaque(true);
+        buttonAddNewFil.setBorderPainted(false);
         buttonAddNewFil.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonAddActionPerformed(evt);
@@ -239,6 +241,7 @@ public class ChatWindow extends JFrame {
         buttonAjoutTicket.setContentAreaFilled(false);
         buttonAjoutTicket.setHorizontalAlignment(SwingConstants.RIGHT);
         buttonAjoutTicket.setOpaque(true);
+        buttonAjoutTicket.setBorderPainted(false);
         buttonAjoutTicket.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonAjoutTicketActionPerformed(evt);
