@@ -84,7 +84,7 @@ public class mainBack {
 		) {
 			System.out.println("[SERVER] Creating database if needed");
 			// TODO => DROP FOR TESTING PURPOSE, COMMENT IT OTHERWISE
-			//stmt.execute("DROP DATABASE IF EXISTS projetS5;");
+			stmt.execute("DROP DATABASE IF EXISTS projetS5;");
 			stmt.execute("CREATE DATABASE IF NOT EXISTS projetS5;");
 		} catch (SQLException e) {
 			e.printStackTrace();
