@@ -658,6 +658,14 @@ public class ChatWindow extends JFrame {
             idThread = lastThreadSelected.id;
         }
 
+        int finalIdThread = idThread;
+
+
+        if (idThread!= -1 && userThreads.stream().noneMatch(thread -> thread.id == finalIdThread)){
+            componentForTicket.get(lastSelectedItemTree.getUserObject()).setVisible(false);
+            labelTitreTicket.setText("Aucun ticket selectionne");
+            panelEcrireMessage.setVisible(false);
+        }
 
 
 
