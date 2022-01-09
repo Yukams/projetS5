@@ -9,9 +9,12 @@ PRE-REQUIS POUR FAIRE FONCTIONNER LE PROJET :
 
 La base de donnees est AUTOMATIQUEMENT CREE lors du lancement de Server.jar avec un petit jeu de donnees prefait
 
+Le Server.jar se lance "discretement", pour savoir si il est correctement lance, essaye de vous connecter avec un client, si la connexion echoue alors que le username et le password sont corrects, c'est que le Serveur est eteint
+Aussi, il faudra manuellement le fermer en tuant son processus (On sait que ce n'est pas pratique, mais on pensait naivement que le .jar laisserait la fenetre du terminal ouverte... On dira que c'est une volontaire car le serveur est suppose etre conteneurise ^.^' ?)
+
 Le Client.jar ouvre une fenetre de connexion, si le compte renseigne est celui d'un admin, l'interface serveur se lancera, sinon, l'interface utilisateur se lancera
 
-Il est possible de lancer jusqu'a 100 utilisateurs (hardcode), mais je ne vous recommande pas d'essayer :)
+Il est possible de lancer jusqu'a 100 utilisateurs (hard code), mais je ne vous recommande pas d'essayer :)
 
 Voici les differents utilisateurs implementes de base dans la DB :
 
