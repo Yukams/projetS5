@@ -50,6 +50,7 @@ public class ChatWindow extends JFrame {
     public static UserRequest userRequest;
     public static FrontUser connectedUser;
     public static FrontGroup allFrontGroup[];
+    public static boolean isCreatorThread=false;
 
     public static ArrayList<FrontThread> userThreads = new ArrayList<>();
     private static final SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
@@ -420,8 +421,9 @@ public class ChatWindow extends JFrame {
         }
         if (node.isLeaf()) {
             FrontThread threadSelected = (FrontThread) node.getUserObject();
-            if (threadSelected.nbNotReadMessage != 0) {
-                this.userRequest.updateMessagesOfThread((FrontThread) node.getUserObject());
+            if (threadSelected.nbNotReadMessage != 0 || isCreatorThread) {
+                isCreatorThread=false;
+                userRequest.updateMessagesOfThread((FrontThread) node.getUserObject());
             }
             firstClick = true;
             labelTitreTicket.setText(node.toString());
