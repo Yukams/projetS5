@@ -70,16 +70,15 @@ public class ServerListener implements Runnable {
         String address = serverResponse.address;
         String payload = serverResponse.payload;
 
-        System.out.println(serverResponse.type);
+        
         if(serverResponse.type.equals("update")) {
-            System.out.println("[CLIENT] Receiving update to request -> " + address + "\n with payload -> " + payload);
+            
         } else {
-            System.out.println("[CLIENT] Receiving response for request -> " + address + "\n as -> " + payload);
+            
         }
 
         switch (address) {
             // USER
-            case "/user/getUserById" -> System.out.println("/user/getUserById");
             case "/user/createUser" -> {
                 RootRequest.createdUser = gson.fromJson(payload, FrontUser.class);
                 if(!RootRequest.allUsersAL.contains(RootRequest.createdUser)) {
@@ -129,7 +128,7 @@ public class ServerListener implements Runnable {
                 FrontThread[] frontThreads = gson.fromJson(payload, FrontThread[].class);
                 ArrayList<FrontThread> tempList = new ArrayList<>(Arrays.asList(frontThreads));
                 if(!tempList.equals(ChatWindow.userThreads)) {
-                    System.out.println("c'est pas egal");
+                    
                     ChatWindow.userThreads = new ArrayList<>();
                     ChatWindow.userThreads.addAll(Arrays.asList(frontThreads));
 
@@ -140,7 +139,6 @@ public class ServerListener implements Runnable {
             case "/thread/createThread" -> {
                 gson.fromJson(payload,FrontThread.class);
             }
-            case "/thread/deleteThread" -> System.out.println("/thread/deleteThread");
             case "/thread/updateMessagesOfThread" -> {
 
             }
@@ -148,13 +146,8 @@ public class ServerListener implements Runnable {
             // MESSAGE
             case "/message/createMessage" -> {
 
-                System.out.println("/message/createMessage");
+                
             }
-            case "/message/deleteMessage" -> System.out.println("/message/deleteMessage");
-
-            // GROUP
-            case "/group/createGroup" -> System.out.println("/group/createGroup");
-            case "/group/deleteGroup" -> System.out.println("/group/deleteGroup");
             case "/group/addUserToGroup" -> {
                 FrontGroup frontGroup = gson.fromJson(payload, FrontGroup.class);
                 ServerInterface.selectedUserFrontGroups.add(frontGroup);

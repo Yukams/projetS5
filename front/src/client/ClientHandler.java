@@ -35,7 +35,7 @@ public class ClientHandler implements Runnable{
     }
 
     private void launchConnexionWindow() {
-        System.out.println("Launching Window");
+        
         this.connexionWindow = new ConnexionWindow();
         connexionWindow.setVisible(true);
     }

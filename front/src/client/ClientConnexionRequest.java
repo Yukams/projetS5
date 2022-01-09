@@ -27,7 +27,7 @@ public class ClientConnexionRequest {
 
     public ClientConnexionRequest(String username, String password){
         try {
-            System.out.println("\n-*-*[CONNECTING...]*-*-\n");
+            
             socket = new Socket(HOST, PORT);
             out = new PrintWriter(socket.getOutputStream(), true);
             /* IMPLEMENTING SERVER UPDATES LISTENER */
@@ -38,13 +38,13 @@ public class ClientConnexionRequest {
             ServerRequest serverRequest = new ServerRequest("/connect", authPayload);
             // Serealize Data
             String request = gson.toJson(serverRequest);
-            System.out.println("[CLIENT] Do request to server" + request);
+            
             // Sending Request
             out.println(request);
             // Wait Response
             String serverResponseString = this.serverListener.getIn().readLine();
             ServerResponse serverPayload = gson.fromJson(serverResponseString, ServerResponse.class);
-            System.out.println("[USER] Response from server :\n" + serverPayload.payload);
+            
             // Deserialize Data
             if(serverPayload.payload != null) {
                 connectedUser = gson.fromJson(serverPayload.payload, FrontUser.class);

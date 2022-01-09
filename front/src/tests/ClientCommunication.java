@@ -40,7 +40,7 @@ public class ClientCommunication {
         payload = new HashMap<>();
         ServerRequest serverRequestUsers = new ServerRequest("/user/getAllDatabaseUsers", payload);
         request = gson.toJson(serverRequestUsers);
-        System.out.println("[CLIENT] Do request to server /user/getAllDatabaseUsers" + request);
+        
         out.println(request);
 
         // Create a new user (update should be received after it IF an admin is connected)
@@ -52,11 +52,11 @@ public class ClientCommunication {
         payload.put("isAdmin", "false");
         ServerRequest serverRequestAddUser = new ServerRequest("/user/createUser", payload);
         request = gson.toJson(serverRequestAddUser);
-        System.out.println("[CLIENT] Do request to server /user/createUser" + request);
+        
         out.println(request);
 
 
-        System.out.println("[CLIENT] Entering waiting state...");
+        
         while(true);
 */
         //out.close();

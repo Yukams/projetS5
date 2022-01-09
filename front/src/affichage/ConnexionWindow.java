@@ -157,7 +157,7 @@ public class ConnexionWindow extends JFrame implements ActionListener {
         this.setEnabled(false);
         while(!ClientConnexionRequest.connected){
             if(!ClientConnexionRequest.clientExists) System.exit(-1);
-            System.out.println("Reconnecting...");
+            
             this.clientConnexionRequest = new ClientConnexionRequest(ConnexionWindow.username,ConnexionWindow.password);
             Thread.sleep(5000);
         }

@@ -15,7 +15,7 @@ import static main.mainBack.*;
 
 public class Server {
 	public static void treatQueryWithoutResponse(String queryString) {
-		System.out.println("[SQL] Query executed -> " + queryString);
+		
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
@@ -29,7 +29,7 @@ public class Server {
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
-			System.out.println("[SQL] Query executed -> " + queryString);
+			
 			ResultSet resultSet = stmt.executeQuery(queryString);
 			ResultSetMetaData rsmd = resultSet.getMetaData();
 			int columnsNumber = rsmd.getColumnCount();
@@ -301,7 +301,7 @@ public class Server {
 
 
 		for(FrontUser user: users) {
-			System.out.println("LINK MESSAGE USER ID -> " + user.surname);
+			
 			if(user.id != authorId) {
 				treatQueryWithoutResponse("INSERT IGNORE INTO dbLinkUserMessage VALUES (" + user.id + "," + id + ",'NOT_SENT'" + ");");
 			}

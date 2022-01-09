@@ -40,7 +40,7 @@ public class ClientHandler implements Runnable {
         try {
             while (request != null) {
                 request = in.readLine();
-                System.out.println("[SERVER] Received request from client (" + clientId + ") => " + request);
+                
 
                 if(request != null) {
                     ClientRequest serverPayload = gson.fromJson(request, ClientRequest.class);
@@ -48,7 +48,7 @@ public class ClientHandler implements Runnable {
 
                     // Close connection if user is not connected and requests anything else than a connection
                     if(response != null) {
-                        System.out.println("[SERVER] Sending response to client (" + clientId + ") => " + response.payload);
+                        
                         out.println(gson.toJson(response));
                         doUpdateIfNeeded(serverPayload);
                     }
@@ -60,7 +60,7 @@ public class ClientHandler implements Runnable {
             Utils.closeAll(this.client, this.in, this.out, this.clientId);
 
             if(clientId != -1){
-                System.out.println("[SERVER] Disconnecting client " + clientId);
+                
                 Server.disconnect(this);
                 updateAdminsExceptSelf(treatRequest(new ClientRequest("/user/getAllConnectedUsers", new HashMap<>())));
             }
@@ -112,7 +112,7 @@ public class ClientHandler implements Runnable {
 
     private void treatSingleRequest(ServerResponse serverResponse, ClientHandler client) {
         ServerResponse update = new ServerResponse(serverResponse.address, serverResponse.payload, "update");
-        System.out.println("[SERVER] Sending update to client (" + client.getClientId() + ") => " + update.payload);
+        
         client.getPrinterOut().println(gson.toJson(update));
     }
 
@@ -236,7 +236,7 @@ public class ClientHandler implements Runnable {
                 // Disconnect the user first
                 int i = 0;
                 while(mainBack.clients.get(i).getClientId() != Integer.parseInt(request.payload.get("id"))) { i++; }
-                System.out.println(mainBack.clients.get(i).clientId);
+                
                 mainBack.clients.get(i).closePrinterOut();
                 sleep(1000);
                 // Sends the new Database User List to admins

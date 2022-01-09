@@ -60,7 +60,7 @@ public class ChatWindow extends JFrame {
 
     public ChatWindow(ClientConnexionRequest clientConnexion) {
         super("Chat: " + ClientConnexionRequest.connectedUser.toString());
-        System.out.println("je suis la personne : "+ClientConnexionRequest.connectedUser.toString());
+        
 
         ImageIcon icon = new ImageIcon(getClass().getResource("/icons/Square44x44Logo.targetsize-40.png"));
         this.setIconImage(icon.getImage());
@@ -413,7 +413,7 @@ public class ChatWindow extends JFrame {
         if (treeTicket != null) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeTicket.getLastSelectedPathComponent();
 
-            System.out.println("je suis :"+node);
+            
             if (node == null) {
 
                 return;

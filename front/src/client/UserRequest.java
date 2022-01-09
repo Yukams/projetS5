@@ -24,7 +24,7 @@ public class UserRequest {
     private static final int MAX_THREAD_CHARS = 300;
 
     public UserRequest(ClientConnexionRequest clientConnexionRequest){
-        System.out.println("\n-*-*[User Services]*-*-\n");
+        
         this.out = clientConnexionRequest.getOut();
         /* IMPLEMENTING SERVER UPDATES LISTENER */
         new Thread(clientConnexionRequest.getServerListener()).start();
@@ -36,7 +36,7 @@ public class UserRequest {
         /*Sending Request*/
         ServerRequest serverRequest = new ServerRequest(adress,payload);
         String request = gson.toJson(serverRequest);
-        System.out.println("[USER] Do request to server" + request);
+        
         out.println(request);
     }
 
@@ -70,7 +70,7 @@ public class UserRequest {
             Map<String, String> payload = new HashMap<>();
             payload.put("authorId", "" + authorId);
             payload.put("content", content);
-            System.out.println("content:" + content);
+            
             payload.put("threadId", "" + threadId);
             sendRequest("/message/createMessage", payload);
             ChatWindow.isCreatorThread = true;

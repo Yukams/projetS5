@@ -21,7 +21,7 @@ public class RootRequest{
     public static FrontUser createdUser;
 
     public RootRequest(ClientConnexionRequest clientConnexionRequest){
-        System.out.println("\n-*-*[Admin Services]*-*-\n");
+        
         out = clientConnexionRequest.getOut();
         /* IMPLEMENTING SERVER UPDATES LISTENER */
         new Thread(clientConnexionRequest.getServerListener()).start();
@@ -33,7 +33,7 @@ public class RootRequest{
         /*Sending Request*/
         ServerRequest serverRequest = new ServerRequest(adress,payload);
         String request = gson.toJson(serverRequest);
-        System.out.println("[ROOT] Do request to server" + request);
+        
         out.println(request);
     }
 

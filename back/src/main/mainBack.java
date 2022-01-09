@@ -44,9 +44,9 @@ public class mainBack {
 		ServerSocket incoming = new ServerSocket(PORT);
 
 		while(true) {
-			System.out.println("[SERVER] Waiting for client connection");
+			
 			Socket client = incoming.accept();
-			System.out.println("[SERVER] Connected to client !");
+			
 			ClientHandler clientThread = new ClientHandler(client);
 			clients.add(clientThread);
 
@@ -60,7 +60,7 @@ public class mainBack {
 		try(Connection conn = DriverManager.getConnection(DB_URL_MULTI_QUERY, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
-			System.out.println("[SERVER] Filling database if needed");
+			
 			InputStream file = mainBack.class.getResourceAsStream("database_setup.sql");
 			assert file != null;
 			Scanner sc = new Scanner(file);
@@ -71,7 +71,7 @@ public class mainBack {
 			String sql = sb.toString();
 			stmt.execute(sql);
 
-			System.out.println("Tables created successfully.");
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -82,7 +82,7 @@ public class mainBack {
 		try(Connection conn = DriverManager.getConnection(DB_BEFORE_CREATE, USER, PASS);
 			Statement stmt = conn.createStatement()
 		) {
-			System.out.println("[SERVER] Creating database if needed");
+			
 			// TODO => DROP FOR TESTING PURPOSE, COMMENT IT OTHERWISE
 			//stmt.execute("DROP DATABASE IF EXISTS projetS5VGM;");
 			stmt.execute("CREATE DATABASE IF NOT EXISTS projetS5VGM;");

@@ -27,7 +27,7 @@ public class Utils {
 			if(socket != null){
 				socket.close();
 			}
-			System.out.println("[SERVER] Closing connection with client (" + clientId + ")");
+			
 
 		} catch (IOException e){
 			e.printStackTrace();
