@@ -68,7 +68,7 @@ public class RootRequest{
     public void createGroup(Map<String,String> payload){
         sendRequest("/group/createGroup",payload);
     }
-    public void getGroupsOfUser(FrontUser selectedUser) {
+    public static void getGroupsOfUser(FrontUser selectedUser) {
         Map<String,String> payload = new HashMap<>();
         payload.put("id",""+selectedUser.id);
         sendRequest("/group/getGroupsOfUserById",payload);

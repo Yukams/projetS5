@@ -589,7 +589,7 @@ public class ServerInterface extends JFrame {
     private void getSelectedUser(ItemEvent evt){
         if(evt.getStateChange() == ItemEvent.SELECTED){
             FrontUser frontUser = (FrontUser) evt.getItem();
-            this.rootRequest.getGroupsOfUser(frontUser);
+            RootRequest.getGroupsOfUser(frontUser);
         }
     }
 
@@ -677,6 +677,7 @@ public class ServerInterface extends JFrame {
             this.setPagesInvisible();
         }
         setUsrsList(); //Sets table UsersTable: list of users
+
         btn2.setBackground(new Color(72, 159, 181));
         pMngUsr.setVisible(true);
     }

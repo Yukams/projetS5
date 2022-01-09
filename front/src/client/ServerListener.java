@@ -90,6 +90,9 @@ public class ServerListener implements Runnable {
                         FrontUser user = RootRequest.createdUser; // User just created
                         ServerInterface.addUserToGroupFromComboBox(user, ServerInterface.selectedDefaultGroup);
                     }
+                    FrontUser frontUser = ServerInterface.usrListComboBox.getItemAt(ServerInterface.usrListComboBox.getSelectedIndex());
+                    RootRequest.getGroupsOfUser(frontUser);
+                    RootRequest.askGroupsFromServer();
                     Utils.informationWindow("User Successfully created !", "Information");
                     this.updateUsers();
                 }
@@ -98,6 +101,9 @@ public class ServerListener implements Runnable {
                 FrontUser removedUser = gson.fromJson(payload, FrontUser.class);
                 RootRequest.allUsersAL.remove(removedUser);
                 RootRequest.disconectedUsersAL.remove(removedUser);
+                FrontUser frontUser = ServerInterface.usrListComboBox.getItemAt(ServerInterface.usrListComboBox.getSelectedIndex());
+                RootRequest.getGroupsOfUser(frontUser);
+                RootRequest.askGroupsFromServer();
                 this.updateUsers();
             }
             case "/user/getAllConnectedUsers" -> {
@@ -163,8 +169,11 @@ public class ServerListener implements Runnable {
             case "/group/getAllDatabaseGroups" -> {
                 FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
                 ArrayList<FrontGroup> frontGroupsMU = new ArrayList<>();
+                boolean isIn = false;
                 for(FrontGroup frontGroup : frontGroups){
-                    boolean isIn = ServerInterface.selectedUserFrontGroups != null && ServerInterface.selectedUserFrontGroups.stream().anyMatch(group->group.id== frontGroup.id);
+                    if(ServerInterface.selectedUserFrontGroups != null && !ServerInterface.selectedUserFrontGroups.isEmpty()) {
+                        isIn = ServerInterface.selectedUserFrontGroups.stream().anyMatch(group -> group.id == frontGroup.id);
+                    }
                     frontGroupsMU.add(new FrontGroup(frontGroup.id, frontGroup.name,isIn));
                 }
                 FrontGroup[] frontGroupsArray = frontGroupsMU.toArray(new FrontGroup[0]);
@@ -178,9 +187,14 @@ public class ServerListener implements Runnable {
             }
             case "/group/getGroupsOfUserById" -> {
                 FrontGroup[] frontGroups = gson.fromJson(payload, FrontGroup[].class);
-                ServerInterface.selectedUserFrontGroups = new ArrayList<>();
-                ServerInterface.selectedUserFrontGroups.addAll(Arrays.asList(frontGroups));
-                RootRequest.askGroupsFromServer();
+                if(frontGroups.length != 0) {
+                    ServerInterface.selectedUserFrontGroups = new ArrayList<>();
+                    ServerInterface.selectedUserFrontGroups.addAll(Arrays.asList(frontGroups));
+                    RootRequest.askGroupsFromServer();
+                } else {
+                    ServerInterface.selectedUserFrontGroups = new ArrayList<>();
+                    RootRequest.askGroupsFromServer();
+                }
             }
         }
     }
