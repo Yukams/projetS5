@@ -347,7 +347,7 @@ public class Server {
 	}
 
 	public static FrontGroup addUserToGroup(int groupId, int userId) {
-		treatQueryWithoutResponse("INSERT INTO dbLinkUserGroup VALUES (" + userId + "," + groupId + ");");
+		treatQueryWithoutResponse("INSERT IGNORE INTO dbLinkUserGroup VALUES (" + userId + "," + groupId + ");");
 
 		// We consider that the new added user don't need read old messages
 
@@ -366,7 +366,6 @@ public class Server {
 				treatQueryWithoutResponse("DELETE FROM dbLinkUserMessage WHERE messageId=" + message.id + " AND userId=" + userId + ";");
 			}
 		}
-
 		return getGroup(groupId);
 	}
 
@@ -431,7 +430,7 @@ public class Server {
 	public static FrontUser createUser(String username, String name, String surname, String password, boolean isAdmin) {
 		int id = utils.Utils.createRandomId();
 
-		treatQueryWithoutResponse("INSERT INTO dbUser VALUES (" + id + ",'" + username + "','" + name + "','" + surname + "','" + password + "'," + isAdmin + ");");
+		treatQueryWithoutResponse("INSERT IGNORE INTO dbUser VALUES (" + id + ",'" + username + "','" + name + "','" + surname + "','" + password + "'," + isAdmin + ");");
 
 		return new FrontUser(name, surname, id, isAdmin);
 	}

@@ -25,7 +25,7 @@ public class RootRequest{
         out = clientConnexionRequest.getOut();
         /* IMPLEMENTING SERVER UPDATES LISTENER */
         new Thread(clientConnexionRequest.getServerListener()).start();
-        this.askGroupsFromServer();
+        askGroupsFromServer();
         this.setUsersLists();
     }
     // Sends request to server, returns the Response
@@ -61,7 +61,7 @@ public class RootRequest{
         sendRequest("/user/deleteConnectedUser",payload);
     }
     /*-------------- GROUP MANAGEMENT --------------*/
-    public void askGroupsFromServer(){ sendRequest("/group/getAllDatabaseGroups",null); }
+    public static void askGroupsFromServer(){ sendRequest("/group/getAllDatabaseGroups",null); }
     public void removeGroup(Map<String,String> payload){
         sendRequest("/group/deleteGroup",payload);
     }

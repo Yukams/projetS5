@@ -1,20 +1,26 @@
 package frontobjects;
 
+import server.ServerInterface;
+
 public class FrontGroup extends FrontObject {
     public String name;
 
     public FrontGroup(){
+    }
+    public FrontGroup(int id, String name, boolean isIn){
+        this.id = id;
+        this.name = isIn ? name+" (IN)" : name;
     }
 
     public FrontGroup(int id, String name) {
         this.id = id;
         this.name = name;
     }
+
     @Override
     public boolean equals(Object obj){
-        if(obj instanceof FrontGroup){
-            FrontGroup frontGroup = (FrontGroup) obj;
-            return this.name.equals(frontGroup.name) && this.id == frontGroup.id;
+        if(obj instanceof FrontGroup frontGroup){
+            return this.id == frontGroup.id;
         }
         return false;
     }
