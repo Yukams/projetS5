@@ -128,7 +128,7 @@ public class Server {
 	public static FrontThread createThread(int authorId, int groupId, String content, String title) {
 		int id = utils.Utils.createRandomId();
 
-		treatQueryWithoutResponse("INSERT INTO dbThread VALUES (" + id + ",'" + title + "'," + groupId + "," + authorId + ");");
+		treatQueryWithoutResponse("INSERT INTO dbThread VALUES (" + id + ",\"" + title + "\"," + groupId + "," + authorId + ");");
 
 		List<FrontMessage> messages = new ArrayList<>();
 		// Create message

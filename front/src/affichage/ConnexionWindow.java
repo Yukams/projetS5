@@ -90,6 +90,8 @@ public class ConnexionWindow extends JFrame implements ActionListener {
         cancelButton.setBackground(new Color(147, 3, 46));
         cancelButton.setFont(new Font("Candara", 3, 22));
         cancelButton.setForeground(new Color(255, 255, 255));
+        cancelButton.setOpaque(true);
+        cancelButton.setBorderPainted(false);
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
