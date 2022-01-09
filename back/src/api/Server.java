@@ -295,19 +295,19 @@ public class Server {
 		List<FrontUser> users = getUsersFromGroupId(group.id);
 		// Check if author is from the group, otherwise add him
 		FrontUser threadAuthor = getAuthorFromThread(threadId);
-		FrontGroup threadAuthorGroup = getGroup(threadAuthor.id);
-		if(threadAuthorGroup != null && threadAuthorGroup != getGroupFromThreadId(threadId)) {
+		if(!users.contains(threadAuthor)) {
 			users.add(threadAuthor);
 		}
+
 
 		for(FrontUser user: users) {
 			System.out.println("LINK MESSAGE USER ID -> " + user.surname);
 			if(user.id != authorId) {
-				treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + user.id + "," + id + ",'NOT_SENT'" + ");");
+				treatQueryWithoutResponse("INSERT IGNORE INTO dbLinkUserMessage VALUES (" + user.id + "," + id + ",'NOT_SENT'" + ");");
 			}
 		}
 		// Author has SEEN status as he is the writer of the message
-		treatQueryWithoutResponse("INSERT INTO dbLinkUserMessage VALUES (" + authorId + "," + id + ",'SEEN'" + ");");
+		treatQueryWithoutResponse("INSERT IGNORE INTO dbLinkUserMessage VALUES (" + authorId + "," + id + ",'SEEN'" + ");");
 
 		return new FrontMessage(id, getUser(authorId), content, date, "HALF_SEEN");
 	}
