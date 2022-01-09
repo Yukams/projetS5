@@ -14,16 +14,36 @@ import javax.swing.table.*;
 import org.netbeans.lib.awtextra.*;
 
 public class ServerInterface extends JFrame {
-
+    /*---------------------- JSwing Declarations ----------------------*/
+    private JPanel btn1;
+    private JPanel btn2;
+    private JPanel btn3;
+    private JPanel centrePanel;
+    private JTextField firstNameTxtField;
+    public static JComboBox<FrontGroup> grpSelectAddUser;
+    public static JComboBox<FrontGroup> grpListComboBoxMU;
+    public static JComboBox<FrontGroup> grpListToRemove;
+    private JTextField grpNameTextFieldCreate;
+    private JTextField lastNameTxtField;
+    public static JPanel mainPanel;
+    private JPanel pAddUsr;
+    private JPanel pMngGrps;
+    private JPanel pMngUsr;
+    private JPasswordField passwordTxtField;
+    public static JComboBox<FrontUser> usrListComboBox;
+    private JTextField usrNameTxtField;
+    private static JTable usrTable;
+    public static JCheckBox isUserAdminCheckBox;
+    /*---------------------- Util Declarations ----------------------*/
     private int xMouse;
     private int yMouse;
-    private static DefaultTableModel dtmUsers = new DefaultTableModel();
-    private static Map<FrontUser,String> usersTableData = new HashMap<>();
-
+    private static final DefaultTableModel dtmUsers = new DefaultTableModel();
+    private static final Map<FrontUser,String> usersTableData = new HashMap<>();
     private final RootRequest rootRequest;
     private final FrontUser connectedUser;
+
     public static FrontGroup selectedDefaultGroup;
-    public static FrontGroup allFrontGroups[];
+    public static FrontGroup[] allFrontGroups;
     public static ArrayList<FrontGroup> selectedUserFrontGroups = new ArrayList<>();
 
     /* CONSTRUCTOR :
@@ -125,49 +145,49 @@ public class ServerInterface extends JFrame {
         setUndecorated(true);
 
         mainPanel = new JPanel();
-        sideBarPanel = new JPanel();
-        iconLabel = new JLabel();
-        jLabel1 = new JLabel();
+        JPanel sideBarPanel = new JPanel();
+        JLabel iconLabel = new JLabel();
+        JLabel jLabel1 = new JLabel();
         btn1 = new JPanel();
-        iconBtn1 = new JLabel();
-        textBtn1 = new JLabel();
+        JLabel iconBtn1 = new JLabel();
+        JLabel textBtn1 = new JLabel();
         btn2 = new JPanel();
-        iconBtn2 = new JLabel();
-        textBtn2 = new JLabel();
+        JLabel iconBtn2 = new JLabel();
+        JLabel textBtn2 = new JLabel();
         btn3 = new JPanel();
-        iconBtn4 = new JLabel();
-        textBtn4 = new JLabel();
-        headerPanel = new JPanel();
-        quitIcon = new JLabel();
-        frameDrag = new JLabel();
+        JLabel iconBtn4 = new JLabel();
+        JLabel textBtn4 = new JLabel();
+        JPanel headerPanel = new JPanel();
+        JLabel quitIcon = new JLabel();
+        JLabel frameDrag = new JLabel();
         centrePanel = new JPanel();
         pAddUsr = new JPanel();
         firstNameTxtField = new JTextField();
-        jLabel2 = new JLabel();
+        JLabel jLabel2 = new JLabel();
         lastNameTxtField = new JTextField();
-        jLabel3 = new JLabel();
+        JLabel jLabel3 = new JLabel();
         usrNameTxtField = new JTextField();
-        jLabel4 = new JLabel();
-        jLabel5 = new JLabel();
-        jLabel6 = new JLabel();
-        registerUserButton = new JButton();
+        JLabel jLabel4 = new JLabel();
+        JLabel jLabel5 = new JLabel();
+        JLabel jLabel6 = new JLabel();
+        JButton registerUserButton = new JButton();
         passwordTxtField = new JPasswordField();
         grpSelectAddUser = new JComboBox<>();
         pMngGrps = new JPanel();
         grpNameTextFieldCreate = new JTextField();
-        jLabel7 = new JLabel();
-        createGroupBtn = new JButton();
+        JLabel jLabel7 = new JLabel();
+        JButton createGroupBtn = new JButton();
         grpListToRemove = new JComboBox<>();
-        btnRmvGrp = new JButton();
+        JButton btnRmvGrp = new JButton();
         pMngUsr = new JPanel();
-        jScrollPane2 = new JScrollPane();
+        JScrollPane jScrollPane2 = new JScrollPane();
         usrTable = new JTable();
         usrListComboBox = new JComboBox<>();
-        btnRmvUsr = new JButton();
+        JButton btnRmvUsr = new JButton();
         grpListComboBoxMU = new JComboBox<>();
-        btnAddUserToGrp = new JButton();
+        JButton btnAddUserToGrp = new JButton();
         isUserAdminCheckBox = new JCheckBox();
-        btnRmvUsrFrmGrp = new JButton();
+        JButton btnRmvUsrFrmGrp = new JButton();
 
         mainPanel.setLayout(new AbsoluteLayout());
 
@@ -327,6 +347,8 @@ public class ServerInterface extends JFrame {
         registerUserButton.setFont(new Font("Candara", 3, 18));
         registerUserButton.setForeground(new Color(255, 255, 255));
         registerUserButton.setText("Register User");
+        registerUserButton.setOpaque(true);
+        registerUserButton.setBorderPainted(false);
         registerUserButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 registerUserButtonActionPerformed(evt);
@@ -355,6 +377,8 @@ public class ServerInterface extends JFrame {
         createGroupBtn.setFont(new Font("Candara", 3, 20)); 
         createGroupBtn.setForeground(new Color(255, 255, 255));
         createGroupBtn.setText("Create Group");//createGroupBtnActionPerformed
+        createGroupBtn.setOpaque(true);
+        createGroupBtn.setBorderPainted(false);
         createGroupBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 createGroupBtnActionPerformed(evt);
@@ -371,6 +395,8 @@ public class ServerInterface extends JFrame {
         btnRmvGrp.setFont(new Font("Candara", 3, 18)); 
         btnRmvGrp.setForeground(new Color(255, 255, 255));
         btnRmvGrp.setText("Remove Group");
+        btnRmvGrp.setOpaque(true);
+        btnRmvGrp.setBorderPainted(false);
         btnRmvGrp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 btnRmvGrpActionPerformed(evt);
@@ -418,6 +444,8 @@ public class ServerInterface extends JFrame {
         btnRmvUsr.setFont(new Font("Candara", 3, 16));
         btnRmvUsr.setForeground(new Color(255, 255, 255));
         btnRmvUsr.setText("Remove User");
+        btnRmvUsr.setOpaque(true);
+        btnRmvUsr.setBorderPainted(false);
         btnRmvUsr.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 btnRmvUsrActionPerformed(evt);
@@ -435,6 +463,8 @@ public class ServerInterface extends JFrame {
         btnAddUserToGrp.setFont(new Font("Candara", 3, 18));
         btnAddUserToGrp.setForeground(new Color(255, 255, 255));
         btnAddUserToGrp.setText("Add to Group");
+        btnAddUserToGrp.setOpaque(true);
+        btnAddUserToGrp.setBorderPainted(false);
         btnAddUserToGrp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 btnAddUserToGrpActionPerformed(evt);
@@ -446,6 +476,8 @@ public class ServerInterface extends JFrame {
         btnRmvUsrFrmGrp.setFont(new Font("Candara", 3, 15));
         btnRmvUsrFrmGrp.setForeground(new Color(255, 255, 255));
         btnRmvUsrFrmGrp.setText("Remove from Group");
+        btnRmvUsrFrmGrp.setOpaque(true);
+        btnRmvUsrFrmGrp.setBorderPainted(false);
         btnRmvUsrFrmGrp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 btnRmvUserFrmGrpActionPerformed(evt);
@@ -548,12 +580,10 @@ public class ServerInterface extends JFrame {
         Map<String, String> payload = new HashMap<>();
         payload.put("id", "" + selectedUser.id);
         if(selectedUser.id != connectedUser.id) {
-            if (!RootRequest.connectedUsersAL.contains(selectedUser)) {
-                this.rootRequest.removeUser(payload);
-            } else {
-                this.rootRequest.removeConnectedUser(payload);
-            }
+            if (!RootRequest.connectedUsersAL.contains(selectedUser)) this.rootRequest.removeUser(payload);
+            else { this.rootRequest.removeConnectedUser(payload); }
             Utils.informationWindow("User removed successfully", "Information");
+
         } else { Utils.informationWindow("You cannot remove yourself dummy !", "Information"); }
     }
     private void getSelectedUser(ItemEvent evt){
@@ -562,7 +592,6 @@ public class ServerInterface extends JFrame {
             this.rootRequest.getGroupsOfUser(frontUser);
         }
     }
-    /*------------------ {END} ------------------*/
 
     /*------------------ {MANAGE GROUPS} ------------------*/
     public static void addUserToGroupFromComboBox(FrontUser user, FrontGroup selectedGroup){
@@ -612,7 +641,9 @@ public class ServerInterface extends JFrame {
             payload.put("name",groupName);
             this.rootRequest.createGroup(payload);
             Utils.informationWindow("Group successfully created !", "Information");
-        }
+        } else {
+            String msg = "Group name must contain between " + Utils.MIN_CHARS +" and " +Utils.MAX_CHARS +" characters !\nAuthorized chars: [a-Z][0-9]-_";
+            Utils.warningWindow(msg, "Information"); }
     }
     private void btnRmvGrpActionPerformed(ActionEvent evt) {
         FrontGroup selectedGroup = grpListToRemove.getItemAt(grpListToRemove.getSelectedIndex());
@@ -623,9 +654,6 @@ public class ServerInterface extends JFrame {
             Utils.informationWindow("Group successfully removed !", "Information");
         }
     }
-
-
-    /*------------------ {END} ------------------*/
 
     /*------------------ {SELECTION MENU} ------------------*/
     //Add user
@@ -649,7 +677,6 @@ public class ServerInterface extends JFrame {
             this.setPagesInvisible();
         }
         setUsrsList(); //Sets table UsersTable: list of users
-        /*-------------------------------------------------------*/
         btn2.setBackground(new Color(72, 159, 181));
         pMngUsr.setVisible(true);
     }
@@ -664,51 +691,5 @@ public class ServerInterface extends JFrame {
         btn3.setBackground(new Color(72, 159, 181));
         pMngGrps.setVisible(true);
     }
-    /*------------------ {END} ------------------*/
-
-
-    private JPanel btn1;
-    private JPanel btn2;
-    private JPanel btn3;
-    private JButton btnAddUserToGrp;
-    private JButton btnRmvGrp;
-    private JButton btnRmvUsr;
-    private JButton btnRmvUsrFrmGrp;
-    private JPanel centrePanel;
-    private JButton createGroupBtn;
-    private JTextField firstNameTxtField;
-    private JLabel frameDrag;
-    public static JComboBox<FrontGroup> grpSelectAddUser;
-    public static JComboBox<FrontGroup> grpListComboBoxMU;
-    public static JComboBox<FrontGroup> grpListToRemove;
-    private JTextField grpNameTextFieldCreate;
-    private JPanel headerPanel;
-    private JLabel iconBtn1;
-    private JLabel iconBtn2;
-    private JLabel iconBtn4;
-    private JLabel iconLabel;
-    private JLabel jLabel1;
-    private JLabel jLabel2;
-    private JLabel jLabel3;
-    private JLabel jLabel4;
-    private JLabel jLabel5;
-    private JLabel jLabel6;
-    private JLabel jLabel7;
-    private JScrollPane jScrollPane2;
-    private JTextField lastNameTxtField;
-    public static JPanel mainPanel;
-    private JPanel pAddUsr;
-    private JPanel pMngGrps;
-    private JPanel pMngUsr;
-    private JPasswordField passwordTxtField;
-    private JLabel quitIcon;
-    private JButton registerUserButton;
-    private JPanel sideBarPanel;
-    private JLabel textBtn1;
-    private JLabel textBtn2;
-    private JLabel textBtn4;
-    public static JComboBox<FrontUser> usrListComboBox;
-    private JTextField usrNameTxtField;
-    private static JTable usrTable;
-    public static JCheckBox isUserAdminCheckBox;
+    /* ------------------------------------------START------------------------------------------ */
 }

@@ -94,7 +94,7 @@ public class ServerListener implements Runnable {
                     this.updateUsers();
                 }
             }
-            case "/user/deleteUser" -> {
+            case "/user/deleteUser", "/user/deleteConnectedUser"-> {
                 FrontUser removedUser = gson.fromJson(payload, FrontUser.class);
                 RootRequest.allUsersAL.remove(removedUser);
                 RootRequest.disconectedUsersAL.remove(removedUser);

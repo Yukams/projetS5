@@ -7,11 +7,13 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class Utils {
+    public static final int MIN_CHARS = 3;
+    public static final int MAX_CHARS = 25;
     /* String must not contain: !@#$%&*()'+,-./:;<=>?[]^`{|}
-    * String must be between [4-20] chars */
+    * String must be between [MIN_CHARS-MAX_CHARS] chars */
     public static boolean isValidString(String str){
-        String specialCharactersString = "\\!@#$%&*()'+,-./:;<=>?[]^`{|} ";
-        if(str.length()>=4 && str.length() <= 20) {
+        String specialCharactersString = "\\!@#$%&*()'+,./:;<=>?[]^`{|} ";
+        if(str.length()>=MIN_CHARS && str.length() <= MAX_CHARS) {
             for (int i = 0; i < str.length(); i++) {
                 char c = str.charAt(i);
                 if(specialCharactersString.contains(Character.toString(c))){ return false; }
