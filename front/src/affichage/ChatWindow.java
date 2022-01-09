@@ -417,7 +417,10 @@ public class ChatWindow extends JFrame {
             scrollPaneListMessage.getComponent(0).setVisible(false);
         }
         if (node.isLeaf()) {
-            this.userRequest.updateMessagesOfThread((FrontThread) node.getUserObject());
+            FrontThread threadSelected = (FrontThread) node.getUserObject();
+            if (threadSelected.nbNotReadMessage != 0) {
+                this.userRequest.updateMessagesOfThread((FrontThread) node.getUserObject());
+            }
             firstClick = true;
             labelTitreTicket.setText(node.toString());
             panelEcrireMessage.setVisible(true);
