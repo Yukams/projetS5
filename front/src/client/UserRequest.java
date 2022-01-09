@@ -68,6 +68,7 @@ public class UserRequest {
         payload.put("title",title);
         payload.put("content",content);
         sendRequest("/thread/createThread",payload);
+        ChatWindow.isCreatorThread=true;
     }
 
     public void updateMessagesOfThread(FrontThread frontThread) {

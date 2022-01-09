@@ -39,15 +39,18 @@ import javax.swing.tree.TreePath;
  * @author Utilisateur
  */
 public class ChatWindow extends JFrame {
+    private static int messagesNonLu;
     private FrontGroup groupSelectedNewFil;
     private String titleAdd;
     public static Map<FrontThread, JPanel> componentForTicket = new HashMap<>();
+    public static Map<FrontGroup, Integer> messageNotReadPerGroup = new HashMap<>();
     private static DefaultMutableTreeNode rootTree = new DefaultMutableTreeNode("Groups");
     private boolean firstClick = true;
 
     public static UserRequest userRequest;
     public static FrontUser connectedUser;
     public static FrontGroup allFrontGroup[];
+    public static boolean isCreatorThread=false;
 
     public static ArrayList<FrontThread> userThreads = new ArrayList<>();
     private static final SimpleDateFormat dayFormat = new SimpleDateFormat("dd/MM/yyyy [HH:mm]");
@@ -417,7 +420,11 @@ public class ChatWindow extends JFrame {
             scrollPaneListMessage.getComponent(0).setVisible(false);
         }
         if (node.isLeaf()) {
-            this.userRequest.updateMessagesOfThread((FrontThread) node.getUserObject());
+            FrontThread threadSelected = (FrontThread) node.getUserObject();
+            if (threadSelected.nbNotReadMessage != 0 || isCreatorThread) {
+                isCreatorThread=false;
+                userRequest.updateMessagesOfThread((FrontThread) node.getUserObject());
+            }
             firstClick = true;
             labelTitreTicket.setText(node.toString());
             panelEcrireMessage.setVisible(true);
@@ -491,7 +498,7 @@ public class ChatWindow extends JFrame {
             } else {
                 FrameAjout.setVisible(false);
 
-                this.userRequest.createThread(connectedUser.id, groupSelectedNewFil.id,titleAdd,messageAdd);
+                userRequest.createThread(connectedUser.id, groupSelectedNewFil.id,titleAdd,messageAdd);
                 /*-------------Local front thread Creation---------------*/
                 /*FrontThread threadToAdd = new FrontThread();
                 threadToAdd.title = titleAdd;
@@ -577,7 +584,7 @@ public class ChatWindow extends JFrame {
    // }
 
     private void zoneTexteMessageMouseClicked(MouseEvent evt){
-        if (firstClick==true) {
+        if (firstClick) {
             zoneTexteMessage.setText("");
             firstClick=false;
         }
@@ -599,7 +606,7 @@ public class ChatWindow extends JFrame {
                 String dayStr = dayFormat.format(date);
                 //*----------------*//*
 
-                this.userRequest.createMessage(connectedUser.id,content ,threadSelected.id);
+                userRequest.createMessage(connectedUser.id,content ,threadSelected.id);
 
                 //creation affichage new message local
                /* JScrollPane scrollPaneNewMessage = new JScrollPane();
@@ -657,6 +664,8 @@ public class ChatWindow extends JFrame {
 
         rootTree.removeAllChildren();
         componentForTicket.clear();
+        messageNotReadPerGroup.clear();
+
         if(userThreads.size() > 0) {
             for(FrontThread frontThread : userThreads){
                 frontGroupsSet.add(frontThread.group);
@@ -693,7 +702,21 @@ public class ChatWindow extends JFrame {
 
 
         for(FrontThread frontThread : userThreads) {
+            messagesNonLu = frontThread.nbNotReadMessage;
+            String title = frontThread.title;
+            if (messagesNonLu != 0){
+
+                frontThread.title= "<html><b>"+title+" ("+messagesNonLu+")</b></html>";
+            }
             if (frontThread.group.id == frontGroup.id) {
+                if (messageNotReadPerGroup.get(frontThread.group) == null){
+                    messageNotReadPerGroup.put(frontThread.group, messagesNonLu);
+                    System.out.println("--------------> je suis nul");
+                } else {
+                    Integer lol = messageNotReadPerGroup.get(frontThread.group);
+                    lol+= messagesNonLu;
+                    messageNotReadPerGroup.put(frontThread.group, lol );
+                }
                 DefaultMutableTreeNode ticket = new DefaultMutableTreeNode(frontThread);
                 ticket.setAllowsChildren(false);
                 node.add(ticket);
@@ -746,6 +769,12 @@ public class ChatWindow extends JFrame {
 
             }
 
+        }
+        if (messageNotReadPerGroup.get(frontGroup) != null) {
+            if (messageNotReadPerGroup.get(frontGroup) != 0 ) {
+                frontGroup.name = "<html><b>" + frontGroup.name + " (" + messageNotReadPerGroup.get(frontGroup) + ")</b></html>";
+                node.setUserObject(frontGroup);
+            }
         }
         model.reload();
         //panelEcrireMessage.setVisible(true);
