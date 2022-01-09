@@ -15,7 +15,7 @@ Il est possible de lancer jusqu'a 100 utilisateurs (hardcode), mais je ne vous r
 
 Voici les differents utilisateurs implementes de base dans la DB :
 
-username	  	password
+username	  /	password
 - root		  	root		(ADMIN)
 - Jean31			123
 - Pierre31		123
